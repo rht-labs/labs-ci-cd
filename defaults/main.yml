@@ -1,0 +1,10 @@
+---
+nexus_user: admin
+nexus_password: admin123
+nexus_url: http://localhost:8081
+configure_redhat_repos: true
+nexus_redhat_script_name: redhat-repos
+nexus_redhat_script_file: ../files/redhat-repos.json
+configure_labs_repos: true
+nexus_labs_script_name: labs-repos
+nexus_labs_script_file: ../files/labs-repos.json

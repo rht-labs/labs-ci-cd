@@ -1,0 +1,8 @@
+---
+# This test covers the full feature set provided by the role
+
+- name: "Configure Nexus"
+  hosts: nexus
+
+  roles:
+  - configure-nexus

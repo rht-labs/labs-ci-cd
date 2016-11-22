@@ -1,0 +1,8 @@
+---
+- name: "Configured Red Hat Repos"
+  include: redhat-repos.yml
+  when: configure_redhat_repos == true
+
+- name: "Configured Labs Repos"
+  include: labs-repos.yml
+  when: configure_labs_repos == true  

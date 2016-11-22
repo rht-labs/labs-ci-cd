@@ -1,0 +1,5 @@
+{
+  "name": "labs-repos",
+  "type": "groovy",
+  "content": "import org.sonatype.nexus.blobstore.api.BlobStoreManager; import org.sonatype.nexus.repository.manager.RepositoryManager; import org.sonatype.nexus.repository.storage.WritePolicy; import org.sonatype.nexus.repository.maven.VersionPolicy; import org.sonatype.nexus.repository.maven.LayoutPolicy; if ( !repository.repositoryManager.exists( 'labs-snapshots' ) ){ repository.createMavenHosted( 'labs-snapshots', BlobStoreManager.DEFAULT_BLOBSTORE_NAME, true, VersionPolicy.SNAPSHOT, WritePolicy.ALLOW, LayoutPolicy.STRICT); }; if ( !repository.repositoryManager.exists( 'labs-releases' ) ){ repository.createMavenHosted( 'labs-releases', BlobStoreManager.DEFAULT_BLOBSTORE_NAME, true, VersionPolicy.RELEASE, WritePolicy.ALLOW_ONCE, LayoutPolicy.STRICT); if ( !repository.repositoryManager.exists( 'labs-group' ) ){ repository.createMavenGroup('labs-group', ['redhat-group','labs-releases','labs-snapshots']);}} "
+}
