@@ -5,7 +5,7 @@
   hosts: nexus
 
   vars:
-    nexus_url: http://nexus3-holmes-snadbox.apps.s2.core.rht-labs.com
+    nexus_url: http://nexus3-nexus.apps.s2.core.rht-labs.com
 
   roles:
   - configure-nexus
