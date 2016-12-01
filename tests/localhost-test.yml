@@ -1,8 +1,9 @@
 ---
-# This test covers the full feature set provided by the role
+# This test assumes a locally running Nexus3 app.
+# The easiest way to acheive that is via `docker run -it -p 8081:8081 sonatype/nexus3
 
 - name: "Configure Nexus"
-  hosts: nexus
+  hosts: local-nexus
 
   roles:
   - configure-nexus

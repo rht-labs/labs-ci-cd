@@ -3,7 +3,7 @@
 
 - name: Check For Existing Script
   uri:
-    url: "{{ nexus_url }}/service/siesta/rest/v1/script/{{ nexus_redhat_script_name }}"
+    url: "http://{{ nexus_url }}/service/siesta/rest/v1/script/{{ nexus_redhat_script_name }}"
     method: GET
     user: "{{ nexus_user }}"
     password: "{{ nexus_password }}"
@@ -14,7 +14,7 @@
 
 - name: Delete Script if it Exists
   uri:
-    url: "{{ nexus_url }}/service/siesta/rest/v1/script/{{ nexus_redhat_script_name }}"
+    url: "http://{{ nexus_url }}/service/siesta/rest/v1/script/{{ nexus_redhat_script_name }}"
     method: DELETE
     user: "{{ nexus_user }}"
     password: "{{ nexus_password }}"
@@ -24,7 +24,7 @@
 
 - name: Create New Script
   uri:
-    url: "{{ nexus_url }}/service/siesta/rest/v1/script/"
+    url: "http://{{ nexus_url }}/service/siesta/rest/v1/script/"
     method: POST
     user: "{{ nexus_user }}"
     password: "{{ nexus_password }}"
@@ -35,7 +35,7 @@
 
 - name: Execute New Script
   uri:
-    url: "{{ nexus_url }}/service/siesta/rest/v1/script/{{ nexus_redhat_script_name }}/run"
+    url: "http://{{ nexus_url }}/service/siesta/rest/v1/script/{{ nexus_redhat_script_name }}/run"
     method: POST
     user: "{{ nexus_user }}"
     password: "{{ nexus_password }}"

@@ -1,7 +1,6 @@
 ---
 nexus_user: admin
 nexus_password: admin123
-nexus_url: http://localhost:8081
 configure_redhat_repos: true
 nexus_redhat_script_name: redhat-repos
 nexus_redhat_script_file: ../files/redhat-repos.json

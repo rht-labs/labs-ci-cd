@@ -1,4 +1,7 @@
 ---
+- debug:
+    msg: "using nexus_url: {{ nexus_url }}"
+
 - name: "Configured Red Hat Repos"
   include: redhat-repos.yml
   when: configure_redhat_repos == true

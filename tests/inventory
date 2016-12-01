@@ -1,2 +1,5 @@
-[nexus]
-localhost ansible_connection=local
+[local-nexus]
+localhost nexus_url=localhost:8081 nexus_port=8081 ansible_connection=local
+
+[cdk-nexus]
+nexus3-sample-project.rhel-cdk.10.1.2.2.xip.io nexus_url=nexus3-sample-project.rhel-cdk.10.1.2.2.xip.io ansible_connection=local
