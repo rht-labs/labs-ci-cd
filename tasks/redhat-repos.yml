@@ -8,9 +8,8 @@
     user: "{{ nexus_user }}"
     password: "{{ nexus_password }}"
     force_basic_auth: yes
-    status_code: 200   
+    status_code: 200,404
   register: get_script_result
-  ignore_errors: true
 
 - name: Delete Script if it Exists
   uri:
