@@ -22,4 +22,16 @@ if ( !repository.repositoryManager.exists( 'jenkins-public' ) ){
 
 if ( !repository.repositoryManager.exists( 'labs-public' ) ){
     repository.createMavenGroup('labs-public', ['redhat-group','labs-releases','labs-snapshots', 'jenkins-public'])
+};
+
+if ( !repository.repositoryManager.exists( 'npm-all' ) ) {
+    repository.createNpmHosted('npm-all')
+};
+
+if ( !repository.repositoryManager.exists( 'npm-registry' ) ) {
+    repository.createNpmProxy('npm-registry','https://registry.npmjs.org')
+};
+
+if ( !repository.repositoryManager.exists( 'npm-group' ) ) {
+    repository.createNpmGroup('npm-group',['npm-all','npm-registry'])
 }
