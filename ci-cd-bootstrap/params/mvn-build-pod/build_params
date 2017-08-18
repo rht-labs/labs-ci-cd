@@ -1,0 +1,4 @@
+SOURCE_REPOSITORY_URL=https://github.com/rht-labs/examples
+SOURCE_CONTEXT_DIR=ci-cd-starter/builds/mvn-build-pod
+BUILDER_IMAGE_NAME=registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7:latest
+NAME=mvn-build-pod

@@ -1,0 +1,2 @@
+SOURCE_REPOSITORY_URL=https://github.com/rht-labs/openshift-jenkins-s2i-config.git
+NAME=jenkins

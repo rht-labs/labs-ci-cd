@@ -1,0 +1,3 @@
+PIPELINE_SOURCE_REPOSITORY_URL=https://github.com/rht-labs/automation-api
+PIPELINE_SOURCE_REPOSITORY_REF=ci-cd-starter
+NAME=java-app

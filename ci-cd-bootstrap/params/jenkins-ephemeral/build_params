@@ -1,0 +1,2 @@
+NAMESPACE=deven-labs-ci-cd
+MEMORY_LIMIT=2Gi
