@@ -80,14 +80,14 @@
                 "labels": {
                     "build": "${NAME}"
                 },
-                "name": "jenkins-slave-${NAME}-rhel7"
+                "name": "jenkins-slave-base-rhel7"
             },
             "spec": {
                 "tags": [
                     {
                         "from": {
                             "kind": "DockerImage",
-                            "name": "openshift/jenkins-slave-${NAME}-rhel7:latest"
+                            "name": "openshift/jenkins-slave-base-rhel7:latest"
                         },
                         "generation": 2,
                         "importPolicy": {},
