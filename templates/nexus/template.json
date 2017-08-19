@@ -63,6 +63,13 @@
               {
                 "image": "${NAME}",
                 "imagePullPolicy": "Always",
+                "livenessProbe": {
+                  "initialDelaySeconds": 30,
+                  "tcpSocket": {
+                    "port": 8081
+                  },
+                  "timeoutSeconds": 1
+                },
                 "name": "${NAME}",
                 "ports": [
                   {
@@ -70,6 +77,14 @@
                     "protocol": "TCP"
                   }
                 ],
+                "readinessProbe": {
+                  "initialDelaySeconds": 30,
+                  "tcpSocket": {
+                    "port": 8081
+                  },
+                  "initialDelaySeconds": 5,
+                  "timeoutSeconds": 1
+                },
                 "resources": {
                   "requests": {
                     "memory": "${MEMORY_LIMIT}"
