@@ -22,14 +22,6 @@ openshift_cluster_content:
     template: openshift//jenkins-ephemeral
     params: "{{ inventory_dir }}/../params/jenkins-ephemeral/build_params"
     namespace: deven-labs-ci-cd
-  - name: mvn-build-pod
-    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
-    params: "{{ inventory_dir }}/../params/mvn-build-pod/build_params"
-    namespace: deven-labs-ci-cd
-  - name: npm-build-pod
-    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
-    params: "{{ inventory_dir }}/../params/npm-build-pod/build_params"
-    namespace: deven-labs-ci-cd
   - name: nexus
     template: "{{ inventory_dir }}/../../templates/nexus/template.json"
     params: "{{ inventory_dir }}/../params/nexus/build_params"
@@ -37,6 +29,14 @@ openshift_cluster_content:
   - name: sonarqube
     template: "{{ inventory_dir }}/../../templates/sonarqube/template.json"
     params: "{{ inventory_dir }}/../params/sonarqube/build_params"
+    namespace: deven-labs-ci-cd
+  - name: mvn-build-pod
+    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
+    params: "{{ inventory_dir }}/../params/mvn-build-pod/build_params"
+    namespace: deven-labs-ci-cd
+  - name: npm-build-pod
+    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
+    params: "{{ inventory_dir }}/../params/npm-build-pod/build_params"
     namespace: deven-labs-ci-cd
   - name: java-app-build
     template: "{{ inventory_dir }}/../../templates/java-app-build/template.json"
