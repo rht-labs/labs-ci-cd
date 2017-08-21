@@ -2,7 +2,7 @@
   <mirrors>
     <mirror>
       <id>labs-group</id>
-      <url>http://nexus:8081/repository/labs-group/</url>
+      <url>http://nexus:8081/repository/maven-public/</url>
       <mirrorOf>*</mirrorOf>
     </mirror>
   </mirrors>

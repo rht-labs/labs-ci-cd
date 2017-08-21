@@ -1,0 +1,15 @@
+---
+kind: List
+apiVersion: v1
+metadata: {}
+items:
+- apiVersion: v1
+  kind: ProjectRequest
+  metadata:
+    annotations:
+      openshift.io/description: ''
+      openshift.io/display-name: Labs CI/CD
+    creationTimestamp:
+    name: labs-ci-cd
+  spec: {}
+  status: {}
