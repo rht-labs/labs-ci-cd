@@ -16,11 +16,13 @@ to bootstrap a CI/CD environment in OpenShift Container Platform. Currently, thi
 
 ## Usage
 
-1. Clone this repository to `<workdir>/labs-ci-cd`
-2. Modify the inventory under `<workdir>/labs-ci-cd/ci-cd-bootstrap/inventory/group_vars/all.yml` as required for site/customer specific needs
+1. Log on to an OpenShift server `oc login -u <user> https://<server>:<port>/`
+    1. No special permissions should be required
+2. Clone this repository to `<workdir>/labs-ci-cd`
+3. Modify the inventory under `<workdir>/labs-ci-cd/ci-cd-bootstrap/inventory/group_vars/all.yml` as required for site/customer specific needs
     1. Additional customization can be done in `<workdir>/labs-ci-cd/ci-cd-bootstrap/namespaces`
     2. Additional customization can be done in `<workdir>/labs-ci-cd/ci-cd-bootstrap/params`
-3. Clone the `casl-ansible` repository to `<workdir>/casl-ansible`
-4. Change directory to `<workdir>/casl-ansible`
-5. Change directory to `<workdir>/casl-ansible/roles/oc-apply/tests`
-6. Run the playbook using `ansible-playbook -i <workdir>/labs-ci-cd/ci-cd-bootstrap/inventory test.yml`
+4. Clone the `casl-ansible` repository to `<workdir>/casl-ansible`
+5. Change directory to `<workdir>/casl-ansible`
+6. Change directory to `<workdir>/casl-ansible/roles/oc-apply/tests`
+7. Run the playbook using `ansible-playbook -i <workdir>/labs-ci-cd/ci-cd-bootstrap/inventory test.yml`
