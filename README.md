@@ -23,6 +23,5 @@ to bootstrap a CI/CD environment in OpenShift Container Platform. Currently, thi
     1. Additional customization can be done in `<workdir>/labs-ci-cd/ci-cd-bootstrap/namespaces`
     2. Additional customization can be done in `<workdir>/labs-ci-cd/ci-cd-bootstrap/params`
 4. Clone the casl-ansible repository: `git clone https://github.com/redhat-cop/casl-ansible.git` repository to `<workdir>/casl-ansible`
-5. Change directory to `<workdir>/casl-ansible`
-6. Change directory to `<workdir>/casl-ansible/roles/oc-apply/tests`
-7. Run the playbook using `ansible-playbook -i <workdir>/labs-ci-cd/ci-cd-bootstrap/inventory test.yml`
+5. Change directory to `<workdir>/casl-ansible/roles/oc-apply/tests`
+6. Run the playbook using `ansible-playbook -i <workdir>/labs-ci-cd/ci-cd-bootstrap/inventory test.yml`
