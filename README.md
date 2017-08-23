@@ -17,7 +17,7 @@ to bootstrap a CI/CD environment in OpenShift Container Platform. Currently, thi
 ## Usage
 
 1. Log on to an OpenShift server `oc login -u <user> https://<server>:<port>/`
-    1. No special permissions should be required
+    1. User needs permissions to deploy ProjectRequest objects
 2. Clone this repository to `<workdir>/labs-ci-cd`
 3. Modify the inventory under `<workdir>/labs-ci-cd/ci-cd-bootstrap/inventory/group_vars/all.yml` as required for site/customer specific needs
     1. Additional customization can be done in `<workdir>/labs-ci-cd/ci-cd-bootstrap/namespaces`
