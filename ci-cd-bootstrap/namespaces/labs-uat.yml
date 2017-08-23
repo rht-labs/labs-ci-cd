@@ -1,15 +1,11 @@
 ---
-kind: List
 apiVersion: v1
-metadata: {}
-items:
-- apiVersion: v1
-  kind: ProjectRequest
-  metadata:
-    annotations:
-      openshift.io/description: ''
-      openshift.io/display-name: Labs UAT
-    creationTimestamp:
-    name: labs-uat
-  spec: {}
-  status: {}
+kind: ProjectRequest
+metadata:
+  annotations:
+    openshift.io/description: ''
+    openshift.io/display-name: Labs UAT
+  creationTimestamp:
+  name: labs-uat
+spec: {}
+status: {}
