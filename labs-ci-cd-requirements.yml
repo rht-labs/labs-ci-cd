@@ -3,4 +3,6 @@
 
 # From 'infra-ansible'
 - src: https://github.com/redhat-cop/casl-ansible
-
+  scm: git
+  version: master
+  name: casl-ansible

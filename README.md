@@ -14,6 +14,12 @@ to bootstrap a CI/CD environment in OpenShift Container Platform. Currently, thi
 * NPM Build Pod
 * Example Java application and pipeline
 
+## Prerequisites
+* Ansible
+* Ansible Galaxy
+* OpenShift CLI Tools
+* Access to an OpenShift cluster or [minishift](https://github.com/minishift/minishift)/[cdk](https://developers.redhat.com/products/cdk/overview/) environment
+
 ## Usage
 
 1. Log on to an OpenShift server `oc login -u <user> https://<server>:<port>/`

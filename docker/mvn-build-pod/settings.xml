@@ -1,7 +1,7 @@
 <settings>
   <mirrors>
     <mirror>
-      <id>labs-group</id>
+      <id>maven-public</id>
       <url>http://nexus:8081/repository/maven-public/</url>
       <mirrorOf>*</mirrorOf>
     </mirror>
