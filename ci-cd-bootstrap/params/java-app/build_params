@@ -1,3 +1,0 @@
-PIPELINE_SOURCE_REPOSITORY_URL=https://github.com/rht-labs/automation-api
-PIPELINE_SOURCE_REPOSITORY_REF=master
-NAME=java-app
