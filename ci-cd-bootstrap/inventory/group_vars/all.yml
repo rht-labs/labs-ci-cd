@@ -48,15 +48,15 @@ openshift_cluster_content:
     namespace: labs-ci-cd
 - object: app-deployments
   content:
-  - name: java-app-dev
+  - name: java-app
     template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
     params: "{{ inventory_dir }}/../params/java-app-dev/deploy_params"
     namespace: labs-dev
-  - name: java-app-test
+  - name: java-app
     template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
     params: "{{ inventory_dir }}/../params/java-app-test/deploy_params"
     namespace: labs-test
-  - name: java-app-uat
+  - name: java-app
     template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
     params: "{{ inventory_dir }}/../params/java-app-uat/deploy_params"
     namespace: labs-uat
