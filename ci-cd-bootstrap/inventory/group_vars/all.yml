@@ -36,7 +36,7 @@ openshift_cluster_content:
     template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
     params: "{{ inventory_dir }}/../params/npm-build-pod/build_params"
     namespace: labs-ci-cd
-- object: deployments2
+- object: ci-cd-deployments
   content:
   - name: jenkins-ephemeral
     template: openshift//jenkins-ephemeral
@@ -46,4 +46,17 @@ openshift_cluster_content:
     template: "{{ inventory_dir }}/../../templates/java-app-build/template.json"
     params: "{{ inventory_dir }}/../params/java-app/deploy_params"
     namespace: labs-ci-cd
-
+- object: app-deployments
+  content:
+  - name: java-app-dev
+    template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
+    params: "{{ inventory_dir }}/../params/java-app-dev/deploy_params"
+    namespace: labs-dev
+  - name: java-app-test
+    template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
+    params: "{{ inventory_dir }}/../params/java-app-test/deploy_params"
+    namespace: labs-test
+  - name: java-app-uat
+    template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
+    params: "{{ inventory_dir }}/../params/java-app-uat/deploy_params"
+    namespace: labs-uat

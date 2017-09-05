@@ -31,3 +31,4 @@ to bootstrap a CI/CD environment in OpenShift Container Platform. Currently, thi
 4. Execute `./run.sh` in the `<workdir>/labs-ci-cd` directory. This will:
     1. Install the [casl-ansible](https://github.com/redhat-cop/casl-ansible) dependency in the current directory
     2. Execute the playbook `labs-ci-cd.yml` using the inventory contained in the current directory
+

@@ -1,0 +1,234 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "java-app-deploy",
+        "annotations": {
+            "openshift.io/display-name": "Java App Deploy Template",
+            "description": "A template to deploy your Java App",
+            "iconClass": "icon-java",
+            "tags": "java"
+        }
+    },
+    "objects": [
+        {
+            "apiVersion": "v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "labels": {
+                    "build": "${NAME}"
+                },
+                "name": "${NAME}"
+            },
+            "spec": {}
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "DeploymentConfig",
+            "metadata": {
+                "name": "${NAME}"
+            },
+            "spec": {
+                "replicas": 1,
+                "selector": {
+                    "name": "${NAME}"
+                },
+                "strategy": {
+                    "activeDeadlineSeconds": 21600,
+                    "resources": {},
+                    "rollingParams": {
+                        "intervalSeconds": 1,
+                        "maxSurge": "25%",
+                        "maxUnavailable": "25%",
+                        "timeoutSeconds": 600,
+                        "updatePeriodSeconds": 1
+                    },
+                    "type": "Rolling"
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "name": "${NAME}"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "env": [
+                                    {
+                                        "name": "JAVA_OPTIONS",
+                                        "value": "-Dspring.profiles.active=hsql"
+                                    }
+                                ],
+                                "image": "${NAME}",
+                                "imagePullPolicy": "Always",
+                                "name": "${NAME}",
+                                "ports": [
+                                    {
+                                        "containerPort": 8778,
+                                        "protocol": "TCP"
+                                    },
+                                    {
+                                        "containerPort": 8080,
+                                        "protocol": "TCP"
+                                    },
+                                    {
+                                        "containerPort": 8443,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log"
+                            }
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "Always",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30
+                    }
+                },
+                "test": false,
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "${NAME}"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "${NAME}:latest"
+                            }
+                        },
+                        "type": "ImageChange"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "labels": {
+                    "name": "${NAME}"
+                },
+                "name": "${NAME}"
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "8080-tcp",
+                        "port": 8080,
+                        "protocol": "TCP",
+                        "targetPort": 8080
+                    },
+                    {
+                        "name": "8443-tcp",
+                        "port": 8443,
+                        "protocol": "TCP",
+                        "targetPort": 8443
+                    },
+                    {
+                        "name": "8778-tcp",
+                        "port": 8778,
+                        "protocol": "TCP",
+                        "targetPort": 8778
+                    }
+                ],
+                "selector": {
+                    "name": "${NAME}"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Route",
+            "metadata": {
+                "labels": {
+                    "name": "${NAME}"
+                },
+                "name": "${NAME}"
+            },
+            "spec": {
+                "port": {
+                    "targetPort": "8080-tcp"
+                },
+                "to": {
+                    "kind": "Service",
+                    "name": "${NAME}",
+                    "weight": 100
+                },
+                "wildcardPolicy": "None"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "edit"
+            },
+            "roleRef": {
+                "name": "edit"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "jenkins",
+                    "namespace": "${PIPELINES_NAMESPACE}"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:${PIPELINES_NAMESPACE}:jenkins"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "groupNames": [
+                "system:serviceaccounts:${APP_NAMESPACE}"
+            ],
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "view"
+            },
+            "roleRef": {
+                "name": "view"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:${APP_NAMESPACE}"
+                }
+            ],
+            "userNames": null
+        }
+    ],
+    "parameters": [
+        {
+            "name": "NAME",
+            "displayName": "Name",
+            "description": "The name assigned to all objects and the resulting imagestream.",
+            "required": true
+        },
+        {
+            "name": "PIPELINES_NAMESPACE",
+            "displayName": "Project/Namespace for Jenkins Pipelines",
+            "description": "The project/namespace where the Jenkins executing pipelines is deployed.",
+            "required": true
+        },
+        {
+            "name": "APP_NAMESPACE",
+            "displayName": "Project/Namespace for the Java App",
+            "description": "The project/namespace where the Jenkins executing pipelines is deployed.",
+            "required": true
+        }
+    ],
+    "labels": {
+        "template": "java-app-deploy-template"
+    }
+}
