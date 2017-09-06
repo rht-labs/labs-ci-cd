@@ -10,8 +10,6 @@ openshift_cluster_content:
     file: "{{ inventory_dir }}/../namespaces/labs-test.yml"
   - name: labs-uat
     file: "{{ inventory_dir }}/../namespaces/labs-uat.yml"
-- object: policy
-  content:
 - object: deployments1
   content:
   - name: nexus
