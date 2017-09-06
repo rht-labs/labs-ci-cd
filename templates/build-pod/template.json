@@ -4,7 +4,7 @@
     "metadata": {
         "name": "${NAME}",
         "annotations": {
-            "openshift.io/display-name": "Maven Build Pod",
+            "openshift.io/display-name": "Generic Build Pod",
             "description": "${NAME} build pod template pre-configured to use a nexus in the same project/namespace"
         }
     },
@@ -141,6 +141,6 @@
 	}
     ],
     "labels": {
-        "template": "mvn-build-pod-template"
+        "template": "build-pod-template"
     }
 }
