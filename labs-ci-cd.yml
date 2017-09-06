@@ -1,4 +1,0 @@
----
-- hosts: localhost
-  roles:
-          - { role: casl-ansible/roles/oc-apply }
