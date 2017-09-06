@@ -1,0 +1,3 @@
+PIPELINES_NAMESPACE=labs-ci-cd
+APP_NAMESPACE=labs-uat
+NAME=java-app

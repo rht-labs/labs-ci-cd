@@ -1,0 +1,5 @@
+SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd
+SOURCE_CONTEXT_DIR=docker/npm-build-pod
+BUILDER_IMAGE_NAME=registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7:latest
+NAME=npm-build-pod
+SOURCE_REPOSITORY_REF=master

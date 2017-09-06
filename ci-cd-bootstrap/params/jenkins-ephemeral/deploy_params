@@ -1,0 +1,2 @@
+NAMESPACE=labs-ci-cd
+MEMORY_LIMIT=2Gi

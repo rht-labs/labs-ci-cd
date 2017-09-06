@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ProjectRequest
+metadata:
+  annotations:
+    openshift.io/description: ''
+    openshift.io/display-name: Labs Dev
+  creationTimestamp:
+  name: labs-dev
+spec: {}
+status: {}

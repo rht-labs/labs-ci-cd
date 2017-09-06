@@ -1,0 +1,153 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "java-app-build",
+        "annotations": {
+            "openshift.io/display-name": "Java App Build Template",
+            "description": "Java S2I binary build config to create an image with your Java App baked in.",
+            "iconClass": "icon-java",
+            "tags": "java"
+        }
+    },
+    "objects": [
+        {
+            "apiVersion": "v1",
+            "kind": "BuildConfig",
+            "metadata": {
+                "labels": {
+                    "build": "${NAME}",
+                    "name": "${NAME}-pipeline"
+                },
+                "name": "${NAME}-pipeline"
+            },
+            "spec": {
+                "nodeSelector": {},
+                "output": {},
+                "postCommit": {},
+                "resources": {},
+                "runPolicy": "Serial",
+                "source": {
+                    "contextDir": "${PIPELINE_CONTEXT_DIR}",
+                    "git": {
+                        "ref": "${PIPELINE_SOURCE_REPOSITORY_REF}",
+                        "uri": "${PIPELINE_SOURCE_REPOSITORY_URL}"
+                    },
+                    "type": "Git"
+                },
+                "strategy": {
+                    "jenkinsPipelineStrategy": {
+                        "jenkinsfilePath": "Jenkinsfile"
+                    },
+                    "type": "JenkinsPipeline"
+                },
+                "triggers": [
+                    {
+                        "github": {
+                            "secret": "${PIPELINE_GITHUB_WEBHOOK_SECRET}"
+                        },
+                        "type": "GitHub"
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "BuildConfig",
+            "metadata": {
+                "labels": {
+                    "build": "${NAME}"
+                },
+                "name": "${NAME}"
+            },
+            "spec": {
+                "nodeSelector": null,
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "${NAME}:latest"
+                    }
+                },
+                "postCommit": {},
+                "resources": {},
+                "runPolicy": "Serial",
+                "source": {
+                    "binary": {},
+                    "type": "Binary"
+                },
+                "strategy": {
+                    "sourceStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "redhat-openjdk18-openshift:latest",
+                            "namespace": "openshift"
+                        }
+                    },
+                    "type": "Source"
+                },
+                "triggers": [
+                    {
+                        "github": {
+                            "secret": "${GITHUB_WEBHOOK_SECRET}"
+                        },
+                        "type": "GitHub"
+                    }
+                ]
+            },
+            "status": {
+                "lastVersion": 1
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "labels": {
+                    "build": "${NAME}"
+                },
+                "name": "${NAME}"
+            },
+            "spec": {}
+        }
+    ],
+    "parameters": [
+        {
+            "name": "NAME",
+            "displayName": "Name",
+            "description": "The name assigned to all objects and the resulting imagestream.",
+            "required": true,
+            "value": "java-app"
+        },
+        {
+            "name": "GITHUB_WEBHOOK_SECRET",
+            "displayName": "GitHub Webhook Secret",
+            "description": "A secret string used to configure the GitHub webhook.",
+            "generate": "expression",
+            "from": "[a-zA-Z0-9]{40}"
+        },
+        {
+            "name": "PIPELINE_SOURCE_REPOSITORY_URL",
+            "displayName": "Git Repository URL",
+            "description": "The URL of the repository with your Jenkinsfile.",
+            "required": true,
+            "value": "https://github.com/rht-labs/Jenkinsfiles"
+        },
+        {
+            "name": "PIPELINE_SOURCE_REPOSITORY_REF",
+            "displayName": "Git Reference",
+            "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default (master) branch.",
+            "value": "master"
+        },
+        {
+            "name": "PIPELINE_CONTEXT_DIR",
+            "displayName": "Git Context Directory for Jenkinsfile",
+            "description": "Set this to the directory where the Jenkinsfile is if not using the default root directory"
+        }
+    ],
+    "labels": {
+        "template": "java-app-build-template"
+    }
+}

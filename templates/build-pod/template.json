@@ -1,0 +1,146 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "${NAME}",
+        "annotations": {
+            "openshift.io/display-name": "Generic Build Pod",
+            "description": "${NAME} build pod template pre-configured to use a nexus in the same project/namespace"
+        }
+    },
+    "objects": [
+        {
+            "apiVersion": "v1",
+            "kind": "BuildConfig",
+            "metadata": {
+                "labels": {
+                    "build": "${NAME}"
+                },
+                "name": "${NAME}"
+            },
+            "spec": {
+                "nodeSelector": null,
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "${NAME}:latest"
+                    }
+                },
+                "postCommit": {},
+                "resources": {},
+                "runPolicy": "Serial",
+                "source": {
+                    "contextDir": "${SOURCE_CONTEXT_DIR}",
+                    "git": {
+                        "ref": "${SOURCE_REPOSITORY_REF}",
+                        "uri": "${SOURCE_REPOSITORY_URL}"
+                    },
+                    "type": "Git"
+                },
+                "strategy": {
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "${BUILDER_IMAGE_NAME}"
+                        }
+                    },
+                    "type": "Docker"
+                },
+                "triggers": [
+                    {
+                        "github": {
+                            "secret": "${GITHUB_WEBHOOK_SECRET}"
+                        },
+                        "type": "GitHub"
+                    },
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "type": "ImageChange"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "labels": {
+                    "build": "${NAME}",
+                    "role": "jenkins-slave"
+                },
+                "name": "${NAME}"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "labels": {
+                    "build": "${NAME}"
+                },
+                "name": "jenkins-slave-base-rhel7"
+            },
+            "spec": {
+                "tags": [
+                    {
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "openshift/jenkins-slave-base-rhel7:latest"
+                        },
+                        "generation": 2,
+                        "importPolicy": {},
+                        "name": "latest",
+                        "referencePolicy": {
+                            "type": "Source"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "parameters": [
+        {
+            "name": "NAME",
+            "displayName": "Name",
+            "description": "The name assigned to all objects and the resulting imagestream.",
+            "required": true,
+            "value": "mvn-build-pod"
+        },
+        {
+            "name": "GITHUB_WEBHOOK_SECRET",
+            "displayName": "GitHub Webhook Secret",
+            "description": "A secret string used to configure the GitHub webhook.",
+            "generate": "expression",
+            "from": "[a-zA-Z0-9]{40}"
+        },
+        {
+            "name": "SOURCE_REPOSITORY_URL",
+            "displayName": "Git Repository URL",
+            "description": "The URL of the repository with your application source code.",
+            "required": true,
+            "value": "https://github.com/rht-labs/examples"
+        },
+        {
+            "name": "SOURCE_REPOSITORY_REF",
+            "displayName": "Git Reference",
+            "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default (master) branch.",
+            "value": "master"
+        },
+        {
+            "name": "SOURCE_CONTEXT_DIR",
+            "displayName": "Git Context Directory",
+            "description": "Set this to the directory where the build information is (e.g. Dockerfile) if not using the default"
+        },
+	{
+	    "name": "BUILDER_IMAGE_NAME",
+	    "displayName": "Image name from which to build this pod",
+	    "description": "The build image which this build pod will extend to create it's new build pod type.",
+	    "value": "jenkins-slave-base-rhel7"
+	}
+    ],
+    "labels": {
+        "template": "build-pod-template"
+    }
+}

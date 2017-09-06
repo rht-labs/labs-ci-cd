@@ -1,0 +1,63 @@
+---
+openshift_cluster_content:
+- object: projectrequest
+  content:
+  - name: labs-ci-cd
+    file: "{{ inventory_dir }}/../namespaces/labs-ci-cd.yml"
+  - name: labs-dev
+    file: "{{ inventory_dir }}/../namespaces/labs-dev.yml"
+  - name: labs-test
+    file: "{{ inventory_dir }}/../namespaces/labs-test.yml"
+  - name: labs-uat
+    file: "{{ inventory_dir }}/../namespaces/labs-uat.yml"
+- object: deployments1
+  content:
+  - name: nexus
+    template: "{{ inventory_dir }}/../../templates/nexus/template.json"
+    params: "{{ inventory_dir }}/../params/nexus/deploy_params"
+    namespace: labs-ci-cd
+- object: builds
+  content:
+  - name: owasp-zap-openshift
+    template: "{{ inventory_dir }}/../../templates/zap-build-pod/template.json"
+    namespace: labs-ci-cd
+  - name: jenkins-s2i
+    template: "{{ inventory_dir }}/../../templates/jenkins-s2i/template.json"
+    params: "{{ inventory_dir }}/../params/jenkins-s2i/build_params"
+    namespace: labs-ci-cd
+  - name: sonarqube
+    template: "{{ inventory_dir }}/../../templates/sonarqube/template.json"
+    params: "{{ inventory_dir }}/../params/sonarqube/build_params"
+    namespace: labs-ci-cd
+  - name: mvn-build-pod
+    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
+    params: "{{ inventory_dir }}/../params/mvn-build-pod/build_params"
+    namespace: labs-ci-cd
+  - name: npm-build-pod
+    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
+    params: "{{ inventory_dir }}/../params/npm-build-pod/build_params"
+    namespace: labs-ci-cd
+- object: ci-cd-deployments
+  content:
+  - name: jenkins-ephemeral
+    template: openshift//jenkins-ephemeral
+    params: "{{ inventory_dir }}/../params/jenkins-ephemeral/deploy_params"
+    namespace: labs-ci-cd
+  - name: java-app-build
+    template: "{{ inventory_dir }}/../../templates/java-app-build/template.json"
+    params: "{{ inventory_dir }}/../params/java-app/deploy_params"
+    namespace: labs-ci-cd
+- object: app-deployments
+  content:
+  - name: java-app
+    template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
+    params: "{{ inventory_dir }}/../params/java-app-dev/deploy_params"
+    namespace: labs-dev
+  - name: java-app
+    template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
+    params: "{{ inventory_dir }}/../params/java-app-test/deploy_params"
+    namespace: labs-test
+  - name: java-app
+    template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
+    params: "{{ inventory_dir }}/../params/java-app-uat/deploy_params"
+    namespace: labs-uat
