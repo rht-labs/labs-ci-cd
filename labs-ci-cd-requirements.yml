@@ -1,7 +1,7 @@
 # This is the Ansible Galaxy requirements file to pull in the correct roles
 # to support the operation of CASL provisioning/runs. 
 
-# From 'infra-ansible'
+# From 'casl-ansible'
 - src: https://github.com/redhat-cop/casl-ansible
   scm: git
   version: master
