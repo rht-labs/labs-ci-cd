@@ -3,15 +3,15 @@ FROM centos:centos7
 MAINTAINER Deven Phillips <deven.phillips@redhat.com>
 
 RUN yum install -y epel-release; yum clean all; rm -rf /var/cache/yum
-RUN yum install \
-      --enablerepo=epel \
-      -y redhat-rpm-config \
+RUN yum install -y redhat-rpm-config \
     make automake autoconf gcc gcc-c++ \
-    libstdc++ libstdc++-devel wget curl \
-    xmlstarlet git gettext tar \
-    xorg-x11-server-Xvfb xterm \
-    net-tools python-pip \
-    firefox nss_wrapper git && \
+    libstdc++ libstdc++-devel \
+    java-1.8.0-openjdk ruby wget curl \
+    xmlstarlet git x11vnc gettext tar \
+    xorg-x11-server-Xvfb openbox xterm \
+    net-tools ruby-devel python-pip \
+    firefox nss_wrapper java-1.8.0-openjdk-headless \
+    java-1.8.0-openjdk-devel nss_wrapper git && \
     yum clean all && \
     rm -rf /var/cache/yum
 
