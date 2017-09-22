@@ -1,5 +1,5 @@
 # This dockerfile builds the zap stable release
-FROM centos:centos7
+FROM openshift/jenkins-slave-nodejs-rhel7:latest
 MAINTAINER Deven Phillips <deven.phillips@redhat.com>
 
 RUN yum install \
@@ -8,13 +8,11 @@ RUN yum install \
       --enablerepo=rhel-7-server-optional-rpms \
       -y redhat-rpm-config \
     make automake autoconf gcc gcc-c++ \
-    libstdc++ libstdc++-devel \
-    java-1.8.0-openjdk wget curl \
+    libstdc++ libstdc++-devel wget curl \
     xmlstarlet git x11vnc gettext tar \
     xorg-x11-server-Xvfb openbox xterm \
     net-tools python-pip \
-    firefox nss_wrapper java-1.8.0-openjdk-headless.x86_64 \
-    java-1.8.0-openjdk-devel nss_wrapper git && \
+    firefox nss_wrapper git && \
     yum clean all && \
     rm -rf /var/cache/yum
 
