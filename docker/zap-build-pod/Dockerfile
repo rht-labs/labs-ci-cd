@@ -2,9 +2,11 @@
 FROM centos:centos7
 MAINTAINER Deven Phillips <deven.phillips@redhat.com>
 
-RUN yum install -y epel-release && \
-    yum clean all
-RUN yum install -y redhat-rpm-config \
+RUN yum install \
+      --enablerepo=rhel-server-rhscl-7-rpms \
+      --enablerepo=rhel-7-server-optional-rpms \
+      --enablerepo=rhel-7-server-optional-rpms \
+      -y redhat-rpm-config \
     make automake autoconf gcc gcc-c++ \
     libstdc++ libstdc++-devel \
     java-1.8.0-openjdk wget curl \
@@ -13,7 +15,8 @@ RUN yum install -y redhat-rpm-config \
     net-tools python-pip \
     firefox nss_wrapper java-1.8.0-openjdk-headless \
     java-1.8.0-openjdk-devel nss_wrapper git && \
-    yum clean all
+    yum clean all && \
+    rm -rf /var/cache/yum
 
 RUN pip install --upgrade pip
 RUN pip install zapcli
