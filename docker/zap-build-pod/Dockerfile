@@ -10,7 +10,7 @@ RUN yum install \
     libstdc++ libstdc++-devel wget curl \
     xmlstarlet git gettext tar \
     xorg-x11-server-Xvfb xterm \
-    net-tools python27-python-pip \
+    net-tools python-pip \
     firefox nss_wrapper git && \
     yum clean all && \
     rm -rf /var/cache/yum
