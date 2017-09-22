@@ -2,6 +2,7 @@
 FROM centos:centos7
 MAINTAINER Deven Phillips <deven.phillips@redhat.com>
 
+RUN yum install -y epel-repository; yum clean all; rm -rf /var/cache/yum
 RUN yum install \
       --enablerepo=epel \
       -y redhat-rpm-config \
