@@ -1,12 +1,9 @@
 # This dockerfile builds the zap stable release
-FROM openshift/jenkins-slave-nodejs-rhel7:latest
+FROM centos:centos7
 MAINTAINER Deven Phillips <deven.phillips@redhat.com>
 
 RUN yum install \
-      --enablerepo=rhel-server-rhscl-7-rpms \
-      --enablerepo=rhel-7-server-optional-rpms \
-      --enablerepo=rhel-7-server-optional-rpms \
-      --enablerepo=rhel-7-server-rhceph-2-mon-rpms \
+      --enablerepo=epel \
       -y redhat-rpm-config \
     make automake autoconf gcc gcc-c++ \
     libstdc++ libstdc++-devel wget curl \
