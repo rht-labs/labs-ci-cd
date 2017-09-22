@@ -6,12 +6,13 @@ RUN yum install \
       --enablerepo=rhel-server-rhscl-7-rpms \
       --enablerepo=rhel-7-server-optional-rpms \
       --enablerepo=rhel-7-server-optional-rpms \
+      --enablerepo=rhel-7-server-rhceph-2-mon-rpms \
       -y redhat-rpm-config \
     make automake autoconf gcc gcc-c++ \
     libstdc++ libstdc++-devel wget curl \
-    xmlstarlet git x11vnc gettext tar \
-    xorg-x11-server-Xvfb openbox xterm \
-    net-tools python-pip \
+    xmlstarlet git gettext tar \
+    xorg-x11-server-Xvfb xterm \
+    net-tools python27-python-pip \
     firefox nss_wrapper git && \
     yum clean all && \
     rm -rf /var/cache/yum
