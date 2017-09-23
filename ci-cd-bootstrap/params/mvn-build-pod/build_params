@@ -2,4 +2,4 @@ SOURCE_REPOSITORY_URL=https://github.com/InfoSec812/labs-ci-cd
 SOURCE_CONTEXT_DIR=docker/mvn-build-pod
 BUILDER_IMAGE_NAME=registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7:latest
 NAME=mvn-build-pod
-SOURCE_REPOSITORY_REF=casl-ansible-implementation
+SOURCE_REPOSITORY_REF=master
