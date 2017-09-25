@@ -18,9 +18,10 @@ openshift_cluster_content:
     namespace: labs-ci-cd
 - object: builds
   content:
-  - name: owasp-zap-openshift
-    template: "{{ inventory_dir }}/../../templates/zap-build-pod/template.json"
+  - name: zap-build-pod
+    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
     namespace: labs-ci-cd
+    params: "{{ inventory_dir }}/../params/zap-build-pod/build_params"
   - name: jenkins-s2i
     template: "{{ inventory_dir }}/../../templates/jenkins-s2i/template.json"
     params: "{{ inventory_dir }}/../params/jenkins-s2i/build_params"
