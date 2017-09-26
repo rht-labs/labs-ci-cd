@@ -3,13 +3,13 @@ openshift_cluster_content:
 - object: projectrequest
   content:
   - name: ci-cd
-    file: "{{ inventory_dir }}/../namespaces/ci-cd.yml"
+    file: "{{ inventory_dir }}/../projectrequests/ci-cd.yml"
   - name: dev
-    file: "{{ inventory_dir }}/../namespaces/dev.yml"
+    file: "{{ inventory_dir }}/../projectrequests/dev.yml"
   - name: test
-    file: "{{ inventory_dir }}/../namespaces/test.yml"
+    file: "{{ inventory_dir }}/../projectrequests/test.yml"
   - name: uat
-    file: "{{ inventory_dir }}/../namespaces/uat.yml"
+    file: "{{ inventory_dir }}/../projectrequests/uat.yml"
 - object: deployments1
   content:
   - name: nexus
