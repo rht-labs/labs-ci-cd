@@ -2,14 +2,14 @@
 openshift_cluster_content:
 - object: projectrequest
   content:
-  - name: labs-ci-cd
-    file: "{{ inventory_dir }}/../namespaces/labs-ci-cd.yml"
-  - name: labs-dev
-    file: "{{ inventory_dir }}/../namespaces/labs-dev.yml"
-  - name: labs-test
-    file: "{{ inventory_dir }}/../namespaces/labs-test.yml"
-  - name: labs-uat
-    file: "{{ inventory_dir }}/../namespaces/labs-uat.yml"
+  - name: ci-cd
+    file: "{{ inventory_dir }}/../namespaces/ci-cd.yml"
+  - name: dev
+    file: "{{ inventory_dir }}/../namespaces/dev.yml"
+  - name: test
+    file: "{{ inventory_dir }}/../namespaces/test.yml"
+  - name: uat
+    file: "{{ inventory_dir }}/../namespaces/uat.yml"
 - object: deployments1
   content:
   - name: nexus
