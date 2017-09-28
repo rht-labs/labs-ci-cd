@@ -27,6 +27,9 @@
             "kind": "DeploymentConfig",
             "metadata": {
                 "name": "${NAME}"
+                "labels" : {
+                    "app" : "${NAME}"
+                },
             },
             "spec": {
                 "replicas": 1,
