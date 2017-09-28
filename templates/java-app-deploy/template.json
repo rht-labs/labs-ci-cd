@@ -29,7 +29,7 @@
                 "name": "${NAME}",
                 "labels" : {
                     "app" : "${NAME}"
-                },
+                }
             },
             "spec": {
                 "replicas": 1,
