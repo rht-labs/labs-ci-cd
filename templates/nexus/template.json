@@ -8,6 +8,11 @@
       "description": "Creates a Nexus with configuration and artifacts stored in a persistent volume.",
       "iconClass": "icon-nexus",
       "tags": "instant-app"
+    },
+    "labels": {
+      "app": "Nexus",
+      "application": "Nexus",
+      "appName": "Nexus"
     }
   },
   "objects": [
