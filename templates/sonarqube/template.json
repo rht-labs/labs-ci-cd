@@ -99,7 +99,8 @@
           "metadata": {
             "creationTimestamp": null,
             "labels": {
-              "name": "${DATABASE_SERVICE_NAME}"
+              "name": "${DATABASE_SERVICE_NAME}",
+	      "app": "openshift-sonarqube"
             }
           },
           "spec": {
