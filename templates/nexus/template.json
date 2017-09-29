@@ -10,9 +10,7 @@
       "tags": "instant-app"
     },
     "labels": {
-      "app": "Nexus",
-      "application": "Nexus",
-      "appName": "Nexus"
+      "app": "Nexus"
     }
   },
   "objects": [

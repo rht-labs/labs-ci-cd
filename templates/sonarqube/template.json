@@ -100,9 +100,7 @@
             "creationTimestamp": null,
             "labels": {
               "name": "${DATABASE_SERVICE_NAME}",
-	      "app": "openshift-sonarqube",
-	      "appName": "openshift-sonarqube",
-	      "application": "openshift-sonarqube"
+	      "app": "openshift-sonarqube"
             }
           },
           "spec": {

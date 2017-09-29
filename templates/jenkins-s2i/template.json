@@ -10,9 +10,7 @@
             "tags": "instant-app,jenkins"
         },
 	"labels": {
-          "app": "Jenkins",
-	  "appName": "Jenkins",
-	  "application": "Jenkins"
+          "app": "Jenkins"
 	}
     },
     "objects": [
