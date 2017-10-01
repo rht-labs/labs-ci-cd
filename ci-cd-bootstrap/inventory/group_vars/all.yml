@@ -10,20 +10,14 @@ openshift_cluster_content:
     file: "{{ inventory_dir }}/../projectrequests/test.yml"
   - name: uat
     file: "{{ inventory_dir }}/../projectrequests/uat.yml"
-- object: deployments1
-  content:
-  - name: nexus
-    template: "{{ inventory_dir }}/../../templates/nexus/template.json"
-    params: "{{ inventory_dir }}/../params/nexus/deploy_params"
-    namespace: labs-ci-cd
-- object: builds
+- object: ci-cd-builds
   content:
   - name: zap-build-pod
-    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
+    template: "{{ inventory_dir }}/../../templates/jenkins-slave-pod/template.json"
     namespace: labs-ci-cd
     params: "{{ inventory_dir }}/../params/zap-build-pod/build_params"
   - name: jenkins-s2i
-    template: "{{ inventory_dir }}/../../templates/jenkins-s2i/template.json"
+    template: "{{ inventory_dir }}/../../templates/jenkins-s2i-build/template.json"
     params: "{{ inventory_dir }}/../params/jenkins-s2i/build_params"
     namespace: labs-ci-cd
   - name: sonarqube
@@ -31,11 +25,11 @@ openshift_cluster_content:
     params: "{{ inventory_dir }}/../params/sonarqube/build_params"
     namespace: labs-ci-cd
   - name: mvn-build-pod
-    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
+    template: "{{ inventory_dir }}/../../templates/jenkins-slave-pod/template.json"
     params: "{{ inventory_dir }}/../params/mvn-build-pod/build_params"
     namespace: labs-ci-cd
   - name: npm-build-pod
-    template: "{{ inventory_dir }}/../../templates/build-pod/template.json"
+    template: "{{ inventory_dir }}/../../templates/jenkins-slave-pod/template.json"
     params: "{{ inventory_dir }}/../params/npm-build-pod/build_params"
     namespace: labs-ci-cd
 - object: ci-cd-deployments
@@ -44,21 +38,39 @@ openshift_cluster_content:
     template: openshift//jenkins-ephemeral
     params: "{{ inventory_dir }}/../params/jenkins-ephemeral/deploy_params"
     namespace: labs-ci-cd
+  - name: nexus
+    template: "{{ inventory_dir }}/../../templates/nexus/template.json"
+    params: "{{ inventory_dir }}/../params/nexus/deploy_params"
+    namespace: labs-ci-cd
+- object: app-builds
+  content:
   - name: java-app-build
-    template: "{{ inventory_dir }}/../../templates/java-app-build/template.json"
-    params: "{{ inventory_dir }}/../params/java-app/deploy_params"
+    template: "{{ inventory_dir }}/../../templates/s2i-app-build/template-no-secrets.json"
+    params: "{{ inventory_dir }}/../params/java-app/deploy_params"    
     namespace: labs-ci-cd
 - object: app-deployments
   content:
   - name: java-app
-    template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
+    template: "{{ inventory_dir }}/../../templates/http-app-deploy/template.json"
     params: "{{ inventory_dir }}/../params/java-app-dev/deploy_params"
     namespace: labs-dev
+  - name: fabric8-rolebinding
+    template: "{{ inventory_dir }}/../../templates/fabric8-role-bindings/template.json"
+    params: "{{ inventory_dir }}/../params/java-app-dev/fabric8_params"
+    namespace: labs-dev  
   - name: java-app
-    template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
+    template: "{{ inventory_dir }}/../../templates/http-app-deploy/template.json"
     params: "{{ inventory_dir }}/../params/java-app-test/deploy_params"
     namespace: labs-test
+  - name: fabric8-rolebinding
+    template: "{{ inventory_dir }}/../../templates/fabric8-role-bindings/template.json"
+    params: "{{ inventory_dir }}/../params/java-app-test/fabric8_params"
+    namespace: labs-test
   - name: java-app
-    template: "{{ inventory_dir }}/../../templates/java-app-deploy/template.json"
+    template: "{{ inventory_dir }}/../../templates/http-app-deploy/template.json"
     params: "{{ inventory_dir }}/../params/java-app-uat/deploy_params"
     namespace: labs-uat
+  - name: fabric8-rolebinding
+    template: "{{ inventory_dir }}/../../templates/fabric8-role-bindings/template.json"
+    params: "{{ inventory_dir }}/../params/java-app-uat/fabric8_params"
+    namespace: labs-uat    
