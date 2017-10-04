@@ -8,7 +8,10 @@
             "description": "Jenkins S2I build config to create a Jenkins image with your configuration baked in.",
             "iconClass": "icon-jenkins",
             "tags": "instant-app,jenkins"
-        }
+        },
+	"labels": {
+          "app": "Jenkins"
+	}
     },
     "objects": [
         {
