@@ -10,7 +10,10 @@
       "apiVersion": "v1",
       "kind": "PersistentVolumeClaim",
       "metadata": {
-        "name": "openshift-sonarqube"
+        "name": "openshift-sonarqube",
+        "labels": {
+          "app": "openshift-sonarqube"
+        }
       },
       "spec": {
         "accessModes": [
@@ -27,7 +30,10 @@
       "apiVersion": "v1",
       "kind": "Secret",
       "metadata": {
-        "name": "${DATABASE_SERVICE_NAME}"
+        "name": "${DATABASE_SERVICE_NAME}",
+        "labels": {
+          "app": "openshift-sonarqube"
+        }
       },
       "stringData": {
         "database-password": "${POSTGRESQL_PASSWORD}",
@@ -40,7 +46,10 @@
       "metadata": {
         "creationTimestamp": null,
         "name": "${DATABASE_SERVICE_NAME}",
-        "appName": "sonarqube"
+        "labels": {
+          "appName": "sonarqube",
+          "app": "openshift-sonarqube"
+        }
       },
       "spec": {
         "ports": [
@@ -67,7 +76,10 @@
       "kind": "PersistentVolumeClaim",
       "metadata": {
         "name": "${DATABASE_SERVICE_NAME}",
-        "appName": "sonarqube"
+        "appName": "sonarqube",
+        "labels": {
+          "app": "openshift-sonarqube"
+        }
       },
       "spec": {
         "accessModes": [
@@ -227,7 +239,8 @@
         },
         "creationTimestamp": null,
         "labels": {
-          "appName": "sonarqube"
+          "appName": "sonarqube",
+          "app": "openshift-sonarqube"
         },
         "name": "openshift-sonarqube"
       },
@@ -287,7 +300,7 @@
         "creationTimestamp": null,
         "generation": 2,
         "labels": {
-          "app": "sonarqube",
+          "app": "openshift-sonarqube",
           "appName": "sonarqube"
         },
         "name": "sonarqube"
