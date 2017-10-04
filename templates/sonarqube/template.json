@@ -85,7 +85,10 @@
       "kind": "DeploymentConfig",
       "metadata": {
         "creationTimestamp": null,
-        "name": "${DATABASE_SERVICE_NAME}"
+        "name": "${DATABASE_SERVICE_NAME}",
+        "labels": {
+          "app": "openshift-sonarqube"
+        }
       },
       "spec": {
         "replicas": 1,
