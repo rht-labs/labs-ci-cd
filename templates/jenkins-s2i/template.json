@@ -117,7 +117,8 @@
         {
             "name": "SOURCE_REPOSITORY_REF",
             "displayName": "Git Reference",
-            "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default (master) branch."
+            "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default (master) branch.",
+            "value": "plugins-update-2017-08"
         }
     ],
     "labels": {
