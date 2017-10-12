@@ -1,0 +1,4 @@
+casl-ansible
+casl-ansible/**
+.idea/**
+**/*.iml
