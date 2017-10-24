@@ -35,9 +35,6 @@
                     "git": {
                         "uri": "${SOURCE_REPOSITORY_URL}",
                         "ref": "${SOURCE_REPOSITORY_REF}"
-                    },
-                    "sourceSecret": {
-                        "name": "${PIPELINE_SOURCE_SECRET}"
                     }
                 },
                 "strategy": {
@@ -103,12 +100,6 @@
             "description": "A secret string used to configure the GitHub webhook.",
             "generate": "expression",
             "from": "[a-zA-Z0-9]{40}"
-        },
-        {
-            "name": "PIPELINE_SOURCE_SECRET",
-            "displayName": "Secret for git repository",
-            "description": "The name of the OCP secret that has credentials for the pipeline git repository",
-            "value": ""
         },
         {
             "name": "SOURCE_REPOSITORY_URL",
