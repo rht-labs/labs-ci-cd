@@ -108,7 +108,7 @@
             "name": "PIPELINE_SOURCE_SECRET",
             "displayName": "Secret for git repository",
             "description": "The name of the OCP secret that has credentials for the pipeline git repository",
-            "value": "git-pipeline-secret"
+            "value": ""
         },
         {
             "name": "SOURCE_REPOSITORY_URL",
