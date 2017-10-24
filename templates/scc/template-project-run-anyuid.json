@@ -1,0 +1,75 @@
+{
+    "kind": "Template", 
+    "objects": [
+        {
+            "readOnlyRootFilesystem": false, 
+            "users": [
+                "system:serviceaccount:${NAMESPACE}:${NAME}"
+            ], 
+            "allowPrivilegedContainer": false, 
+            "allowHostPorts": false, 
+            "groups": [
+                "system:cluster-admins"
+            ], 
+            "allowHostPID": false, 
+            "allowHostDirVolumePlugin": false, 
+            "allowedCapabilities": [], 
+            "kind": "SecurityContextConstraints", 
+            "allowHostIPC": false, 
+            "runAsUser": {
+                "type": "RunAsAny"
+            }, 
+            "supplementalGroups": {
+                "type": "RunAsAny"
+            }, 
+            "fsGroup": {
+                "type": "RunAsAny"
+            }, 
+            "apiVersion": "v1", 
+            "priority": 9, 
+            "volumes": [
+                "configMap", 
+                "downwardAPI", 
+                "emptyDir", 
+                "persistentVolumeClaim", 
+                "projected", 
+                "secret"
+            ], 
+            "seLinuxContext": {
+                "type": "MustRunAs"
+            }, 
+            "defaultAddCapabilities": [], 
+            "allowHostNetwork": false, 
+            "requiredDropCapabilities": [
+                "MKNOD", 
+                "SYS_CHROOT"
+            ], 
+            "metadata": {
+                "creationTimestamp": null, 
+                "annotations": {
+                    "kubernetes.io/description": "anyuid provides all features of the restricted SCC but allows users to run with any UID and any GID."
+                }, 
+                "name": "${NAME}-anyuid"
+            }
+        }
+    ], 
+    "apiVersion": "v1", 
+    "parameters": [
+        {
+            "required": true, 
+            "displayName": "Application Name", 
+            "name": "NAME", 
+            "description": "Name of the Application"
+        }, 
+        {
+            "required": true, 
+            "displayName": "Namespace", 
+            "description": "The NameSpace to Deploy to", 
+            "name": "NAMESPACE"
+        }
+    ], 
+    "metadata": {
+        "creationTimestamp": null, 
+        "name": "${NAME}"
+    }
+}
