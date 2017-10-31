@@ -1,3 +1,4 @@
+---
 kind: Template
 apiVersion: v1
 metadata:
@@ -102,7 +103,6 @@ objects:
   metadata:
     annotations:
       description: The Gogs server's https port
-      service.alpha.openshift.io/dependencies: '[{"name":"${APPLICATION_NAME}-postgresql","namespace":"","kind":"Service"}]'
     labels:
       app: ${APPLICATION_NAME}
     name: ${APPLICATION_NAME}
@@ -326,22 +326,6 @@ objects:
       [cron.check_repo_stats]
       RUN_AT_START = true
       SCHEDULE = @every 24h
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    labels:
-      app: ${APPLICATION_NAME}
-    name: ${APPLICATION_NAME}
-  spec:
-    tags:
-    - name: "docker-registry.default.svc:5000/summit-game/oauth-proxy"
-      from:
-        kind: DockerImage
-        name: 'docker.io/openshift/oauth-proxy'
-      importPolicy: {}
-      annotations:
-        description: OpenShift OAuth Logging Proxy
-        tags: oauth,openshift,k8s,kubernetes
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
@@ -351,36 +335,53 @@ objects:
   spec:
     replicas: 1
     selector:
-      app: ${APPLICATION_NAME}
-      deploymentconfig: ${APPLICATION_NAME}
+      app: "${APPLICATION_NAME}"
+      deploymentconfig: "${APPLICATION_NAME}"
     strategy:
-      resources: {}
       type: Recreate
     template:
       metadata:
-        creationTimestamp: null
         labels:
           app: ${APPLICATION_NAME}
-          deploymentconfig: ${APPLICATION_NAME}
-        spec:
-          serviceAccountName: default
-          containers:
-          - image: 'docker.io/openshift/oauth-proxy:v1.0.0'
-            imagePullPolicy: IfNotPresent
-            name: oauth-proxy
-            resources: {}
-            terminationMessagePath: /dev/termination-log
-            terminationMessagePolicy: File
-            ports:
-            - containerPort: 8443
-              name: public
-            args:
-              - "--upstream=http://${APPLICATION_NAME}:3000"
-              - "--openshift-service-account=default"
-              - "--http-address=:8080"
-              - "--tls-cert=/etc/tls/private/tls.crt"
-              - "--tls-key=/etc/tls/private/tls.key"
-              - "--cookie-secret=${OAUTH_COOKIE_SECRET}"
+      spec:
+        containers:
+        - image: 'docker.io/openshift/oauth-proxy:v1.0.0'
+          imagePullPolicy: IfNotPresent
+          name: oauth-proxy
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          ports:
+          - containerPort: 8080
+            name: public
+            protocol: TCP
+          args:
+            - "--upstream=http://${APPLICATION_NAME}:3000"
+            - "--openshift-service-account=default"
+            - "--http-address=:8080"
+            - "--tls-cert=/etc/tls/private/tls.crt"
+            - "--tls-key=/etc/tls/private/tls.key"
+            - "--cookie-secret=${OAUTH_COOKIE_SECRET}"
+          readinessProbe:
+              httpGet:
+                path: /
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 60
+              timeoutSeconds: 1
+              periodSeconds: 20
+              successThreshold: 1
+              failureThreshold: 5
+          livenessProbe:
+              httpGet:
+                path: /
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 30
+              timeoutSeconds: 1
+              periodSeconds: 10
+              successThreshold: 1
+              failureThreshold: 5
 - kind: Service
   apiVersion: v1
   metadata:
@@ -406,11 +407,11 @@ parameters:
   required: true
 - description: Volume space available for data, e.g. 512Mi, 2Gi
   name: GOGS_VOLUME_CAPACITY
-  required: true
+  required: "true"
   value: 10Gi
 - description: Volume space available for postregs data, e.g. 512Mi, 2Gi
   name: DB_VOLUME_CAPACITY
-  required: true
+  required: "true"
   value: 5Gi
 - displayName: Database Username
   from: gogs
@@ -437,7 +438,7 @@ parameters:
   displayName: Gogs Version
   description: 'Version of the Gogs container image to be used (check the available version https://hub.docker.com/r/makentenza/gogs/tags/)'
   value: "0.11.29"
-  required: true
+  required: "true"
 - name: INSTALL_LOCK
   displayName: Installation lock
   description: 'If set to true, installation (/install) page will be disabled. Set to false if you want to run the installation wizard via web'
@@ -445,13 +446,13 @@ parameters:
 - name: REVERSE_PROXY_USER_HEADER
   displayName: OAuth Reverse Proxy User ID Header
   description: 'The name of the header provided by the OAuth reverse proxy to indicate the username of the person authenticated'
-  value: 'PROXY_OAUTH_USER'
-  required: true
+  value: 'X-Forwarded-User'
+  required: "true"
 - name: ENABLE_OAUTH_PROXY
   displayName: 'Enable Proxy based OAuth Authentication'
   description: 'If set to `true`, then the Gogs installation will expect users to be authenticated via an OAuth reverse proxy'
-  value: true
-  required: true
+  value: "true"
+  required: "true"
 - name: SKIP_TLS_VERIFY
   displayName: Skip TLS verification on webhooks
   description: Skip TLS verification on webhooks. Enable with caution!
