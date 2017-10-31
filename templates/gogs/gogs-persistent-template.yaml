@@ -131,7 +131,7 @@ objects:
   spec:
     host: ${HOSTNAME}
     port:
-      targetPort: 3000-tcp
+      targetPort: 8080-tcp
     tls:
       termination: edge
     to:
@@ -290,6 +290,7 @@ objects:
 
       [security]
       INSTALL_LOCK = ${INSTALL_LOCK}
+      REVERSE_PROXY_AUTHENTICATION_USER	= ${REVERSE_PROXY_USER_HEADER}
 
       [service]
       ENABLE_CAPTCHA = false
@@ -300,9 +301,9 @@ objects:
       DISABLE_REGISTRATION = false
       REQUIRE_SIGNIN_VIEW = true
       ENABLE_NOTIFY_MAIL = false
-      ENABLE_REVERSE_PROXY_AUTHENTICATION = false
-      ENABLE_REVERSE_PROXY_AUTO_REGISTRATION = false
       ENABLE_CAPTCHA = false
+      ENABLE_REVERSE_PROXY_AUTHENTICATION = ${ENABLE_OAUTH_PROXY}
+      ENABLE_REVERSE_PROXY_AUTO_REGISTRATION = ${ENABLE_OAUTH_PROXY}
 
       [webhook]
       SKIP_TLS_VERIFY = ${SKIP_TLS_VERIFY}
@@ -325,6 +326,76 @@ objects:
       [cron.check_repo_stats]
       RUN_AT_START = true
       SCHEDULE = @every 24h
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    tags:
+    - name: "docker-registry.default.svc:5000/summit-game/oauth-proxy"
+      from:
+        kind: DockerImage
+        name: 'docker.io/openshift/oauth-proxy'
+      importPolicy: {}
+      annotations:
+        description: OpenShift OAuth Logging Proxy
+        tags: oauth,openshift,k8s,kubernetes
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    replicas: 1
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}
+    strategy:
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${APPLICATION_NAME}
+          deploymentconfig: ${APPLICATION_NAME}
+        spec:
+          serviceAccountName: default
+          containers:
+          - image: 'docker.io/openshift/oauth-proxy:v1.0.0'
+            imagePullPolicy: IfNotPresent
+            name: oauth-proxy
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            ports:
+            - containerPort: 8443
+              name: public
+            args:
+              - "--upstream=http://${APPLICATION_NAME}:3000"
+              - "--openshift-service-account=default"
+              - "--http-address=:8080"
+              - "--tls-cert=/etc/tls/private/tls.crt"
+              - "--tls-key=/etc/tls/private/tls.key"
+              - "--cookie-secret=${OAUTH_COOKIE_SECRET}"
+- kind: Service
+  apiVersion: v1
+  metadata:
+    annotations:
+      description: Exposes auth proxied service
+    name: ${APPLICATION_NAME}-oauth-proxy
+    labels:
+      app: ${APPLICATION_NAME}
+  spec:
+    ports:
+    - name: https-8443
+      port: 8443
+      targetPort: 8443
+    selector:
+      name: ${APPLICATION_NAME}-oauth-proxy
 parameters:
 - description: The name for the application.
   name: APPLICATION_NAME
@@ -371,7 +442,22 @@ parameters:
   displayName: Installation lock
   description: 'If set to true, installation (/install) page will be disabled. Set to false if you want to run the installation wizard via web'
   value: "true"
+- name: REVERSE_PROXY_USER_HEADER
+  displayName: OAuth Reverse Proxy User ID Header
+  description: 'The name of the header provided by the OAuth reverse proxy to indicate the username of the person authenticated'
+  value: 'PROXY_OAUTH_USER'
+  required: true
+- name: ENABLE_OAUTH_PROXY
+  displayName: 'Enable Proxy based OAuth Authentication'
+  description: 'If set to `true`, then the Gogs installation will expect users to be authenticated via an OAuth reverse proxy'
+  value: true
+  required: true
 - name: SKIP_TLS_VERIFY
   displayName: Skip TLS verification on webhooks
   description: Skip TLS verification on webhooks. Enable with caution!
   value: "true"
+- name: OAUTH_COOKIE_SECRET
+  displayName: Cookie secret for OAuth Proxy
+  description: Randomly generated seed for securing cookies
+  generate: expression
+  from: '[A-Z0-9]{16}'
