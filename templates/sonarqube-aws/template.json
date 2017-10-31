@@ -154,8 +154,8 @@
         "runPolicy": "Serial",
         "source": {
           "git": {
-            "uri": "https://github.com/rht-labs/openshift-sonarqube.git",
-            "ref": "${SONAR_CONTAINER_BRANCH}"
+            "uri": "${SOURCE_REPOSITORY_URL}",
+            "ref": "${SOURCE_REPOSITORY_REF}"
           },
           "type": "Git"
         },
@@ -394,10 +394,16 @@
   ],
   "parameters": [
     {
-      "name": "SONAR_CONTAINER_BRANCH",
-      "displayName": "SonarQube Container Branch",
-      "description": "Branch from which to build the SonarQube container (https://github.com/rht-labs/openshift-sonarqube)",
-      "value": "master"
+      "name": "SOURCE_REPOSITORY_URL",
+      "displayName": "Git Repository URL for SonarQube Build",
+      "description": "The URL of the repository with the SonarQube container image build.",
+      "required": true,
+      "value": "https://github.com/rht-labs/openshift-sonarqube"
+    },
+    {
+      "name": "SOURCE_REPOSITORY_REF",
+      "displayName": "Git Reference",
+      "description": "Set this to a branch name, tag or other ref of git repository if you are not using the default (master) branch."
     },
     {
       "name": "DATABASE_USER",
