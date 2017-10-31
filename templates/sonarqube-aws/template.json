@@ -177,23 +177,7 @@
         },
         "triggers": [
           {
-            "github": {
-              "secret": "tu5UyJNNhAyxXYrcnDTZ"
-            },
-            "type": "GitHub"
-          },
-          {
-            "generic": {
-              "secret": "xhUU0WVDG3eA2Yu89zGe"
-            },
-            "type": "Generic"
-          },
-          {
             "type": "ConfigChange"
-          },
-          {
-            "imageChange": {},
-            "type": "ImageChange"
           }
         ]
       },
