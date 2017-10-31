@@ -23,7 +23,6 @@
         "tags": [
           {
             "annotations": {
-              "openshift.io/generated-by": "OpenShiftWebConsole",
               "openshift.io/imported-from": "sonarqube:latest"
             },
             "from": {
@@ -33,9 +32,7 @@
             "generation": 2,
             "importPolicy": {},
             "name": "latest",
-            "referencePolicy": {
-              "type": "Source"
-            }
+            "referencePolicy": {}
           }
         ]
       },
