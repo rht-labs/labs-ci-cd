@@ -1,0 +1,527 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: "gogs-oauth"
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    replicas: 1
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${APPLICATION_NAME}
+          deploymentconfig: ${APPLICATION_NAME}
+      spec:
+        containers:
+        - image: "docker.io/makentenza/gogs:${GOGS_VERSION}"
+          imagePullPolicy: IfNotPresent
+          name: gogs
+          ports:
+          - containerPort: 3000
+            protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /opt/gogs/data
+            name: gogs-data
+          - mountPath: /opt/gogs/custom/conf
+            name: gogs-config
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        serviceAccount: gogs
+        serviceAccountName: gogs
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: gogs-data
+          persistentVolumeClaim:
+            claimName: gogs-data
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: app.ini
+              path: app.ini
+            name: gogs-config
+          name: gogs-config
+    test: false
+    triggers:
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the database
+    creationTimestamp: null
+    generation: 1
+    name: ${APPLICATION_NAME}-postgresql
+  spec:
+    replicas: 1
+    selector:
+      name: ${APPLICATION_NAME}-postgresql
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          name: ${APPLICATION_NAME}-postgresql
+        name: ${APPLICATION_NAME}-postgresql
+      spec:
+        containers:
+        - env:
+          - name: POSTGRESQL_USER
+            value: ${DATABASE_USER}
+          - name: POSTGRESQL_PASSWORD
+            value: ${DATABASE_PASSWORD}
+          - name: POSTGRESQL_DATABASE
+            value: ${DATABASE_NAME}
+          - name: POSTGRESQL_MAX_CONNECTIONS
+            value: ${DATABASE_MAX_CONNECTIONS}
+          - name: POSTGRESQL_SHARED_BUFFERS
+            value: ${DATABASE_SHARED_BUFFERS}
+          - name: POSTGRESQL_ADMIN_PASSWORD
+            value: ${DATABASE_ADMIN_PASSWORD}
+          image: registry.access.redhat.com/rhscl/postgresql-95-rhel7@sha256:155cf81a3d3a8bbcab3a1f61b177cab75a4105306146d172ef8fb29488cf58b4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 5432
+            timeoutSeconds: 1
+          name: postgresql
+          ports:
+          - containerPort: 5432
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - psql -h 127.0.0.1 -U ${POSTGRESQL_USER} -q -d ${POSTGRESQL_DATABASE}
+                -c 'SELECT 1'
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /var/lib/pgsql/data
+            name: gogs-postgres-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        serviceAccount: gogs
+        serviceAccountName: gogs
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: gogs-postgres-data
+          persistentVolumeClaim:
+            claimName: gogs-postgres-data
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - postgresql
+        from:
+          kind: ImageStreamTag
+          name: postgresql:9.5
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-proxy
+  spec:
+    replicas: 1
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}-proxy
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: ${APPLICATION_NAME}
+          deploymentconfig: ${APPLICATION_NAME}-proxy
+      spec:
+        containers:
+        - args:
+          - "--upstream=http://${APPLICATION_NAME}-server:3000/"
+          - "--cookie-secret=${OAUTH_COOKIE_SECRET}"
+          - "--openshift-service-account=${APPLICATION_NAME}"
+          - "--http-address=:8080"
+          - "--https-address="
+          - "-pass-user-headers"
+          - "-pass-access-token"
+          image: "docker.io/openshift/oauth-proxy:v1.0.0"
+          imagePullPolicy: IfNotPresent
+          name: ${APPLICATION_NAME}-proxy
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          livenessProbe:
+            failureThreshold: 3
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 5
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 1
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        serviceAccount: gogs
+        serviceAccountName: gogs
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The Gogs server's http port
+      service.alpha.openshift.io/dependencies: '[{"name":"gogs-postgresql","namespace":"","kind":"Service"}]'
+    creationTimestamp: null
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-proxy
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}-proxy
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes the database server
+    creationTimestamp: null
+    name: ${APPLICATION_NAME}-postgresql
+  spec:
+    ports:
+    - name: postgresql
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      name: gogs-postgresql
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The Gogs server's http port
+    creationTimestamp: null
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-server
+  spec:
+    ports:
+    - name: 3000-tcp
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+    selector:
+      app: gogs
+      deploymentconfig: gogs
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      description: Route for application's https service.
+    creationTimestamp: null
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    port:
+      targetPort: 8080-tcp
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}-proxy
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.first: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"gogs"}}'
+    creationTimestamp: null
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    creationTimestamp: null
+    name: gogs-data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${GOGS_VOLUME_CAPACITY}
+  status: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    creationTimestamp: null
+    name: gogs-postgres-data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${DB_VOLUME_CAPACITY}
+  status: {}
+- apiVersion: v1
+  data:
+    app.ini: |
+      RUN_MODE = prod
+      RUN_USER = gogs
+
+      [database]
+      DB_TYPE  = postgres
+      HOST     = gogs-postgresql:5432
+      NAME     = gogs
+      USER     = gogs
+      PASSWD   = gogs
+
+      [repository]
+      ROOT = /opt/gogs/data/repositories
+      PREFERRED_LICENSES = Apache License 2.0,MIT License
+      DISABLE_HTTP_GIT = false
+
+      [server]
+      ROOT_URL=https://gogs.apps.ad.zanclus.com
+      DISABLE_SSH = true
+
+      [security]
+      INSTALL_LOCK = ${INSTALL_LOCK}
+      REVERSE_PROXY_AUTHENTICATION_USER = ${REVERSE_PROXY_USER_HEADER}
+
+      [service]
+      ENABLE_CAPTCHA = false
+
+      [service]
+      ACTIVE_CODE_LIVE_MINUTES = 180
+      RESET_PASSWD_CODE_LIVE_MINUTES = 180
+      DISABLE_REGISTRATION = false
+      REQUIRE_SIGNIN_VIEW = true
+      ENABLE_NOTIFY_MAIL = false
+      ENABLE_REVERSE_PROXY_AUTHENTICATION = ${ENABLE_OAUTH_PROXY}
+      ENABLE_REVERSE_PROXY_AUTO_REGISTRATION = ${ENABLE_OAUTH_PROXY}
+      ENABLE_CAPTCHA = false
+
+      [webhook]
+      SKIP_TLS_VERIFY = ${SKIP_TLS_VERIFY}
+
+      [admin]
+      DISABLE_REGULAR_ORG_CREATION = true
+
+      [cron]
+      ENABLED = true
+      RUN_AT_START = false
+
+      [cron.update_mirrors]
+      SCHEDULE = @every 10m
+
+      [cron.repo_health_check]
+      SCHEDULE = @every 24h
+      TIMEOUT = 60s
+      ARGS =
+
+      [cron.check_repo_stats]
+      RUN_AT_START = true
+      SCHEDULE = @every 24h
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    name: gogs-config
+parameters:
+- description: The name for the application.
+  name: APPLICATION_NAME
+  required: true
+  value: gogs
+- name: GOGS_HOSTNAME
+  displayName: Gogs Hostname
+  description: Hostname to be used to route for the Gogs web application
+  required: true
+- description: Volume space available for data, e.g. 512Mi, 2Gi
+  name: GOGS_VOLUME_CAPACITY
+  required: true
+  value: 10Gi
+- description: Volume space available for postregs data, e.g. 512Mi, 2Gi
+  name: DB_VOLUME_CAPACITY
+  required: true
+  value: 5Gi
+- displayName: Database Username
+  from: gogs
+  value: gogs
+  name: DATABASE_USER
+- displayName: Database Password
+  from: '[a-zA-Z0-9]{8}'
+  value: gogs
+  name: DATABASE_PASSWORD
+- displayName: Database Name
+  name: DATABASE_NAME
+  value: gogs
+- displayName: Database Admin Password
+  from: '[a-zA-Z0-9]{8}'
+  generate: expression
+  name: DATABASE_ADMIN_PASSWORD
+- displayName: Maximum Database Connections
+  name: DATABASE_MAX_CONNECTIONS
+  value: "100"
+- displayName: Shared Buffer Amount
+  name: DATABASE_SHARED_BUFFERS
+  value: 12MB
+- name: GOGS_VERSION
+  displayName: Gogs Version
+  description: 'Version of the Gogs container image to be used (check the available version https://hub.docker.com/r/makentenza/gogs/tags/)'
+  value: "0.11.29"
+  required: true
+- name: INSTALL_LOCK
+  displayName: Installation lock
+  description: 'If set to true, installation (/install) page will be disabled. Set to false if you want to run the installation wizard via web'
+  value: "true"
+- name: REVERSE_PROXY_USER_HEADER
+  displayName: OAuth Reverse Proxy User ID Header
+  description: 'The name of the header provided by the OAuth reverse proxy to indicate the username of the person authenticated'
+  value: 'x-forwarded-user'
+  required: true
+- name: ENABLE_OAUTH_PROXY
+  displayName: 'Enable Proxy based OAuth Authentication'
+  description: 'If set to `true`, then the Gogs installation will expect users to be authenticated via an OAuth reverse proxy'
+  value: "true"
+  required: true
+- name: SKIP_TLS_VERIFY
+  displayName: Skip TLS verification on webhooks
+  description: Skip TLS verification on webhooks. Enable with caution!
+  value: "true"
+- name: OAUTH_COOKIE_SECRET
+  displayName: Cookie secret for OAuth Proxy
+  description: Randomly generated seed for securing cookies
+  generate: expression
+  from: '[A-Z0-9]{20}'
