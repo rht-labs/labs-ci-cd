@@ -375,7 +375,7 @@ objects:
         version: ${GOGS_VERSION}
       from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/gogs/gogs:${GOGS_VERSION}
+        name: gogs:${GOGS_VERSION}
       generation: 2
       importPolicy: {}
       name: ${GOGS_VERSION}
@@ -400,7 +400,7 @@ objects:
         openshift.io/imported-from: docker.io/openshift/oauth-proxy:v1.0.0
       from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/gogs/oauth-proxy:v1.0.0
+        name: docker.io/openshift/oauth-proxy:v1.0.0
       generation: 2
       importPolicy: {}
       name: v1.0.0
