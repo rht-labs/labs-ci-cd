@@ -90,7 +90,7 @@ objects:
     triggers:
     - type: ConfigChange
     - imageChangeParams:
-        automatic: true
+        automatic: "true"
         containerNames:
         - gogs
         from:
@@ -190,7 +190,7 @@ objects:
     test: false
     triggers:
     - imageChangeParams:
-        automatic: true
+        automatic: "true"
         containerNames:
         - postgresql
         from:
@@ -258,7 +258,7 @@ objects:
     test: false
     triggers:
     - imageChangeParams:
-        automatic: true
+        automatic: "true"
         containerNames:
         - oauth-proxy
         from:
@@ -520,11 +520,11 @@ parameters:
   required: true
 - description: Volume space available for data, e.g. 512Mi, 2Gi
   name: GOGS_VOLUME_CAPACITY
-  required: "true"
+  required: true
   value: 10Gi
 - description: Volume space available for postregs data, e.g. 512Mi, 2Gi
   name: DB_VOLUME_CAPACITY
-  required: "true"
+  required: true
   value: 5Gi
 - displayName: Database Username
   from: gogs
@@ -551,7 +551,7 @@ parameters:
   displayName: Gogs Version
   description: 'Version of the Gogs container image to be used (check the available version https://hub.docker.com/r/makentenza/gogs/tags/)'
   value: "0.11.29"
-  required: "true"
+  required: true
 - name: INSTALL_LOCK
   displayName: Installation lock
   description: 'If set to true, installation (/install) page will be disabled. Set to false if you want to run the installation wizard via web'
@@ -560,12 +560,12 @@ parameters:
   displayName: OAuth Reverse Proxy User ID Header
   description: 'The name of the header provided by the OAuth reverse proxy to indicate the username of the person authenticated'
   value: 'x-forwarded-user'
-  required: "true"
+  required: true
 - name: ENABLE_OAUTH_PROXY
   displayName: 'Enable Proxy based OAuth Authentication'
   description: 'If set to `true`, then the Gogs installation will expect users to be authenticated via an OAuth reverse proxy'
   value: "true"
-  required: "true"
+  required: true
 - name: SKIP_TLS_VERIFY
   displayName: Skip TLS verification on webhooks
   description: Skip TLS verification on webhooks. Enable with caution!
