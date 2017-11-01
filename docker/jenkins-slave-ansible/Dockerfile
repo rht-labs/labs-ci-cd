@@ -10,3 +10,5 @@ RUN yum repolist > /dev/null && \
     rpm -V $INSTALL_PKGS && \
     yum clean all -y && \
     rm -rf /var/cache/yum
+
+USER 1001
