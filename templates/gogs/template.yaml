@@ -90,7 +90,7 @@ objects:
     triggers:
     - type: ConfigChange
     - imageChangeParams:
-        automatic: "true"
+        automatic: true
         containerNames:
         - gogs
         from:
@@ -190,7 +190,7 @@ objects:
     test: false
     triggers:
     - imageChangeParams:
-        automatic: "true"
+        automatic: true
         containerNames:
         - postgresql
         from:
@@ -258,7 +258,7 @@ objects:
     test: false
     triggers:
     - imageChangeParams:
-        automatic: "true"
+        automatic: true
         containerNames:
         - oauth-proxy
         from:
