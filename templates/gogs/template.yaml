@@ -245,20 +245,16 @@ objects:
           terminationMessagePath: /dev/termination-log
           livenessProbe:
             failureThreshold: 3
-            httpGet:
-              path: /
+            tcpSocket:
               port: 8080
-              scheme: HTTP
             initialDelaySeconds: 3
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
           readinessProbe:
             failureThreshold: 3
-            httpGet:
-              path: /
+            tcpSocket:
               port: 8080
-              scheme: HTTP
             initialDelaySeconds: 120
             periodSeconds: 20
             successThreshold: 1
