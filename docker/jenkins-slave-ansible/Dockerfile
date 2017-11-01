@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7:latest
+FROM openshift3/jenkins-slave-base-rhel7:latest
 
 USER root
 
@@ -10,11 +10,3 @@ RUN yum repolist > /dev/null && \
     rpm -V $INSTALL_PKGS && \
     yum clean all -y && \
     rm -rf /var/cache/yum
-
-ADD bin/start.sh /root/
-
-# Set /root as starting directory
-WORKDIR /root
-
-# Helper script
-ENTRYPOINT ["/root/start.sh"]
