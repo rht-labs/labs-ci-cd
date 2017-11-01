@@ -255,7 +255,7 @@ objects:
             failureThreshold: 3
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 120
+            initialDelaySeconds: 30
             periodSeconds: 20
             successThreshold: 1
             timeoutSeconds: 1
