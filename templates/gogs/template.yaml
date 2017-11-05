@@ -99,6 +99,8 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
+    labels:
+      app: ${APPLICATION_NAME}
     annotations:
       description: Defines how to deploy the database
     creationTimestamp: null
@@ -343,7 +345,7 @@ objects:
   kind: Route
   metadata:
     annotations:
-      description: Route for application's https service.
+      description: Route for OAuth authenticated HTTPS service
     creationTimestamp: null
     labels:
       app: ${APPLICATION_NAME}
@@ -356,6 +358,25 @@ objects:
     to:
       kind: Service
       name: ${APPLICATION_NAME}-proxy
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      description: Route for application's https service.
+    creationTimestamp: null
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    port:
+      targetPort: 3000-tcp
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}
       weight: 100
     wildcardPolicy: None
 - apiVersion: v1
