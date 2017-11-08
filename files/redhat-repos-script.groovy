@@ -11,10 +11,10 @@ if ( !repository.repositoryManager.exists( 'redhat-ga' ) ){
     repository.createMavenProxy('redhat-ga','https://maven.repository.redhat.com/ga/')
 }
 
-if ( !repository.repositoryManager.exists( 'redhat-techpreview-all' ) ){
-    repository.createMavenProxy('redhat-techpreview-all','https://maven.repository.redhat.com/techpreview/all/')
+if ( !repository.repositoryManager.exists( 'redhat-earlyaccess-all' ) ){
+    repository.createMavenProxy('redhat-earlyaccess-all','https://maven.repository.redhat.com/earlyaccess/all/')
 }
 
-if ( !repository.repositoryManager.exists( 'redhat-group' ) ){
-    repository.createMavenGroup('redhat-group', ['maven-central','jboss-public','redhat-techpreview-all','redhat-ga'])
+if ( !repository.repositoryManager.exists( 'redhat-public' ) ){
+    repository.createMavenGroup('redhat-public', ['maven-central','jboss-public','redhat-earlyaccess-all','redhat-ga', 'maven-public'])
 }

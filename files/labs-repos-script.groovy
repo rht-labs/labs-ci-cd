@@ -4,7 +4,7 @@ import org.sonatype.nexus.repository.maven.VersionPolicy
 import org.sonatype.nexus.repository.storage.WritePolicy
 
 // this is the exploded content for labs-repos.json
-// to do development on this script, load up the nexus example repo in your IDE for code completion and then copy here and into labs-repo.json. https://github.com/sonatype/nexus-book-examples/tree/nexus-3.x/scripting/nexus-script-example
+// to do development on this script, load up the nexus example repo in your IDE for code completion and then copy here and into labs-repo.json. https://githubpublic.com/sonatype/nexus-book-examples/tree/nexus-3.x/scripting/nexus-script-example
 
 // not the prettiest code I've written, but it's really the only way to config manage nexus
 
@@ -21,7 +21,7 @@ if ( !repository.repositoryManager.exists( 'jenkins-public' ) ){
 }
 
 if ( !repository.repositoryManager.exists( 'labs-public' ) ){
-    repository.createMavenGroup('labs-public', ['redhat-group','labs-releases','labs-snapshots', 'jenkins-public'])
+    repository.createMavenGroup('labs-public', ['labs-releases','labs-snapshots', 'jenkins-public'])
 };
 
 if ( !repository.repositoryManager.exists( 'npm-all' ) ) {
@@ -34,4 +34,10 @@ if ( !repository.repositoryManager.exists( 'npm-registry' ) ) {
 
 if ( !repository.repositoryManager.exists( 'npm-group' ) ) {
     repository.createNpmGroup('npm-group',['npm-all','npm-registry'])
+};
+
+if ( repository.repositoryManager.exists( 'maven-public' ) ) {
+    repository.repositoryManager.delete('maven-public')
 }
+repository.createMavenGroup('maven-public',['labs-public','redhat-public','maven-releases', 'maven-snapshots', 'maven-central'])
+
