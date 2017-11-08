@@ -16,5 +16,5 @@ if ( !repository.repositoryManager.exists( 'redhat-earlyaccess-all' ) ){
 }
 
 if ( !repository.repositoryManager.exists( 'redhat-public' ) ){
-    repository.createMavenGroup('redhat-public', ['maven-central','jboss-public','redhat-earlyaccess-all','redhat-ga', 'maven-public'])
+    repository.createMavenGroup('redhat-public', ['jboss-public','redhat-earlyaccess-all','redhat-ga', 'maven-public'])
 }
