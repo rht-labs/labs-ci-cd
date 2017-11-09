@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# inspired by https://github.com/openshift/jenkins/blob/master/2/contrib/jenkins/jenkins-common.sh
+
+
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
+
+if [ x"$USER_ID" != x"0" -a x"$USER_ID" != x"997" ]; then
+  echo "tool-box:x:${USER_ID}:${GROUP_ID}:Tool Box User:${HOME}:/sbin/nologin" >> /etc/passwd
+fi
+
+tail -f /dev/null
