@@ -8,7 +8,7 @@ RUN dnf -y update && \
     dnf -y install $PACKAGE_LIST && \
     dnf clean all && \
     curl -o /tmp/oc.tar.gz $OC_CLIENT_MIRROR && \
-    tar zxf /tmp/oc.tar.gz -C /usr/bin/ --strip-components=1 2> /dev/null && \
+    tar zxf /tmp/oc.tar.gz -C /usr/bin/  && \
     rm /tmp/oc.tar.gz && \
     mkdir -m 775 $HOME && \
     chmod 775 /etc/passwd
