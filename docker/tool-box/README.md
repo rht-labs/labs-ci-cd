@@ -1,6 +1,6 @@
 # Tool Box
 
-This container exists to help folks that can't install ansible, git or other necessary tools. It includes `oc` version 3.6.173.0.21
+This container exists to help folks that can't install ansible, git or other necessary tools. It is not to be used in any time of production setting and is not suppportable under an OpenShift subscription. It includes `oc` version 3.6.173.0.21
 
 ## Usage
 
