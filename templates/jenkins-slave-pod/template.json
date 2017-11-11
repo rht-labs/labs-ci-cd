@@ -11,6 +11,43 @@
     "objects": [
         {
             "apiVersion": "v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "labels": {
+                    "build": "${NAME}"
+                },
+                "name": "jenkins-slave-base-rhel7"
+            },
+            "spec": {
+                "tags": [
+                    {
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "openshift/jenkins-slave-base-rhel7:latest"
+                        },
+                        "generation": 2,
+                        "importPolicy": {},
+                        "name": "latest",
+                        "referencePolicy": {
+                            "type": "Source"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "labels": {
+                    "build": "${NAME}",
+                    "role": "jenkins-slave"
+                },
+                "name": "${NAME}"
+            }
+        },
+        {
+            "apiVersion": "v1",
             "kind": "BuildConfig",
             "metadata": {
                 "labels": {
@@ -58,43 +95,6 @@
                     },
                     {
                         "type": "ImageChange"
-                    }
-                ]
-            }
-        },
-        {
-            "apiVersion": "v1",
-            "kind": "ImageStream",
-            "metadata": {
-                "labels": {
-                    "build": "${NAME}",
-                    "role": "jenkins-slave"
-                },
-                "name": "${NAME}"
-            }
-        },
-        {
-            "apiVersion": "v1",
-            "kind": "ImageStream",
-            "metadata": {
-                "labels": {
-                    "build": "${NAME}"
-                },
-                "name": "jenkins-slave-base-rhel7"
-            },
-            "spec": {
-                "tags": [
-                    {
-                        "from": {
-                            "kind": "DockerImage",
-                            "name": "openshift/jenkins-slave-base-rhel7:latest"
-                        },
-                        "generation": 2,
-                        "importPolicy": {},
-                        "name": "latest",
-                        "referencePolicy": {
-                            "type": "Source"
-                        }
                     }
                 ]
             }
