@@ -6,6 +6,23 @@ metadata:
     tags: instant-app,gogs,go,golang
   name: gogs
 objects:
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    tags:
+    - name: "${GOGS_VERSION}"
+      from:
+        kind: DockerImage
+        name: docker.io/makentenza/gogs:${GOGS_VERSION}
+      importPolicy: {}
+      annotations:
+        description: The Gogs git server docker image
+        tags: gogs,go,golang
+        version: "${GOGS_VERSION}"
 - kind: ServiceAccount
   apiVersion: v1
   metadata:
@@ -226,23 +243,6 @@ objects:
           kind: ImageStreamTag
           name: ${APPLICATION_NAME}:${GOGS_VERSION}
       type: ImageChange
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    labels:
-      app: ${APPLICATION_NAME}
-    name: ${APPLICATION_NAME}
-  spec:
-    tags:
-    - name: "${GOGS_VERSION}"
-      from:
-        kind: DockerImage
-        name: docker.io/makentenza/gogs:${GOGS_VERSION}
-      importPolicy: {}
-      annotations:
-        description: The Gogs git server docker image
-        tags: gogs,go,golang
-        version: "${GOGS_VERSION}"
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:

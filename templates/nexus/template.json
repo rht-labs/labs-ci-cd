@@ -15,6 +15,34 @@
   },
   "objects": [
     {
+      "apiVersion": "v1",
+      "kind": "ImageStream",
+      "metadata": {
+        "labels": {
+          "name": "${NAME}"
+        },
+        "name": "${NAME}"
+      },
+      "spec": {
+        "tags": [
+          {
+            "annotations": {
+              "openshift.io/imported-from": "${CONTAINER_IMAGE}"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "${CONTAINER_IMAGE}"
+            },
+            "importPolicy": {},
+            "name": "latest",
+            "referencePolicy": {
+              "type": "Source"
+            }
+          }
+        ]
+      }
+    },
+    {
       "kind": "PersistentVolumeClaim",
       "apiVersion": "v1",
       "metadata": {
@@ -150,34 +178,6 @@
         },
         "sessionAffinity": "None",
         "type": "ClusterIP"
-      }
-    },
-    {
-      "apiVersion": "v1",
-      "kind": "ImageStream",
-      "metadata": {
-        "labels": {
-          "name": "${NAME}"
-        },
-        "name": "${NAME}"
-      },
-      "spec": {
-        "tags": [
-          {
-            "annotations": {
-              "openshift.io/imported-from": "${CONTAINER_IMAGE}"
-            },
-            "from": {
-              "kind": "DockerImage",
-              "name": "${CONTAINER_IMAGE}"
-            },
-            "importPolicy": {},
-            "name": "latest",
-            "referencePolicy": {
-              "type": "Source"
-            }
-          }
-        ]
       }
     },
     {
