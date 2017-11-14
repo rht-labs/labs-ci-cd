@@ -8,12 +8,82 @@
   "objects": [
     {
       "apiVersion": "v1",
+      "kind": "ImageStream",
+      "metadata": {
+        "annotations": {
+          "openshift.io/generated-by": "OpenShiftNewApp"
+        },
+        "creationTimestamp": null,
+        "generation": 1,
+        "labels": {
+          "app": "openshift-sonarqube",
+          "appName": "sonarqube"
+        },
+        "name": "openshift-sonarqube"
+      },
+      "spec": {
+        "tags": [
+          {
+            "annotations": null,
+            "from": {
+              "kind": "DockerImage",
+              "name": "openshift-sonarqube:latest"
+            },
+            "generation": null,
+            "importPolicy": {},
+            "name": "latest",
+            "referencePolicy": {
+              "type": ""
+            }
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "ImageStream",
+      "metadata": {
+        "annotations": null,
+        "creationTimestamp": null,
+        "generation": 2,
+        "labels": {
+          "app": "sonarqube",
+          "appName": "sonarqube"
+        },
+        "name": "sonarqube"
+      },
+      "spec": {
+        "tags": [
+          {
+            "annotations": {
+              "openshift.io/generated-by": "OpenShiftWebConsole",
+              "openshift.io/imported-from": "sonarqube:latest"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "sonarqube:latest"
+            },
+            "generation": 2,
+            "importPolicy": {},
+            "name": "latest",
+            "referencePolicy": {
+              "type": "Source"
+            }
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": ""
+      }
+    },
+    {
+      "apiVersion": "v1",
       "kind": "PersistentVolumeClaim",
       "metadata": {
-        "name": "openshift-sonarqube",
-        "labels": {
-          "app": "openshift-sonarqube"
-        }
+        "name": "openshift-sonarqube"
       },
       "spec": {
         "accessModes": [
@@ -30,10 +100,7 @@
       "apiVersion": "v1",
       "kind": "Secret",
       "metadata": {
-        "name": "${DATABASE_SERVICE_NAME}",
-        "labels": {
-          "app": "openshift-sonarqube"
-        }
+        "name": "${DATABASE_SERVICE_NAME}"
       },
       "stringData": {
         "database-password": "${POSTGRESQL_PASSWORD}",
@@ -46,10 +113,7 @@
       "metadata": {
         "creationTimestamp": null,
         "name": "${DATABASE_SERVICE_NAME}",
-        "labels": {
-          "appName": "sonarqube",
-          "app": "openshift-sonarqube"
-        }
+        "appName": "sonarqube"
       },
       "spec": {
         "ports": [
@@ -76,10 +140,7 @@
       "kind": "PersistentVolumeClaim",
       "metadata": {
         "name": "${DATABASE_SERVICE_NAME}",
-        "appName": "sonarqube",
-        "labels": {
-          "app": "openshift-sonarqube"
-        }
+        "appName": "sonarqube"
       },
       "spec": {
         "accessModes": [
@@ -97,10 +158,7 @@
       "kind": "DeploymentConfig",
       "metadata": {
         "creationTimestamp": null,
-        "name": "${DATABASE_SERVICE_NAME}",
-        "labels": {
-          "app": "openshift-sonarqube"
-        }
+        "name": "${DATABASE_SERVICE_NAME}"
       },
       "spec": {
         "replicas": 1,
@@ -240,8 +298,7 @@
         },
         "creationTimestamp": null,
         "labels": {
-          "appName": "sonarqube",
-          "app": "openshift-sonarqube"
+          "appName": "sonarqube"
         },
         "name": "openshift-sonarqube"
       },
@@ -255,79 +312,6 @@
           "weight": 100
         },
         "wildcardPolicy": "None"
-      }
-    },
-    {
-      "apiVersion": "v1",
-      "kind": "ImageStream",
-      "metadata": {
-        "annotations": {
-          "openshift.io/generated-by": "OpenShiftNewApp"
-        },
-        "creationTimestamp": null,
-        "generation": 1,
-        "labels": {
-          "app": "openshift-sonarqube",
-          "appName": "sonarqube"
-        },
-        "name": "openshift-sonarqube"
-      },
-      "spec": {
-        "tags": [
-          {
-            "annotations": null,
-            "from": {
-              "kind": "DockerImage",
-              "name": "openshift-sonarqube:latest"
-            },
-            "generation": null,
-            "importPolicy": {},
-            "name": "latest",
-            "referencePolicy": {
-              "type": ""
-            }
-          }
-        ]
-      },
-      "status": {
-        "dockerImageRepository": ""
-      }
-    },
-    {
-      "apiVersion": "v1",
-      "kind": "ImageStream",
-      "metadata": {
-        "annotations": null,
-        "creationTimestamp": null,
-        "generation": 2,
-        "labels": {
-          "app": "openshift-sonarqube",
-          "appName": "sonarqube"
-        },
-        "name": "sonarqube"
-      },
-      "spec": {
-        "tags": [
-          {
-            "annotations": {
-              "openshift.io/generated-by": "OpenShiftWebConsole",
-              "openshift.io/imported-from": "sonarqube:latest"
-            },
-            "from": {
-              "kind": "DockerImage",
-              "name": "sonarqube:latest"
-            },
-            "generation": 2,
-            "importPolicy": {},
-            "name": "latest",
-            "referencePolicy": {
-              "type": "Source"
-            }
-          }
-        ]
-      },
-      "status": {
-        "dockerImageRepository": ""
       }
     },
     {
