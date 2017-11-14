@@ -26,8 +26,16 @@ openshift_cluster_content:
     namespace: labs-ci-cd
   - name: sonarqube
     template: "{{ inventory_dir }}/../../templates/sonarqube/template.json"
-    params: "{{ inventory_dir }}/../params/sonarqube/build_params"
+    params: "{{ inventory_dir }}/../params/sonarqube/build-and-deploy"
     namespace: labs-ci-cd
+    tags:
+    - sonar
+  - name: sonarqube-postgresql
+    template: "openshift//postgresql-persistent"
+    params: "{{ inventory_dir }}/../params/sonarqube/postgresql"
+    namespace: labs-ci-cd
+    tags:
+    - sonar
   - name: mvn-build-pod
     template: "{{ inventory_dir }}/../../templates/jenkins-slave-pod/template.json"
     params: "{{ inventory_dir }}/../params/mvn-build-pod/build_params"
