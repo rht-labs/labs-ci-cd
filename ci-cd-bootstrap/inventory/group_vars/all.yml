@@ -4,16 +4,12 @@ openshift_cluster_content:
   content:
   - name: ci-cd
     file: "{{ inventory_dir }}/../projectrequests/ci-cd.yml"
-    file_action: create
   - name: dev
     file: "{{ inventory_dir }}/../projectrequests/dev.yml"
-    file_action: create
   - name: test
     file: "{{ inventory_dir }}/../projectrequests/test.yml"
-    file_action: create
   - name: uat
     file: "{{ inventory_dir }}/../projectrequests/uat.yml"
-    file_action: create
 - object: ci-cd-builds
   content:
   - name: zap-build-pod
@@ -39,7 +35,7 @@ openshift_cluster_content:
 - object: ci-cd-deployments
   content:
   - name: jenkins-ephemeral
-    template: openshift//jenkins-ephemeral
+    template: "{{ inventory_dir }}/../../templates/jenkins-ephemeral/template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-ephemeral/deploy_params"
     namespace: labs-ci-cd
   - name: nexus
