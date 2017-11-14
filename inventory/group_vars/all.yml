@@ -57,6 +57,18 @@ openshift_cluster_content:
     namespace: labs-ci-cd
     tags:
     - nexus
+  - name: sonarqube
+    template: "{{ inventory_dir }}/../openshift-templates/sonarqube/template.json"
+    params: "{{ inventory_dir }}/../params/sonarqube/build-and-deploy"
+    namespace: labs-ci-cd
+    tags:
+    - sonar
+  - name: sonarqube-postgresql
+    template: "openshift//postgresql-persistent"
+    params: "{{ inventory_dir }}/../params/sonarqube/postgresql"
+    namespace: labs-ci-cd
+    tags:
+    - sonar  
 - object: app-builds
   content:
   - name: java-app-build
