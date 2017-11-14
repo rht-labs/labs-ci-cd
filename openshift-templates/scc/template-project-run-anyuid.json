@@ -41,8 +41,7 @@
             "defaultAddCapabilities": [], 
             "allowHostNetwork": false, 
             "requiredDropCapabilities": [
-                "MKNOD", 
-                "SYS_CHROOT"
+                "MKNOD"
             ], 
             "metadata": {
                 "creationTimestamp": null, 
