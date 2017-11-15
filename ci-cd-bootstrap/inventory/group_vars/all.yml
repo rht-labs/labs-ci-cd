@@ -47,7 +47,7 @@ openshift_cluster_content:
 - object: ci-cd-deployments
   content:
   - name: jenkins-ephemeral
-    template: openshift//jenkins-ephemeral
+    template: "{{ inventory_dir }}/../../templates/jenkins-ephemeral/template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-ephemeral/deploy_params"
     namespace: labs-ci-cd
   - name: nexus
