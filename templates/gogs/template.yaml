@@ -349,7 +349,7 @@ objects:
     creationTimestamp: null
     labels:
       app: ${APPLICATION_NAME}
-    name: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-http
   spec:
     port:
       targetPort: 8080-tcp
