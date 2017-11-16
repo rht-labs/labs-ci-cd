@@ -1,6 +1,17 @@
 # Tool Box
 
-This container exists to help folks that can't install ansible, git or other necessary tools. It is not to be used in any time of production setting and is not suppportable under an OpenShift subscription. It includes `oc` version 3.6.173.0.21
+This container exists to help folks that can't install ansible, git or other necessary tools. It is not to be used in any time of production setting and is not suppportable under an OpenShift subscription. 
+
+## What's in the box?
+
+- `oc` version 3.6.173.0.21.
+- `ansible` latest in fedora
+- `git`
+- `tree`
+- `unzip`
+- `hoverctl` for [hoverfly](https://docs.hoverfly.io/en/latest/)
+
+If you need something not here, let us know in an issue or submit a PR.
 
 ## Usage
 
