@@ -5,3 +5,6 @@ CPU_LIMIT=2
 JDBC_URL=jdbc:postgresql://postgresql:5432/sonar
 JDBC_USER=sonar
 JDBC_PASSWORD=sonar
+SOURCE_REPOSITORY_URL=https://github.com/sherl0cks/labs-ci-cd
+SOURCE_REPOSITORY_REF=migrating-sonar
+SOURCE_REPOSITORY_CONTEXT_DIR=docker/sonarqube

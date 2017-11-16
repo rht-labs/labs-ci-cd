@@ -65,8 +65,8 @@
         "name": "sonar-database-secret"
       },
       "stringData": {
-        "database-password": "${DATABASE_PASSWORD}",
-        "database-user": "${DATABASE_USER}"
+        "database-password": "${JDBC_PASSWORD}",
+        "database-user": "${JDBC_USER}"
       }
     },
     {
@@ -149,6 +149,7 @@
             "uri": "${SOURCE_REPOSITORY_URL}",
             "ref": "${SOURCE_REPOSITORY_REF}"
           },
+          "contextDir": "${SOURCE_REPOSITORY_CONTEXT_DIR}",
           "type": "Git"
         },
         "strategy": {
@@ -400,6 +401,11 @@
       "name": "SOURCE_REPOSITORY_REF",
       "displayName": "Git Reference",
       "description": "Set this to a branch name, tag or other ref of git repository if you are not using the default (master) branch."
+    },
+    {
+      "name": "SOURCE_REPOSITORY_CONTEXT_DIR",
+      "displayName": "Git Reference",
+      "description": "The directory in the source repository where the SonarQube docker build is."
     },
     {
       "name": "JDBC_USER",

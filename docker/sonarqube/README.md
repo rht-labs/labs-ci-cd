@@ -8,11 +8,21 @@ but it has been modified to allow permissions to be run in an OpenShift environm
 * supports for persistent volumes for configuration, plugins & elastic indices
 * additional configuration options
 
-## Plugin Installation
+## Usage
+
+### Database
+
+By default, SonarQube will use H2 embedded, which is only for demo usage. To use a proper database, set `JDBC_USER`, `JDBC_PASSWORD` and `JDBC_URL` per [the docs](https://docs.sonarqube.org/display/SONAR/Installing+the+Server#InstallingtheServer-installingDatabaseInstallingtheDatabase).
+
+
+### Plugin Installation
+
+TODO
+
 When the container image is built, the environment variable "SONAR_PLUGINS_LIST" should contain a space separated list 
 of plugins which should be installed. More plugins can always be installed later as well.
 
-## Configuration
+### Configuration
 Some configuration settings are well defined, but you can always pass additional configuration using the catchall
 `SONARQUBE_WEB_JVM_OPTS`. Any Java properties placed in this environment variable will be passed to the SonarQube 
 application. The format of the Java properties is like `-Dsome.java.property=someValue`, so you can add an environment
@@ -20,18 +30,7 @@ variable like `SONARQUBE_WEB_JVM_OPTS="-Dsonar.auth.google.allowUsersToSignUp=fa
 
 ### Pre-defined Configuration Variables
 
-* Variable: POSTGRESQL_USER
-  * Description: Username for PostgreSQL user that will be used for accessing the database.
-  * displayName: PostgreSQL Connection Username
-  * from: user[A-Z0-9]{3}
-  * generate: expression
-  * Required: true
-* Variable: POSTGRESQL_PASSWORD
-  * Description: Password for the PostgreSQL connection user.
-  * displayName: PostgreSQL Connection Password
-  * from: '[a-zA-Z0-9]{16}'
-  * generate: expression
-  * Required: true
+
 * Variable: SONAR_PLUGINS_LIST
   * displayName: SonarQube Plugins List
   * Description: "Space separated list of plugins (See: https://docs.sonarqube.org/display/PLUG/Plugin+Version+Matrix)"
@@ -40,6 +39,18 @@ variable like `SONARQUBE_WEB_JVM_OPTS="-Dsonar.auth.google.allowUsersToSignUp=fa
   * displayName: Extra SonarQube startup properties
   * Description: Extra startup properties for SonarQube (in the form of "-Dsonar.someProperty=someValue")
   * Default Value:
+* Variable: JDBC_USER
+  * Description: Username for database user that will be used for accessing the database.
+  * displayName: database Connection Username
+  * from: user[A-Z0-9]{3}
+  * generate: expression
+  * Required: true
+* Variable: JDBC_PASSWORD
+  * Description: Password for the database connection user.
+  * displayName: database Connection Password
+  * from: '[a-zA-Z0-9]{16}'
+  * generate: expression
+  * Required: true
 * Variable: JDBC_URL
   * displayName: JDBC URL for connecting to the SonarQube database
   * Description: Password used for SonarQube database authentication (leave blank to use ephemeral database)
