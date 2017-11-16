@@ -46,3 +46,6 @@ See [the docs](https://github.com/redhat-cop/casl-ansible/tree/master/roles/open
 
 - S2I Build fails to push image to registry with `error: build error: Failed to push image: unauthorized: authentication required`
   - This appears to be an eventual consistency error. Wait a minute or two and then kick the build off again, it should work
+
+## License
+[ASL 2.0](LICENSE)
