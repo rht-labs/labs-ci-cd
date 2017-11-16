@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ProjectRequest
 metadata:
-  name: labs-uat
+  name: labs-demo
 description:  
-displayName: 'Labs UAT'
+displayName: 'Labs Demo'
 
