@@ -9,7 +9,6 @@ This container exists to help folks that can't install ansible, git or other nec
 - `git`
 - `tree`
 - `unzip`
-- `hoverctl` for [hoverfly](https://docs.hoverfly.io/en/latest/)
 
 If you need something not here, let us know in an issue or submit a PR.
 
