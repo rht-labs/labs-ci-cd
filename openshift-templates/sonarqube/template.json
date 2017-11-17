@@ -301,7 +301,7 @@
                     "value": "${LDAP_GROUP_ID_ATTR}"
                   },
                   {
-                    "name": "SONARQUBE_FORCE_AUTHENTICATION",
+                    "name": "FORCE_AUTHENTICATION",
                     "value": "${FORCE_AUTHENTICATION}"
                   },
                   {

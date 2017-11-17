@@ -127,3 +127,7 @@ variable like `SONARQUBE_WEB_JVM_OPTS="-Dsonar.auth.google.allowUsersToSignUp=fa
   * displayName: Disable Build Breaker plugin
   * Description: Build Breaker plugin - Disable the build breaker plugin for all builds
   * Default Value: "true"
+* Variable: FORCE_AUTHENTICATION
+  * displayName: Require Authentication
+  * Description: Require authentication for all requests to sonarqube
+  * Default Value: "true"
