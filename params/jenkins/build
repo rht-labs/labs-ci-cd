@@ -1,3 +1,4 @@
-SOURCE_REPOSITORY_URL=https://github.com/rht-labs/openshift-jenkins-s2i-config.git
+SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd.git
 NAME=jenkins
 SOURCE_REPOSITORY_REF=master
+SOURCE_REPOSITORY_CONTEXT_DIR=s2i-config/jenkins-master

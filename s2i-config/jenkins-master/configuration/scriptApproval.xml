@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<scriptApproval plugin="script-security@1.29">
+  <approvedScriptHashes/>
+  <approvedSignatures>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods drop java.lang.CharSequence int</string>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods reverse java.lang.String</string>
+    <string>method hudson.plugins.git.GitSCM getUserRemoteConfigs</string>
+  </approvedSignatures>
+  <aclApprovedSignatures/>
+  <approvedClasspathEntries/>
+  <pendingScripts/>
+  <pendingSignatures/>
+  <pendingClasspathEntries/>
+</scriptApproval>
