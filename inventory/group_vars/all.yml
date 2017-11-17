@@ -3,18 +3,18 @@ openshift_cluster_content:
 - object: projectrequest
   content:
   - name: ci-cd
-    file: "{{ inventory_dir }}/../projectrequests/ci-cd.yml"
-    file_action: create
+    template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/master/files/projectrequest/template.yml"
+    params: "{{ inventory_dir }}/../params/projectrequests/ci-cd"
     tags:
     - projects
   - name: dev
-    file: "{{ inventory_dir }}/../projectrequests/dev.yml"
-    file_action: create
+    template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/master/files/projectrequest/template.yml"
+    params: "{{ inventory_dir }}/../params/projectrequests/dev"
     tags:
     - projects
   - name: demo
-    file: "{{ inventory_dir }}/../projectrequests/demo.yml"
-    file_action: create
+    template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/master/files/projectrequest/template.yml"
+    params: "{{ inventory_dir }}/../params/projectrequests/demo"
     tags:
     - projects
 - object: ci-cd-builds

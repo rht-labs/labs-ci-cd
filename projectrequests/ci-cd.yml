@@ -1,7 +1,0 @@
----
-apiVersion: v1
-kind: ProjectRequest
-metadata:
-  name: labs-ci-cd
-description:  
-displayName: 'Labs CI/CD'
