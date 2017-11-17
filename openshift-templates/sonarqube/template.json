@@ -300,6 +300,10 @@
                     "value": "${LDAP_GROUP_ID_ATTR}"
                   },
                   {
+                    "name": "SONARQUBE_FORCE_AUTHENTICATION",
+                    "value": "${FORCE_AUTHENTICATION}"
+                  },
+                  {
                     "name": "CA_CERT_URL",
                     "value": "${CA_CERT_URL}"
                   },
@@ -535,6 +539,12 @@
       "displayName": "Extra arguments to be passed to the JVM on start",
       "description": "Pass in arguments like '-Djavax.net.debug=ssl' to debug issues.",
       "required": false
+    },
+    {
+      "name": "FORCE_AUTHENTICATION",
+      "displayName": "Require Authentication",
+      "description": "Require authentication for all requests to sonarqube",
+      "value": "true"
     }
   ]
 }
