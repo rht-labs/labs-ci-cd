@@ -65,8 +65,8 @@
         "name": "sonar-database-secret"
       },
       "stringData": {
-        "database-password": "${DATABASE_PASSWORD}",
-        "database-user": "${DATABASE_USER}"
+        "database-password": "${JDBC_PASSWORD}",
+        "database-user": "${JDBC_USER}"
       }
     },
     {
@@ -149,6 +149,7 @@
             "uri": "${SOURCE_REPOSITORY_URL}",
             "ref": "${SOURCE_REPOSITORY_REF}"
           },
+          "contextDir": "${SOURCE_REPOSITORY_CONTEXT_DIR}",
           "type": "Git"
         },
         "strategy": {
@@ -222,7 +223,7 @@
                     "value": "${WEB_JVM_OPTS}"
                   },
                   {
-                    "name": "SONARQUBE_JDBC_USERNAME",
+                    "name": "JDBC_USERNAME",
                     "valueFrom": {
                       "secretKeyRef": {
                         "key": "database-user",
@@ -231,7 +232,7 @@
                     }
                   },
                   {
-                    "name": "SONARQUBE_JDBC_PASSWORD",
+                    "name": "JDBC_PASSWORD",
                     "valueFrom": {
                       "secretKeyRef": {
                         "key": "database-password",
@@ -240,67 +241,67 @@
                     }
                   },
                   {
-                    "name": "SONARQUBE_JDBC_URL",
+                    "name": "JDBC_URL",
                     "value": "${JDBC_URL}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_BINDDN",
+                    "name": "LDAP_BINDDN",
                     "value": "${LDAP_BINDDN}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_BINDPASSWD",
+                    "name": "LDAP_BINDPASSWD",
                     "value": "${LDAP_BINDPASSWD}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_URL",
+                    "name": "LDAP_URL",
                     "value": "${LDAP_URL}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_REALM",
+                    "name": "LDAP_REALM",
                     "value": "${LDAP_REALM}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_CONTEXTFACTORY",
+                    "name": "LDAP_CONTEXTFACTORY",
                     "value": "${LDAP_CONTEXT_FACTORY}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_STARTTLS",
+                    "name": "LDAP_STARTTLS",
                     "value": "${LDAP_STARTTLS}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_AUTHENTICATION",
+                    "name": "LDAP_AUTHENTICATION",
                     "value": "${LDAP_AUTHENTICATION_METHOD}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_USER_BASEDN",
+                    "name": "LDAP_USER_BASEDN",
                     "value": "${LDAP_USER_BASEDN}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_USER_REQUEST",
+                    "name": "LDAP_USER_REQUEST",
                     "value": "${LDAP_USER_REQUEST}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_USER_REAL_NAME_ATTR",
+                    "name": "LDAP_USER_REAL_NAME_ATTR",
                     "value": "${LDAP_USER_REAL_NAME_ATTR}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_USER_EMAIL_ATTR",
+                    "name": "LDAP_USER_EMAIL_ATTR",
                     "value": "${LDAP_USER_EMAIL_ATTR}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_GROUP_BASEDN",
+                    "name": "LDAP_GROUP_BASEDN",
                     "value": "${LDAP_GROUP_BASEDN}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_GROUP_REQUEST",
+                    "name": "LDAP_GROUP_REQUEST",
                     "value": "${LDAP_GROUP_REQUEST}"
                   },
                   {
-                    "name": "SONARQUBE_LDAP_GROUP_ID_ATTR",
+                    "name": "LDAP_GROUP_ID_ATTR",
                     "value": "${LDAP_GROUP_ID_ATTR}"
                   },
                   {
-                    "name": "SONARQUBE_FORCE_AUTHENTICATION",
+                    "name": "FORCE_AUTHENTICATION",
                     "value": "${FORCE_AUTHENTICATION}"
                   },
                   {
@@ -402,13 +403,18 @@
       "description": "Set this to a branch name, tag or other ref of git repository if you are not using the default (master) branch."
     },
     {
-      "name": "DATABASE_USER",
+      "name": "SOURCE_REPOSITORY_CONTEXT_DIR",
+      "displayName": "Git Reference",
+      "description": "The directory in the source repository where the SonarQube docker build is."
+    },
+    {
+      "name": "JDBC_USER",
       "displayName": "Database Connection Username",
       "description": "User that will be used for accessing the database.",
       "required": true
     },
     {
-      "name": "DATABASE_PASSWORD",
+      "name": "JDBC_PASSWORD",
       "displayName": "Database Connection Password",
       "description": "Password for the database connection user.",
       "required": true
