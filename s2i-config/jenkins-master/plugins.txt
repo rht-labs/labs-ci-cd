@@ -61,6 +61,7 @@ pipeline-stage-view:2.9
 pipeline-utility-steps:1.5.1
 plain-credentials:1.4
 pubsub-light:1.12
+slack:2.3
 scm-api:2.2.3
 script-security:1.34
 sonar:2.6.1
