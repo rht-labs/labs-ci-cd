@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# inspired by https://github.com/openshift/jenkins/blob/master/2/contrib/jenkins/jenkins-common.sh
+
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
 
@@ -16,4 +16,11 @@ else
   echo "User $USER_ID already exists"
 fi
 
-sleep infinity
+
+if [ -v RUN_AS_WEBSERVER ]; then
+    hoverctl start webserver
+else
+    hoverctl start
+fi    
+
+hoverctl logs --follow
