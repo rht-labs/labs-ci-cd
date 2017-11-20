@@ -25,6 +25,7 @@ github-pullrequest:0.1.0-rc26
 github:1.28.1
 handlebars:1.1.1
 htmlpublisher:1.14
+hubot-steps:1.1.0
 icon-shim:2.0.3
 jackson2-api:2.7.3
 javadoc:1.4
