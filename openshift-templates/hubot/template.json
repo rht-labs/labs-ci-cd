@@ -1,0 +1,271 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "hubot"
+    },
+    "objects": [
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "hubot",
+                "labels": {
+                    "app": "hubot"
+                }
+            },
+            "spec": {
+                "tags": [
+                    {
+                        "name": "latest",
+                        "annotations": null,
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "hubot:latest"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "hubot",
+                "labels": {
+                    "app": "hubot"
+                }
+            },
+            "spec": {
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "Serial",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "${SOURCE_REPOSITORY_URL}",
+                        "ref": "${SOURCE_REPOSITORY_REF}"
+                    },
+                    "contextDir": "${SOURCE_REPOSITORY_CONTEXT_DIR}"
+                },
+                "strategy": {
+                    "type": "Source",
+                    "sourceStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "namespace": "openshift",
+                            "name": "nodejs:6"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "hubot:latest"
+                    }
+                }
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "hubot",
+                "labels": {
+                    "app": "hubot"
+                }
+            },
+            "spec": {
+                "strategy": {
+                    "type": "Rolling",
+                    "rollingParams": {
+                        "updatePeriodSeconds": 1,
+                        "intervalSeconds": 1,
+                        "timeoutSeconds": 600,
+                        "maxUnavailable": "25%",
+                        "maxSurge": "25%"
+                    },
+                    "resources": {},
+                    "activeDeadlineSeconds": 21600
+                },
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "hubot"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "hubot:latest"
+                            }
+                        }
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "replicas": 1,
+                "test": false,
+                "selector": {
+                    "deploymentconfig": "hubot"
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "app": "hubot",
+                            "deploymentconfig": "hubot"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "hubot",
+                                "ports": [
+                                    {
+                                        "containerPort": 8080,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "env": [
+                                    {
+                                        "name": "HUBOT_SLACK_TOKEN",
+                                        "value": "${HUBOT_SLACK_TOKEN}"
+                                    },
+                                    {
+                                        "name": "HUBOT_JENKINS_URL",
+                                        "value": "${HUBOT_JENKINS_URL}"
+                                    },
+                                    {
+                                        "name": "NODE_TLS_REJECT_UNAUTHORIZED",
+                                        "value": "${NODE_TLS_REJECT_UNAUTHORIZED}"
+                                    },
+                                    {
+                                        "name": "HUBOT_JENKINS_AUTH",
+                                        "value": "${HUBOT_JENKINS_AUTH}"
+                                    }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File",
+                                "imagePullPolicy": "Always"
+                            }
+                        ],
+                        "restartPolicy": "Always",
+                        "terminationGracePeriodSeconds": 30,
+                        "dnsPolicy": "ClusterFirst",
+                        "serviceAccountName": "${SERVICE_ACCOUNT}",
+                        "serviceAccount": "${SERVICE_ACCOUNT}",
+                        "securityContext": {},
+                        "schedulerName": "default-scheduler"
+                    }
+                }
+            }
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "hubot",
+                "labels": {
+                    "app": "hubot"
+                }
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "8080-tcp",
+                        "protocol": "TCP",
+                        "port": 8080,
+                        "targetPort": 8080
+                    }
+                ],
+                "selector": {
+                    "deploymentconfig": "hubot"
+                },
+                "type": "ClusterIP",
+                "sessionAffinity": "None"
+            }
+        },
+        {
+            "kind": "Route",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "hubot",
+                "labels": {
+                    "app": "hubot"
+                }
+            },
+            "spec": {
+                "to": {
+                    "kind": "Service",
+                    "name": "hubot",
+                    "weight": 100
+                },
+                "port": {
+                    "targetPort": "8080-tcp"
+                },
+                "wildcardPolicy": "None"
+            }
+        }
+    ],
+    "parameters": [
+        {
+          "name": "HUBOT_SLACK_TOKEN",
+          "displayName": "The slack integration token",
+          "description": "The slack integration token.",
+          "required": true
+        },
+        {
+          "name": "HUBOT_JENKINS_URL",
+          "displayName": "Jenkins URL",
+          "description": "Jenkins URL",
+          "value": "http://jenkins/"
+        },
+        {
+          "name": "HUBOT_JENKINS_AUTH",
+          "displayName": "Service Account Location",
+          "description": "The location of the the serviceaccount token in the container",
+          "value": "/run/secrets/kubernetes.io/serviceaccount/token"
+        },
+        {
+          "name": "NODE_TLS_REJECT_UNAUTHORIZED",
+          "displayName": "Should this run unauthorized",
+          "description": "Value of 0 gives sets to unauthorized.",
+          "required": true
+        },
+        {
+          "name": "SERVICE_ACCOUNT",
+          "displayName": "Runtime Service Account",
+          "description": "Runtime Service Account. Needs to be able to invoke Jenkins jobs",
+          "value": "jenkins"
+        },
+        {
+          "name": "SOURCE_REPOSITORY_URL",
+          "displayName": "Git URL",
+          "description": "Git URL",
+          "required": true
+        },
+        {
+          "name": "SOURCE_REPOSITORY_REF",
+          "displayName": "Git Ref",
+          "description": "Git Ref",
+          "required": true
+        },
+        {
+          "name": "SOURCE_REPOSITORY_CONTEXT_DIR",
+          "displayName": "Git Context Dir",
+          "description": "Git Context Dir",
+          "required": true
+        }
+    ]
+}
