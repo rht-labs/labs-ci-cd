@@ -82,6 +82,23 @@ if (rc == 200) {
     sonarRunner.setInstallations(sinst)
 
     sonarRunner.save()
+    
+    def addWebhook = new URL("${sonarHost}/api/settings/set").openConnection()
+    def fieldValues = URLEncoder.encode('{"name":"Jenkins","url":"http://jenkins/sonarqube-webhook/"}', 'UTF-8')
+    def postBody = "key=sonar.webhooks.global&fieldValues=${fieldValues}"
+    addWebhook.setRequestMethod('POST')
+    addWebhook.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+    addWebhook.setRequestProperty("Authorization", "Basic ${authString}")
+    addWebhook.setDoOutput(true)
+    addWebhook.setDoInput(true)
+    addWebhook.getOutputStream().write(postBody.getBytes())
+    def webHookRC = addWebhook.getResponseCode()
+    if (webHookRC == 204) {
+        LOG.log(Level.INFO, 'SonarQube Webhook successfully configured')
+    } else {
+        LOG.log(Level.WARNING, 'SonarQube Webhook configuration FAILED')
+        LOG.log(Level.WARNING, addWebhook.getInputStream().text)
+    }
 
     LOG.log(Level.INFO, 'SonarQube configuration complete')
 } else {
