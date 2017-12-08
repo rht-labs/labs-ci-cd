@@ -42,6 +42,7 @@ while (rc != 200) {
     rc = testConnect.getResponseCode()
     if (rc != 200) {
         failCount += 1
+        LOG.log(Level.INFO, "Waiting for SonarQube to start: ${failCount}")
         if (failCount>=20) {
             break
         }
