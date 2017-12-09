@@ -7,10 +7,7 @@
 # Configuration:
 #   HUBOT_JENKINS_URL
 #   HUBOT_JENKINS_AUTH - A reference to where the auth token can be found on the file system
-#
-#   Auth should be in the "user:password" format.
-#   password can be a token (which can be obtainined from the jenkins user configuration)
-#
+##
 # Commands:
 #   hubot jenkins abort <jobPath> - aborts the given job that is paused, waiting on user input
 #   hubot jenkins build <jobPath> - builds the specified Jenkins job
