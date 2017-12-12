@@ -3,7 +3,7 @@
 The goal of this repository is to:
 
  1. provide all the tools necessary for a comprehensive CI/CD pipeline, built for and deployed to OpenShift
- 2. serve as a reference implementation of the [openshift-applier](https://github.com/redhat-cop/casl-ansible/tree/master/roles/openshift-applier) model for infrastructure as code  
+ 2. serve as a reference implementation of the [openshift-applier](https://github.com/redhat-cop/casl-ansible/tree/master/roles/openshift-applier) model for Infrastructure-as-Code (IaC) 
 
 A few additional guiding principles:
 
