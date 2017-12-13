@@ -13,7 +13,8 @@ import static hudson.plugins.sonar.utils.SQServerVersions.SQ_5_3_OR_HIGHER
 
 final def LOG = Logger.getLogger("LABS")
 
-if(System.getenv("DISABLE_SONAR") != null) {
+def disableSonar = System.getenv("DISABLE_SONAR");
+if(disableSonar != null && disableSonar.toUpperCase() == "TRUE") {
     LOG.log(Level.INFO, 'Skipping SonarQube configuration')
     return
 }
