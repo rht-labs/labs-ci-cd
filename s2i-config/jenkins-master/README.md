@@ -9,9 +9,33 @@ The directory structure is dictated by [OpenShift Jenkins S2I image](https://doc
 - [plugins.txt](plugins.txt) is used to install plugins during the S2I build. If you want the details, here is the [S2I assemble script](https://github.com/openshift/jenkins/blob/master/2/contrib/s2i/assemble), which calls the [install jenkins plugins script](https://github.com/openshift/jenkins/blob/master/2/contrib/jenkins/install-plugins.sh).
 - files in the [configuration](configuration) directory will have comments describing exactly what they do
 
+## Hubot Integration
+
+The jenkins s2i build includes the Hubot Steps plugin allowing communication to a running hubot instance. Currently, this repository supports Slack integration through Hubot to allow messages to be sent and to approve/abort builds through Slack.
+
+To more easily integrate with Hubot set the following optional env variables in your Jenkins OpenShift template:
+1. The url to HUBOT `HUBOT_URL`
+2. The default Slack channel `HUBOT_DEFAULT_ROOM`
+
+Once this is complete you can send Slack messages through Hubot.
+
+Example
+```
+node {
+   def url = env.HUBOT_URL
+   def room = env.HUBOT_DEFAULT_ROOM
+
+   stage('Hubot Test Pipeline') {
+        hubotApprove message: "Proceed?", failOnError: true, room: room, url: url
+    }
+}
+```
+
 ## Slack Integration
 
-To Integrate with slack follow the steps at https://github.com/jenkinsci/slack-plugin. Particularly, create a webhook at  https://customteamname.slack.com/services/new/jenkins-ci. After the webhook setup is complete at slack, record and add the below environmental variables. You can retrieve the values on your [slack dashboard](https://my.slack.com/services/new/jenkins-ci). Make sure you are logged into the correct team.
+If you are running Slack integration through Hubot then you can skip this set up. This only enables sending messages directory to slack via the `slackSend` method.
+
+To integrate with slack follow the steps at https://github.com/jenkinsci/slack-plugin. Particularly, create a webhook at  https://customteamname.slack.com/services/new/jenkins-ci. After the webhook setup is complete at slack, record and add the below environmental variables. You can retrieve the values on your [slack dashboard](https://my.slack.com/services/new/jenkins-ci). Make sure you are logged into the correct team.
 1. The base url as `SLACK_BASE_URL`
 2. The slack token as `SLACK_TOKEN`
 3. The slack room you selected as the default slack channel as `SLACK_ROOM`
