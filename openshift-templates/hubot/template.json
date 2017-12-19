@@ -259,13 +259,12 @@
           "name": "SOURCE_REPOSITORY_REF",
           "displayName": "Git Ref",
           "description": "Git Ref",
-          "required": true
+          "value": "master"
         },
         {
           "name": "SOURCE_REPOSITORY_CONTEXT_DIR",
           "displayName": "Git Context Dir",
-          "description": "Git Context Dir",
-          "required": true
+          "description": "Git Context Dir"
         }
     ]
 }

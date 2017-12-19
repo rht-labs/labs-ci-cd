@@ -335,12 +335,13 @@
       "name": "SLACK_TOKEN"
     },
     {
-      "description": "The default slack channel for the hubot",
+      "description": "The default slack channel for the hubot. Defaults to jenkins",
       "displayName": "Default Hubot Slack Channel",
-      "name": "HUBOT_DEFAULT_ROOM"
+      "name": "HUBOT_DEFAULT_ROOM",
+      "value": "jenkins"
     },
     {
-      "description": "The URL for the hubot",
+      "description": "The URL for the hubot. Defaults to http://hubot:8080",
       "displayName": "Hubot URL",
       "name": "HUBOT_URL",
       "value": "http://hubot:8080/"
