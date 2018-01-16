@@ -46,16 +46,20 @@
   - content.1.value|trim != ''
   loop_control:
     loop_var: content
+  register: command_output
 
-- name: "Update SCM REF related config"
-  replace:
-    path: "{{ content.0.params }}"
-    regexp: '^({{ content.1.match }})=.*$'
-    replace: '\1={{ content.1.value }}'
-  with_nested:
-  - "{{ item.content }}"
-  - "{{ scm_ref_replacement_value }}"
-  when:
-  - content.1.value|trim != ''
-  loop_control:
-    loop_var: content
+- debug: msg="{{command_output.results}}"
+  when: command_output.results[0].changed == true
+
+#- name: "Update SCM REF related config"
+#  replace:
+#    path: "{{ content.0.params }}"
+#    regexp: '^({{ content.1.match }})=.*$'
+#    replace: '\1={{ content.1.value }}'
+#  with_nested:
+#  - "{{ item.content }}"
+#  - "{{ scm_ref_replacement_value }}"
+#  when:
+#  - content.1.value|trim != ''
+#  loop_control:
+#    loop_var: content

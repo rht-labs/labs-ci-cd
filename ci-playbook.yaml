@@ -5,4 +5,4 @@
     scm_url: "https://github.com/labs-robot/labs-ci-cd.git"
   roles:
     - make-demo-unique
-    - openshift-applier
+    #- openshift-applier
