@@ -1,0 +1,3 @@
+NAME=ci-for-labs-ci-cd
+PIPELINE_SOURCE_REPOSITORY_REF=ci-for-labs-ci-cd
+PIPELINE_SOURCE_REPOSITORY_URL=https://github.com/sherl0cks/labs-ci-cd.git

@@ -1,0 +1,9 @@
+---
+- hosts: seed-hosts[0]
+  vars:
+    demo_projectname: "pr"
+    scm_url: "this is only here to the role will run"
+    scm_ref: "this is only here to the role will run"
+  roles:
+    - make-demo-unique
+    - openshift-applier
