@@ -6,9 +6,10 @@
       value: "{{ unique_name }}"
     - match: 'NAMESPACE_DESCRIPTION'
       value: "{{ unique_name }}"
-    scm_replacement_values:
+    scm_url_replacement_value:
     - match: 'SOURCE_REPOSITORY_URL'
       value: "{{ scm_url }}"
+    scm_ref_replacement_value:
     - match: 'SOURCE_REPOSITORY_REF'
       value: "{{ scm_ref }}"
 
@@ -33,16 +34,28 @@
   loop_control:
     loop_var: content 
 
-- name: "Update SCM related config to ensure it's pointing to the correct source repo, etc."
+- name: "Update SCM URL related config"
   replace:
     path: "{{ content.0.params }}"
     regexp: '^({{ content.1.match }})=(https://github\.com/rht-labs/labs-ci-cd)'
     replace: '\1={{ content.1.value }}'
   with_nested:
   - "{{ item.content }}"
-  - "{{ scm_replacement_values }}"
+  - "{{ scm_url_replacement_value }}"
   when:
   - content.1.value|trim != ''
   loop_control:
     loop_var: content
 
+- name: "Update SCM REF related config"
+  replace:
+    path: "{{ content.0.params }}"
+    regexp: '^({{ content.1.match }})=.*$'
+    replace: '\1={{ content.1.value }}'
+  with_nested:
+  - "{{ item.content }}"
+  - "{{ scm_ref_replacement_value }}"
+  when:
+  - content.1.value|trim != ''
+  loop_control:
+    loop_var: content
