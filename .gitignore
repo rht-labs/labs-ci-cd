@@ -1,2 +1,5 @@
 casl-ansible
 roles
+.idea
+*.iml
+gdsl
