@@ -76,7 +76,7 @@ node() {
                         git checkout master
                         git fetch origin pull/${env.PR_ID}/head:pr
                         git merge pr --ff
-                        git push ci master:pr-${env.PR_ID}
+                        git push ci master:pr-${env.PR_ID} -f
                     """
                 }
 
