@@ -11,6 +11,8 @@ ENV SONAR_VERSION=6.7.1 \
 # Http port
 EXPOSE 9000
 
+USER root
+
 RUN set -x \
 
     # pub   2048R/D26468DE 2015-05-25
@@ -37,6 +39,8 @@ RUN set -x \
 VOLUME "$SONARQUBE_HOME/data"
 
 WORKDIR $SONARQUBE_HOME
+
+USER 1001
 
 ADD sonar.properties /opt/sonarqube/conf/sonar.properties
 ADD run.sh /opt/sonarqube/bin/run.sh
