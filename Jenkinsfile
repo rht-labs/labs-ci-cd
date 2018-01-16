@@ -7,24 +7,33 @@ node() {
 
         node('jenkins-slave-ansible') {
 
+
             stage('Merge PR') {
 
                 sh '''
+                    git config --global user.email "labs.robot@gmail.com"
+                    git config --global user.name "Labs Robot"
+                    cd $HOME
+                    mkdir .ssh
+                    oc get secret labs-robot-ssh-key --template=\'{{index .data \"ssh-privatekey\"}}\' | base64 -d >> .ssh/id_rsa
+                    chmod 0600 .ssh/id_rsa
+                    echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> .ssh/config
+                '''
+
+                sh '''
                     git clone https://github.com/rht-labs/labs-ci-cd
-                    git config --global user.email "robot@example.com"
-                    git config --global user.name "A Robot"
+                    cd labs-ci-cd
+                    git remote add ci git@github.com:labs-robot/labs-ci-cd.git
                 '''
 
                 timeout(time: 1, unit: 'HOURS') {
                     def userInput = input(
                             id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
-                            [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr'],
-                            [$class: 'StringParameterDefinition', description: 'github token', name: 'token'],
-                            [$class: 'StringParameterDefinition', description: 'github user name', name: 'username']
+                            [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
                     ])
-                    env.PR_ID = userInput['pr']
-                    env.PR_GITHUB_TOKEN = userInput['token']
-                    env.PR_GITHUB_USERNAME = userInput['username']
+                    env.PR_ID = userInput
+                    env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
+                    env.PR_GITHUB_USERNAME = 'labs-robot'
 
 
                     if (env.PR_ID == null || env.PR_ID == ""){
@@ -67,6 +76,7 @@ node() {
                         git checkout master
                         git fetch origin pull/${env.PR_ID}/head:pr
                         git merge pr --ff
+                        git push ci master:pr-${env.PR_ID}
                     """
                 }
 
@@ -77,13 +87,10 @@ node() {
                 dir('labs-ci-cd'){
                     sh '''
                         ansible-galaxy install -r requirements.yml --roles-path=roles
-                        git clone https://github.com/sherl0cks/labs-demo
-                        mv labs-demo/roles/make-demo-unique roles
-                        rm -rf labs-demo
                         cp -r roles/casl-ansible/roles/* roles/
                         ls roles/
                     '''
-                    sh 'ansible-playbook ci-playbook.yaml -i inventory/'
+                    sh "ansible-playbook ci-playbook.yaml -i inventory/ -e \"scm_ref=pr-${env.PR_ID}\""
                 }
             }
 
@@ -92,7 +99,7 @@ node() {
         stage('Verify Results') {
             parallel(
                     'CI Builds': {
-                        String[] builds = ['mvn-build-pod', 'npm-build-pod', 'zap-build-pod']
+                        String[] builds = ['mvn-build-pod', 'npm-build-pod', 'zap-build-pod', 'jenkins-slave-pod']
 
                         for (String build : builds) {
                             openshiftVerifyBuild(

@@ -1,5 +1,7 @@
 casl-ansible
-roles
+roles/*
+!roles/make-demo-unique
+*.pyc
 .idea
 *.iml
 gdsl

@@ -1,0 +1,48 @@
+---
+
+- set_fact:
+    replacement_values:
+    - match: 'NAMESPACE_DISPLAY_NAME'
+      value: "{{ unique_name }}"
+    - match: 'NAMESPACE_DESCRIPTION'
+      value: "{{ unique_name }}"
+    scm_replacement_values:
+    - match: 'SOURCE_REPOSITORY_URL'
+      value: "{{ scm_url }}"
+    - match: 'SOURCE_REPOSITORY_REF'
+      value: "{{ scm_ref }}"
+
+- name: "Append the demo projectname in the params files"
+  replace:
+    path: "{{ content.params }}"
+    regexp: '^(.*NAMESPACE.*)=(.*)$'
+    replace: '\1=\2{{ unique_id }}'
+  with_items:
+  - "{{ item.content }}"
+  loop_control:
+    loop_var: content 
+
+- name: "Change the 'unique_id value to a different value for certain entries"
+  replace:
+    path: "{{ content.0.params }}"
+    regexp: '^({{ content.1.match }})=(.*)({{ unique_id }})$'
+    replace: '\1=\2 {{ content.1.value }}'
+  with_nested:
+  - "{{ item.content }}"
+  - "{{ replacement_values }}"
+  loop_control:
+    loop_var: content 
+
+- name: "Update SCM related config to ensure it's pointing to the correct source repo, etc."
+  replace:
+    path: "{{ content.0.params }}"
+    regexp: '^({{ content.1.match }})=.*$'
+    replace: '\1={{ content.1.value }}'
+  with_nested:
+  - "{{ item.content }}"
+  - "{{ scm_replacement_values }}"
+  when:
+  - content.1.value|trim != ''
+  loop_control:
+    loop_var: content
+
