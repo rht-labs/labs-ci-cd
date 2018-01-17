@@ -99,7 +99,7 @@ node() {
         stage('Verify Results') {
             parallel(
                     'CI Builds': {
-                        String[] builds = ['mvn-build-pod', 'npm-build-pod', 'zap-build-pod', 'jenkins-slave-pod']
+                        String[] builds = ['mvn-build-pod', 'npm-build-pod', 'zap-build-pod', 'jenkins-slave-ansible']
 
                         for (String build : builds) {
                             openshiftVerifyBuild(
