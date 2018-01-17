@@ -137,7 +137,7 @@ node() {
                                     depCfg: app,
                                     namespace: "labs-dev-pr",
                                     verifyReplicaCount: true,
-                                    waitTime: '10',
+                                    waitTime: '15',
                                     waitUnit: 'min'
                             )
                         }
