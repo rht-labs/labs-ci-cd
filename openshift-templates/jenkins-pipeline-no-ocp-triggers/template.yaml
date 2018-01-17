@@ -10,6 +10,7 @@ objects:
     labels:
       build: "${NAME}"
       name: "${NAME}-pipeline"
+      type: "pipeline"
     name: "${NAME}-pipeline"
   spec:
     runPolicy: Serial
