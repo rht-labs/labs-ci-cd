@@ -12,6 +12,7 @@
     scm_ref_replacement_value:
     - match: 'SOURCE_REPOSITORY_REF'
       value: "{{ scm_ref }}"
+    scm_refs_to_replace: []
 
 - name: "Append the demo projectname in the params files"
   replace:
@@ -48,18 +49,25 @@
     loop_var: content
   register: command_output
 
-- debug: msg="{{command_output.results}}"
-  when: command_output.results[0].changed == true
+- name: "Parse out the params files that need to be updated"
+  set_fact:
+    scm_refs_to_replace: "{{ scm_refs_to_replace }} + [ '{{ itemm.invocation.module_args.path }}' ] "
+  with_items:
+  - "{{ command_output.results }}"
+  loop_control:
+    loop_var: itemm
+  when: itemm['changed'] == true
 
-#- name: "Update SCM REF related config"
-#  replace:
-#    path: "{{ content.0.params }}"
-#    regexp: '^({{ content.1.match }})=.*$'
-#    replace: '\1={{ content.1.value }}'
-#  with_nested:
-#  - "{{ item.content }}"
-#  - "{{ scm_ref_replacement_value }}"
-#  when:
-#  - content.1.value|trim != ''
-#  loop_control:
-#    loop_var: content
+- name: "Update SCM REF related config"
+  replace:
+    path: "{{ content.0.params }}"
+    regexp: '^({{ content.1.match }})=.*$'
+    replace: '\1={{ content.1.value }}'
+  with_nested:
+  - "{{ item.content }}"
+  - "{{ scm_ref_replacement_value }}"
+  when:
+  - content.1.value|trim != ''
+  - content.0.params in scm_refs_to_replace
+  loop_control:
+    loop_var: content
