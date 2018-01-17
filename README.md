@@ -72,14 +72,7 @@ See [the docs](https://github.com/redhat-cop/casl-ansible/tree/master/roles/open
 1) Fork the repo and open PR's
 2) Add all new components to the inventory with appropriate namespaces and tags
 3) Extended the `Jenkinsfile` with steps to verify that your components built/deployed correctly
-4) For now, it is your responsibility to run the CI job
-
-### Running the CI job 
-
-1) Create a [GitHub OAuth](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) token to support commit status updates. You only need the privilege `repo:status`
-2) Apply the `labs-ci-cd` inventory to an OCP cluster, this will create a Jenkins job called `ci-for-labs-ci-cd`
-3) Run the `ci-for-labs-ci-cd` Jenkins job. It will prompt you for input. All fields are required.
-4) The job will update github with the result. If the build passes, your PR will be reviewed.
+4) For now, it is your responsibility to run the CI job. Please contact an admin for the details to set the CI job up.
 
 ## License
 [ASL 2.0](LICENSE)

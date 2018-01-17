@@ -6,4 +6,5 @@ JDBC_URL=jdbc:postgresql://postgresql:5432/sonar
 JDBC_USER=sonar
 JDBC_PASSWORD=sonar
 SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd
+SOURCE_REPOSITORY_REF=master
 SOURCE_REPOSITORY_CONTEXT_DIR=docker/sonarqube
