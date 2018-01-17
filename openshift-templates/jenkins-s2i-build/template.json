@@ -78,7 +78,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "jenkins-2-rhel7:latest"
+                            "name": "${JENKINS_IMAGE_STREAM_TAG}"
                         }
                     }
                 },
@@ -122,7 +122,7 @@
             "displayName": "Git Reference",
             "description": "The directory in the source repository where the SonarQube docker build is."
         }
-      
+
     ],
     "labels": {
         "template": "jenkins-s2i-template"
