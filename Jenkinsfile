@@ -99,27 +99,43 @@ node() {
         stage('Verify Results') {
             parallel(
                     'CI Builds': {
-                        String[] builds = ['mvn-build-pod', 'npm-build-pod', 'zap-build-pod', 'jenkins-slave-ansible']
+                        def ciPipelineResponse = sh(returnStdout: true, script:'oc get bc -l type=pipeline -n labs-ci-cd-pr -o name')
+                        def ciPipelineList = []
+                        for (entry in ciPipelineResponse.split()){
+                            ciPipelineList += entry.replace('buildconfigs/','').replace('-pipeline','')
+                        }
 
-                        for (String build : builds) {
-                            openshiftVerifyBuild(
-                                    apiURL: "${env.OCP_API_SERVER}",
-                                    authToken: "${env.OCP_TOKEN}",
-                                    buildConfig: build,
-                                    namespace: "labs-ci-cd-pr",
-                                    waitTime: '10',
-                                    waitUnit: 'min'
-                            )
+                        def ciBuildsResponse = sh(returnStdout: true, script:'oc get bc -l type=image -n labs-ci-cd-pr -o name')
+                        def ciBuildsList = ciBuildsResponse.split()
+
+                        for (String build : ciBuildsList) {
+                            String buildName = build.replace('buildconfigs/','')
+                            if( ciPipelineList.contains(buildName) ){
+                                // we have an image build with a corresponding pipeline build
+                                // for now, these builds aren't compatible with the openshiftVerifyBuild test we are going to do
+                                // so skip them here, but we'll test them indirectly via the deploy tests
+                            } else {
+                                openshiftVerifyBuild(
+                                        apiURL: "${env.OCP_API_SERVER}",
+                                        authToken: "${env.OCP_TOKEN}",
+                                        buildConfig: buildName,
+                                        namespace: "labs-ci-cd-pr",
+                                        waitTime: '10',
+                                        waitUnit: 'min'
+                                )
+                            }
                         }
                     },
                     'CI Deploys': {
-                        String[] ciDeployments = ['jenkins', 'nexus', 'sonarqube']
+                        def ciDeploysResponse = sh(returnStdout: true, script:'oc get dc -n labs-ci-cd-pr -o name')
+                        def ciDeploysList = ciDeploysResponse.split()
 
-                        for (String deploy : ciDeployments) {
+                        for (String deploy : ciDeploysList) {
+                            def deployName = deploy.replace('deploymentconfigs/','')
                             openshiftVerifyDeployment(
                                     apiURL: "${env.OCP_API_SERVER}",
                                     authToken: "${env.OCP_TOKEN}",
-                                    depCfg: deploy,
+                                    depCfg: deployName,
                                     namespace: "labs-ci-cd-pr",
                                     verifyReplicaCount: true,
                                     waitTime: '10',
@@ -128,13 +144,15 @@ node() {
                         }
                     },
                     'App Deploys': {
-                        String[] appDeployments = ['java-app']
+                        def appDeploysResponse = sh(returnStdout: true, script:'oc get dc -n labs-dev-pr -o name')
+                        def appDeploysList = appDeploysResponse.split()
 
-                        for (String app : appDeployments) {
+                        for (String app : appDeploysList) {
+                            def appName = app.replace('deploymentconfigs/','')
                             openshiftVerifyDeployment(
                                     apiURL: "${env.OCP_API_SERVER}",
                                     authToken: "${env.OCP_TOKEN}",
-                                    depCfg: app,
+                                    depCfg: appName,
                                     namespace: "labs-dev-pr",
                                     verifyReplicaCount: true,
                                     waitTime: '15',

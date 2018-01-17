@@ -51,7 +51,8 @@
             "kind": "BuildConfig",
             "metadata": {
                 "labels": {
-                    "build": "${NAME}"
+                    "build": "${NAME}",
+                    "type": "image"
                 },
                 "name": "${NAME}"
             },
