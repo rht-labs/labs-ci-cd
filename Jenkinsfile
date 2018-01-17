@@ -15,7 +15,7 @@ node() {
                     git config --global user.name "Labs Robot"
                     cd $HOME
                     mkdir .ssh
-                    oc get secret labs-robot-ssh-key --template=\'{{index .data \"ssh-privatekey\"}}\' | base64 -d >> .ssh/id_rsa
+                    oc get secret labs-robot-ssh-privatekey --template=\'{{index .data \"ssh-privatekey\"}}\' | base64 -d >> .ssh/id_rsa
                     chmod 0600 .ssh/id_rsa
                     echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> .ssh/config
                 '''
@@ -32,7 +32,7 @@ node() {
                             [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
                     ])
                     env.PR_ID = userInput
-                    env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
+                    env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret labs-robot-github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
                     env.PR_GITHUB_USERNAME = 'labs-robot'
 
 
