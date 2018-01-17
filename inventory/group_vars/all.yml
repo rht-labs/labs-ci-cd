@@ -73,6 +73,12 @@ openshift_cluster_content:
     namespace: labs-ci-cd
     tags:
     - nexus
+  - name: nexus-configuration-pipeline
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-pipeline-with-ocp-triggers/template.yaml"
+    params: "{{ inventory_dir }}/../params/nexus/configure"
+    namespace: labs-ci-cd
+    tags:
+    - nexus
   - name: sonarqube
     template: "{{ inventory_dir }}/../openshift-templates/sonarqube/template.json"
     params: "{{ inventory_dir }}/../params/sonarqube/build-and-deploy"

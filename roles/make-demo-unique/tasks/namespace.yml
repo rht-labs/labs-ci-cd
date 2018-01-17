@@ -38,7 +38,7 @@
 - name: "Update SCM URL related config"
   replace:
     path: "{{ content.0.params }}"
-    regexp: '^(SOURCE_REPOSITORY_URL)=(https:\/\/github\.com\/rht-labs\/labs-ci-cd.*)'
+    regexp: '^(.*SOURCE_REPOSITORY_URL)=(https:\/\/github\.com\/rht-labs\/labs-ci-cd.*)'
     replace: '\1={{ content.1.value }}'
   with_nested:
   - "{{ item.content }}"
@@ -61,7 +61,7 @@
 - name: "Update SCM REF related config"
   replace:
     path: "{{ content.0.params }}"
-    regexp: '^({{ content.1.match }})=.*$'
+    regexp: '^(.*SOURCE_REPOSITORY_REF)=.*$'
     replace: '\1={{ content.1.value }}'
   with_nested:
   - "{{ item.content }}"
