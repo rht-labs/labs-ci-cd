@@ -85,6 +85,12 @@ openshift_cluster_content:
     namespace: labs-ci-cd
     tags:
     - sonar
+  - name: hubot
+    template: "{{ inventory_dir }}/../openshift-templates/hubot/template.json"
+    params: "{{ inventory_dir }}/../params/hubot/build-and-deploy"
+    namespace: hubot
+    tags:
+    - hubot
 - object: app-builds
   content:
   - name: java-app-build
