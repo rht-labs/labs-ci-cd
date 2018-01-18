@@ -88,7 +88,7 @@ openshift_cluster_content:
   - name: hubot
     template: "{{ inventory_dir }}/../openshift-templates/hubot/template.json"
     params: "{{ inventory_dir }}/../params/hubot/build-and-deploy"
-    namespace: hubot
+    namespace: labs-ci-cd
     tags:
     - hubot
 - object: app-builds
