@@ -1,9 +1,0 @@
----
-# This test assumes a Nexus3 app running in the Red Hat CDK sample-project
-# The easiest way to acheive that once you have a running CDK is via `oc new-app sonatype/nexus3 -n sample-project; oc expose svc nexus3 -n sample-project"
-
-- name: "Configure Nexus"
-  hosts: cdk-nexus
-
-  roles:
-  - configure-nexus

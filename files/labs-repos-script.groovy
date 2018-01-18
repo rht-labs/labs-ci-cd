@@ -36,8 +36,16 @@ if ( !repository.repositoryManager.exists( 'npm-group' ) ) {
     repository.createNpmGroup('npm-group',['npm-all','npm-registry'])
 };
 
+if ( !repository.repositoryManager.exists( 'mulesoft-release' ) ){
+    repository.createMavenProxy('mulesoft-release','http://repository.mulesoft.org/releases/')
+};
+
+if ( !repository.repositoryManager.exists( 'codehaus-mirror' ) ){
+    repository.createMavenProxy('codehaus-mirror','https://repository.mulesoft.org/nexus/content/repositories/public')
+};
+
 if ( repository.repositoryManager.exists( 'maven-public' ) ) {
     repository.repositoryManager.delete('maven-public')
 }
-repository.createMavenGroup('maven-public',['labs-public','redhat-public','maven-releases', 'maven-snapshots', 'maven-central'])
+repository.createMavenGroup('maven-public',['labs-public','redhat-public','maven-releases', 'maven-snapshots', 'maven-central', 'mulesoft-release', 'codehaus-mirror'])
 
