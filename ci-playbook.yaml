@@ -1,0 +1,8 @@
+---
+- hosts: seed-hosts[0]
+  vars:
+    demo_projectname: "pr"
+    scm_url: "https://github.com/labs-robot/labs-ci-cd.git"
+  roles:
+    - make-demo-unique
+    - openshift-applier

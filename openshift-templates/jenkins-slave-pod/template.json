@@ -23,7 +23,7 @@
                     {
                         "from": {
                             "kind": "DockerImage",
-                            "name": "openshift/jenkins-slave-base-rhel7:${SLAVE_IMAGE_TAG}"
+                            "name": "openshift3/jenkins-slave-base-rhel7:${SLAVE_IMAGE_TAG}"
                         },
                         "generation": 2,
                         "importPolicy": {},
@@ -51,7 +51,8 @@
             "kind": "BuildConfig",
             "metadata": {
                 "labels": {
-                    "build": "${NAME}"
+                    "build": "${NAME}",
+                    "type": "image"
                 },
                 "name": "${NAME}"
             },

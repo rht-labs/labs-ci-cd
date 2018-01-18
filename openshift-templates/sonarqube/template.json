@@ -129,7 +129,9 @@
         "creationTimestamp": null,
         "labels": {
           "app": "sonarqube",
-          "appName": "sonarqube"
+          "appName": "sonarqube",
+          "name": "sonarqube",
+          "type": "image"
         },
         "name": "sonarqube"
       },

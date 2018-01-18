@@ -4,45 +4,61 @@ openshift_cluster_content:
   content:
   - name: ci-cd
     template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/master/files/projectrequest/template.yml"
+    template_action: create
     params: "{{ inventory_dir }}/../params/projectrequests/ci-cd"
     tags:
     - projects
   - name: dev
     template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/master/files/projectrequest/template.yml"
+    template_action: create
     params: "{{ inventory_dir }}/../params/projectrequests/dev"
     tags:
     - projects
   - name: demo
     template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/master/files/projectrequest/template.yml"
+    template_action: create
     params: "{{ inventory_dir }}/../params/projectrequests/demo"
     tags:
     - projects
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
-    template: "{{ inventory_dir }}/../openshift-templates/jenkins-s2i-build/template.json"
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-s2i-build/template.yaml"
     params: "{{ inventory_dir }}/../params/jenkins/build"
     namespace: labs-ci-cd
     tags:
     - jenkins
-  - name: mvn-jenkins-slave
+  - name: jenkins-slave-ansible
     template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
-    params: "{{ inventory_dir }}/../params/mvn-jenkins-slave/build"
+    params: "{{ inventory_dir }}/../params/jenkins-slave-ansible/build"
     namespace: labs-ci-cd
     tags:
     - jenkins-slaves
-  - name: npm-jenkins-slave
+  - name: jenkins-slave-mvn
     template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
-    params: "{{ inventory_dir }}/../params/npm-jenkins-slave/build"
+    params: "{{ inventory_dir }}/../params/jenkins-slave-mvn/build"
+    namespace: labs-ci-cd
+    tags:
+    - jenkins-slaves
+  - name: jenkins-slave-npm
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
+    params: "{{ inventory_dir }}/../params/jenkins-slave-npm/build"
     namespace: labs-ci-cd  
     tags:
     - jenkins-slaves
-  - name: zap-jenkins-slave
+  - name: jenkins-slave-zap
     template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
-    params: "{{ inventory_dir }}/../params/zap-jenkins-slave/build"
+    params: "{{ inventory_dir }}/../params/jenkins-slave-zap/build"
     namespace: labs-ci-cd
     tags:
     - jenkins-slaves
+  - name: jenkins-slave-ansible
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
+    params: "{{ inventory_dir }}/../params/jenkins-slave-ansible/build"
+    namespace: labs-ci-cd
+    tags:
+      - jenkins-slaves
+      - ansible-slave
 - object: ci-cd-deployments
   content:
   - name: jenkins-ephemeral
@@ -68,7 +84,7 @@ openshift_cluster_content:
     params: "{{ inventory_dir }}/../params/sonarqube/postgresql"
     namespace: labs-ci-cd
     tags:
-    - sonar  
+    - sonar
 - object: app-builds
   content:
   - name: java-app-build
@@ -102,4 +118,12 @@ openshift_cluster_content:
     params: "{{ inventory_dir }}/../params/java-app/fabric8_demo"
     namespace: labs-demo
     tags:
-    - java-app  
+    - java-app
+- object: ci-for-labs-ci-cd
+  content:
+  - name: pipeline
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yaml"
+    params: "{{ inventory_dir }}/../params/ci-for-labs-ci-cd/build"
+    namespace: labs-ci-cd
+    tags:
+    - ci

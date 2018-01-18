@@ -59,14 +59,20 @@ See [the docs](https://github.com/redhat-cop/casl-ansible/tree/master/roles/open
 - `inventory`: a standard [ansible inventory](http://docs.ansible.com/ansible/latest/intro_inventory.html). 
   - the `group_vars` are written according to [the convention defined by the openshift-applier role](https://github.com/redhat-cop/casl-ansible/tree/master/roles/openshift-applier#sourcing-openshift-object-definitions).
   -  the `hosts` file reflects the fact that the playbook will use the OpenShift CLI on your localhost to interact with the cluster
-- `templates`: a set [OpenShift templates](https://docs.openshift.com/container-platform/3.6/dev_guide/templates.html) to be sourced from the inventory. OpenShift provides a lot of templates out of the box, and [the Labs team curates a repository](https://github.com/rht-labs/labs-ci-cd/tree/master/templates) as well. These should be favored before writing custom/new templates to be kept here.
+- `openshift-templates`: a set [OpenShift templates](https://docs.openshift.com/container-platform/3.6/dev_guide/templates.html) to be sourced from the inventory. OpenShift provides a lot of templates out of the box, and [the Labs team curates a repository](https://github.com/rht-labs/labs-ci-cd/tree/master/templates) as well. These should be favored before writing custom/new templates to be kept here.
 - `params`: a set of [parameter files](https://docs.openshift.com/container-platform/3.6/dev_guide/templates.html#templates-parameters) to be processed along with their respective OpenShift template. the convention here is to group files by their application.
-- `projectrequests`: processing templates for `ProjectRequest` objects in OpenShift requires elevated privileges, so we process `ProjectRequests` without templates because we want normal users to be able to run these playbooks. this directory contains the object definitions.
 
 ## Common Issues
 
 - S2I Build fails to push image to registry with `error: build error: Failed to push image: unauthorized: authentication required`
   - See [this issue](https://github.com/openshift/origin/issues/4518)
+  
+## Contributing
+
+1) Fork the repo and open PR's
+2) Add all new components to the inventory with appropriate namespaces and tags
+3) Extended the `Jenkinsfile` with steps to verify that your components built/deployed correctly
+4) For now, it is your responsibility to run the CI job. Please contact an admin for the details to set the CI job up.
 
 ## License
 [ASL 2.0](LICENSE)
