@@ -2,8 +2,7 @@ FROM openshift3/jenkins-slave-base-rhel7:latest
 
 USER root
 
-RUN yum repolist > /dev/null && \
-    INSTALL_PKGS="ansible" && \
+RUN INSTALL_PKGS="ansible" && \
     yum install -y --setopt=tsflags=nodocs \
       --disablerepo=* --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-extras-rpms \
       $INSTALL_PKGS && \
