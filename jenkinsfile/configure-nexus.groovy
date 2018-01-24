@@ -3,7 +3,6 @@ node(){
         env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
         env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
         env.NAMESPACE = env.OPENSHIFT_BUILD_NAMESPACE
-
     }
     node ('jenkins-slave-ansible'){
         stage ('Wait for Nexus'){
