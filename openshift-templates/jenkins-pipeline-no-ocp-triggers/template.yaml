@@ -13,7 +13,7 @@ objects:
       type: "pipeline"
     name: "${NAME}-pipeline"
   spec:
-    runPolicy: Serial
+    runPolicy: "${RUN_POLICY}"
     source:
       contextDir: "${PIPELINE_CONTEXT_DIR}"
       git:
@@ -48,3 +48,8 @@ parameters:
   displayName: Git Context Directory for Jenkinsfile
   description: Set this to the directory where the Jenkinsfile is if not using the
     default root directory
+- name: RUN_POLICY
+  displayName: Run Policy
+  description: Policy to control how the build runs
+  value: Serial
+  required: true

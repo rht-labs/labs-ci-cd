@@ -34,7 +34,9 @@ node() {
                     env.PR_ID = userInput
                     env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret labs-robot-github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
                     env.PR_GITHUB_USERNAME = 'labs-robot'
-
+                    env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
+                    env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
+                    env.PR_DEMO_PROJECT_NAME = "labs-demo-pr-${env.PR_ID}"
 
                     if (env.PR_ID == null || env.PR_ID == ""){
                         error('PR_ID cannot be null or empty')
@@ -90,7 +92,12 @@ node() {
                         cp -r roles/casl-ansible/roles/* roles/
                         ls roles/
                     '''
-                    sh "ansible-playbook ci-playbook.yaml -i inventory/ -e \"scm_ref=pr-${env.PR_ID}\""
+                    sh "ansible-playbook ci-playbook.yaml -i inventory/ -e \"scm_ref=pr-${env.PR_ID} demo_projectname=pr-${env.PR_ID}\""
+                    sh """
+                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_CI_CD_PROJECT_NAME}
+                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEV_PROJECT_NAME}
+                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEMO_PROJECT_NAME}
+                    """
                 }
             }
 
@@ -99,13 +106,13 @@ node() {
         stage('Verify Results') {
             parallel(
                     'CI Builds': {
-                        def ciPipelineResponse = sh(returnStdout: true, script:'oc get bc -l type=pipeline -n labs-ci-cd-pr -o name')
+                        def ciPipelineResponse = sh(returnStdout: true, script:"oc get bc -l type=pipeline -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
                         def ciPipelineList = []
                         for (entry in ciPipelineResponse.split()){
                             ciPipelineList += entry.replace('buildconfigs/','').replace('-pipeline','')
                         }
 
-                        def ciBuildsResponse = sh(returnStdout: true, script:'oc get bc -l type=image -n labs-ci-cd-pr -o name')
+                        def ciBuildsResponse = sh(returnStdout: true, script:"oc get bc -l type=image -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
                         def ciBuildsList = ciBuildsResponse.split()
 
                         for (String build : ciBuildsList) {
@@ -119,7 +126,7 @@ node() {
                                         apiURL: "${env.OCP_API_SERVER}",
                                         authToken: "${env.OCP_TOKEN}",
                                         buildConfig: buildName,
-                                        namespace: "labs-ci-cd-pr",
+                                        namespace: "${env.PR_CI_CD_PROJECT_NAME}",
                                         waitTime: '10',
                                         waitUnit: 'min'
                                 )
@@ -127,7 +134,7 @@ node() {
                         }
                     },
                     'CI Deploys': {
-                        def ciDeploysResponse = sh(returnStdout: true, script:'oc get dc -n labs-ci-cd-pr -o name')
+                        def ciDeploysResponse = sh(returnStdout: true, script:"oc get dc -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
                         def ciDeploysList = ciDeploysResponse.split()
 
                         for (String deploy : ciDeploysList) {
@@ -136,7 +143,7 @@ node() {
                                     apiURL: "${env.OCP_API_SERVER}",
                                     authToken: "${env.OCP_TOKEN}",
                                     depCfg: deployName,
-                                    namespace: "labs-ci-cd-pr",
+                                    namespace: "${env.PR_CI_CD_PROJECT_NAME}",
                                     verifyReplicaCount: true,
                                     waitTime: '10',
                                     waitUnit: 'min'
@@ -144,7 +151,7 @@ node() {
                         }
                     },
                     'App Deploys': {
-                        def appDeploysResponse = sh(returnStdout: true, script:'oc get dc -n labs-dev-pr -o name')
+                        def appDeploysResponse = sh(returnStdout: true, script:"oc get dc -n ${env.PR_DEV_PROJECT_NAME} -o name")
                         def appDeploysList = appDeploysResponse.split()
 
                         for (String app : appDeploysList) {
@@ -153,7 +160,7 @@ node() {
                                     apiURL: "${env.OCP_API_SERVER}",
                                     authToken: "${env.OCP_TOKEN}",
                                     depCfg: appName,
-                                    namespace: "labs-dev-pr",
+                                    namespace: "${env.PR_DEV_PROJECT_NAME}",
                                     verifyReplicaCount: true,
                                     waitTime: '15',
                                     waitUnit: 'min'
