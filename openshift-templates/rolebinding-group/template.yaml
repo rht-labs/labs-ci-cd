@@ -1,0 +1,23 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: "add-role-to-group"
+objects:
+- apiVersion: v1
+  kind: RoleBinding
+  metadata:
+    name: "${ROLE}"
+  roleRef:
+    name: "${ROLE}"                               
+  groupNames:
+  - "${GROUP}"
+parameters:    
+- name: ROLE
+  displayName: Role
+  description: The role to bind to the group
+  required: true
+- name: GROUP
+  displayName: Group
+  description: The group to bind to the role
+  required: true  
