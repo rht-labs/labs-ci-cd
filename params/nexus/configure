@@ -1,0 +1,5 @@
+NAME=nexus-configuration-pipeline
+PIPELINE_SOURCE_REPOSITORY_REF=master
+PIPELINE_SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd.git
+PIPELINE_CONTEXT_DIR=jenkinsfile
+PIPELINE_FILENAME=configure-nexus.groovy
