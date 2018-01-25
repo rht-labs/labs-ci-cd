@@ -7,9 +7,7 @@ ENV HOME /home/tool-box
 RUN dnf -y update && \
     dnf -y install $PACKAGE_LIST && \
     dnf clean all && \
-    curl -o /tmp/oc.tar.gz $OC_CLIENT_MIRROR && \
-    tar zxf /tmp/oc.tar.gz -C /usr/bin/  && \
-    rm /tmp/oc.tar.gz && \
+    curl $OC_CLIENT_MIRROR | tar -C /usr/local/bin/ -xzf - && \
     mkdir -m 775 $HOME && \
     chmod 775 /etc/passwd
     
