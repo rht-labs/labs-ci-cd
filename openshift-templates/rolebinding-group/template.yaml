@@ -2,7 +2,7 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: jenkins-pipeline-no-ocp-triggers
+  name: "add-role-to-group"
 objects:
 - apiVersion: v1
   kind: RoleBinding
