@@ -1,2 +1,3 @@
 NAMESPACE=labs-ci-cd
 MEMORY_LIMIT=2Gi
+JENKINS_IMAGE_STREAM_TAG=jenkins:latest
