@@ -59,6 +59,12 @@ openshift_cluster_content:
     tags:
       - jenkins-slaves
       - ansible-slave
+  - name: tool-box
+    template: "{{ inventory_dir }}/../openshift-templates/docker-build/template.yaml"
+    params: "{{ inventory_dir }}/../params/tool-box/build"
+    namespace: labs-ci-cd
+    tags:
+      - tool-box
 - object: ci-cd-deployments
   content:
   - name: jenkins-ephemeral

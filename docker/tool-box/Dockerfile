@@ -1,7 +1,7 @@
 FROM fedora:latest
 
 ENV PACKAGE_LIST git ansible tree vim unzip
-ENV OC_CLIENT_MIRROR https://mirror.openshift.com/pub/openshift-v3/clients/3.6.173.0.21/linux/oc.tar.gz
+ENV OC_CLIENT_MIRROR https://mirror.openshift.com/pub/openshift-v3/clients/3.7.23/linux/oc.tar.gz
 ENV HOME /home/tool-box
 
 RUN dnf -y update && \
