@@ -1,6 +1,6 @@
 # Hubot Application For OpenShift, Slack and Jenkins 
 
-This application will deploy hubot with the ability to automated build activity (eg proceed, abort) from Slack. When deploying hubot to OpenShift, it needs sufficient permission to invoke builds on Jenkins. This is accomplished by using passing in the service account token that is running hubot to the API call to Jenkins as the Bearer token. 
+This application will deploy hubot with the ability to automated build activity (eg proceed, abort) from Slack. When deploying hubot to OpenShift, it needs sufficient permission to invoke builds on Jenkins. This is accomplished by passing in the service account token that is running hubot to the API call to Jenkins as the Bearer token. 
 
 ## Configuration
 
@@ -14,8 +14,8 @@ When this is complete, invite (through slack) the bot user to the channel you wi
 
 3. Use the jenkins-s2i-build template found [here](../openshift-templates/jenkins-s2i-build/template.json) to build the jenkins image.
 
-4. Use the jenkins-deploy template found [here](../openshift-templates/jenkins-deploy/template-slack-sonar.json) to deploy to OpenShift in the same project as hubot.
-- In the param file for the jenkins deployment add values for `HUBOT_URL` (if not http://hubot:8080/) and `HUBOT_DEFAULT_ROOM`. These values can be overridden in the Jenkinsfile.
+4. Use the jenkins-deploy template found [here](../openshift-templates/jenkins-deploy/template.json) to deploy to OpenShift in the same project as hubot.
+- In the param file for the jenkins deployment add values for `HUBOT_URL` (by default http://hubot:8080/) and `HUBOT_DEFAULT_ROOM` (by default jenkins). These values can be overridden in the Jenkinsfile.
 
 ## Usage
 

@@ -1,0 +1,28 @@
+node {
+   env.url = env.HUBOT_URL
+   env.room = env.HUBOT_DEFAULT_ROOM
+   
+   echo env.room
+   echo env.url
+
+   hubotUrl = "HUBOT_URL=" + env.url
+   hubotRoom = "HUBOT_DEFAULT_ROOM=" + env.room
+   hubotFail = 'HUBOT_FAIL_ON_ERROR=false'
+
+   env.jenkinsUrl = "https://jenkins/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/"
+
+   echo env.BUILD_URL
+
+   if (env.BUILD_URL == null) {
+     echo "build url not set"
+     env.BUILD_URL = env.jenkinsUrl
+   }
+
+   stage('Hubot Test Pipeline') {
+      hubotSend message: "Testing CI", failOnError: true, room: env.room, url: env.url
+    }
+
+
+}
+
+
