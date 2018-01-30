@@ -3,3 +3,4 @@ NAME=jenkins
 SOURCE_REPOSITORY_REF=master
 SOURCE_REPOSITORY_CONTEXT_DIR=s2i-config/jenkins-master
 BUILDER_IMAGE_STREAM_TAG=jenkins:v3.7
+JENKINS_OPTS=--sessionTimeout=720
