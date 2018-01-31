@@ -53,11 +53,9 @@ After running the playbook, the pipeline should execute in Jenkins, build the sp
 
 ## Running a Subset of the Inventory
 
-See [the docs](https://github.com/redhat-cop/casl-ansible/tree/master/roles/openshift-applier#filtering-content-based-on-tags) in casl-ansible
-
-The only required tag to deploy components within the inventory is **projects**, all other tags are *optional*
-
-An example that provisions projects, ci, and jenkins objects:
+1. See [the docs](https://github.com/redhat-cop/casl-ansible/tree/master/roles/openshift-applier#filtering-content-based-on-tags) in casl-ansible
+2. The only required tag to deploy objects within the inventory is **projects**, all other tags are *optional*
+3. An example that provisions projects, ci, and jenkins objects:
 ```
 ansible-playbook -i inventory/ roles/casl-ansible/playbooks/openshift-cluster-seed.yml --extra-vars="filter_tags=jenkins,ci,projects"
 ```
