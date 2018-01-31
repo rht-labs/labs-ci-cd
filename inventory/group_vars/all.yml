@@ -67,12 +67,6 @@ openshift_cluster_content:
       - tool-box
 - object: ci-cd-deployments
   content:
-  - name: jenkins-ephemeral
-    template: "{{ inventory_dir }}/../openshift-templates/jenkins/jenkins-ephemeral-template.yaml"
-    params: "{{ inventory_dir }}/../params/jenkins/deploy"
-    namespace: labs-ci-cd
-    tags:
-    - jenkins
   - name: jenkins-persistent
     template: "{{ inventory_dir }}/../openshift-templates/jenkins/jenkins-persistent-template.yaml"
     params: "{{ inventory_dir }}/../params/jenkins/deploy"
