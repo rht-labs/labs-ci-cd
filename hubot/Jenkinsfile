@@ -1,6 +1,6 @@
 node {
    env.url = env.HUBOT_URL
-   env.room = env.HUBOT_DEFAULT_ROOM
+   env.room = env.HUBOT_DEFAULT_SLACK_ROOM
    
    echo env.room
    echo env.url
