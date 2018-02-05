@@ -97,6 +97,12 @@ openshift_cluster_content:
     namespace: labs-ci-cd
     tags:
     - sonar
+  - name: hoverfly
+    template: "{{ inventory_dir }}/../openshift-templates/hoverfly/template.yaml"
+    params: "{{ inventory_dir }}/../params/hoverfly/deploy"
+    namespace: labs-ci-cd
+    tags:
+    - hoverfly
 - object: app-builds
   content:
   - name: java-app-build
