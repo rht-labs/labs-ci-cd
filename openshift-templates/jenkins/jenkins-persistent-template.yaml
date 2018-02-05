@@ -27,7 +27,6 @@ objects:
   metadata:
     annotations:
       template.openshift.io/expose-uri: http://{.spec.host}{.spec.path}
-    creationTimestamp: null
     name: ${JENKINS_SERVICE_NAME}
   spec:
     tls:
@@ -49,8 +48,9 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    creationTimestamp: null
     name: ${JENKINS_SERVICE_NAME}
+    labels:
+      app: ${JENKINS_SERVICE_NAME}
   spec:
     replicas: 1
     selector:
@@ -59,7 +59,6 @@ objects:
       type: Recreate
     template:
       metadata:
-        creationTimestamp: null
         labels:
           name: ${JENKINS_SERVICE_NAME}
       spec:
@@ -132,7 +131,6 @@ objects:
       serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${JENKINS_SERVICE_NAME}"}}'
     name: ${JENKINS_SERVICE_NAME}
 - apiVersion: v1
-  groupNames: null
   kind: RoleBinding
   metadata:
     name: ${JENKINS_SERVICE_NAME}_edit
@@ -163,7 +161,6 @@ objects:
       service.alpha.openshift.io/dependencies: '[{"name": "${JNLP_SERVICE_NAME}",
         "namespace": "", "kind": "Service"}]'
       service.openshift.io/infrastructure: "true"
-    creationTimestamp: null
     name: ${JENKINS_SERVICE_NAME}
   spec:
     ports:
