@@ -65,6 +65,12 @@ openshift_cluster_content:
     namespace: labs-ci-cd
     tags:
       - tool-box
+  - name: hoverfly
+    template: "{{ inventory_dir }}/../openshift-templates/docker-build/template.yaml"
+    params: "{{ inventory_dir }}/../params/hoverfly/build"
+    namespace: labs-ci-cd
+    tags:
+      - hoverfly
 - object: ci-cd-deployments
   content:
   - name: jenkins-persistent
