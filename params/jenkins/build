@@ -2,4 +2,5 @@ SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd.git
 NAME=jenkins
 SOURCE_REPOSITORY_REF=master
 SOURCE_REPOSITORY_CONTEXT_DIR=s2i-config/jenkins-master
-BUILDER_IMAGE_STREAM_TAG=jenkins:v3.7
+BUILDER_IMAGE_STREAM_TAG=jenkins-2-rhel7:v3.7
+IMAGE_STREAM_NAMESPACE=labs-ci-cd

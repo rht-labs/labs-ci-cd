@@ -16,6 +16,22 @@ objects:
     name: "${NAME}"
     annotations:
       description: Keeps track of changes in the application image
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: jenkins-2-rhel7
+    annotations:
+      description: Tracks the Red Hat Jenkins base image, since openshift doesn't ship v3.7 tag in the default install. Importing the image to the labs-ci-cd namespsace, instead of openshift, allows normal users to run the playbook.
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: registry.access.redhat.com/openshift3/jenkins-2-rhel7:v3.7
+      importPolicy: {}
+      name: v3.7
+      referencePolicy:
+        type: Source
 - kind: BuildConfig
   apiVersion: v1
   metadata:
