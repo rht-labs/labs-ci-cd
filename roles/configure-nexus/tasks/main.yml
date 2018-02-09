@@ -14,9 +14,9 @@
   - nexus_url is not defined or nexus_url|trim == ''
 
 - name: "Ensure Nexus is available before attempting to communicate"
-  include: wait-for-nexus.yml
+  import_tasks: wait-for-nexus.yml
 
 - name: "Configured Repos"
-  include: configure-repos.yml
+  include_tasks: configure-repos.yml
   with_items:
   - "{{ nexus_repos | default([]) }}"
