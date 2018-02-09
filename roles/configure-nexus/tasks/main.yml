@@ -1,47 +1,22 @@
 ---
 
-- name: Fail is not running with Automation API Variables
-  fail: msg="This role requires you to set the nexus_url variable or have automation API variables set so we can discover nexus_url"
-  when:
-  - nexus_url is not defined or nexus_url == ''
-  - openshift_clusters is not defined
-
-- name: "Set project/namespace Where Nexus Lives"
-  set_fact:
-    nexus_project: "{{ openshift_clusters[0].openshift_resources.projects[0].name }} "
-  when: nexus_url is not defined or nexus_url == ''
-
 - name: "Look up Nexus URL"
   command: >
-     bash -c "{{ openshift.common.client_binary }} get route nexus -n {{ nexus_project }} | awk 'NR > 1 {print $2}'"
+    oc get route {{ nexus_name | default('nexus') }} -n {{ nexus_project }} -o custom-columns=ROUTE:.spec.host --no-headers
   register: nexus_url_result
-  when: nexus_url is not defined or nexus_url == ''
+  when:
+  - nexus_url is not defined or nexus_url|trim == ''
 
 - name: "Set nexus_url Result"
   set_fact:
     nexus_url: "{{ nexus_url_result.stdout }}"
-  when: nexus_url is not defined or nexus_url == ''
+  when:
+  - nexus_url is not defined or nexus_url|trim == ''
 
-- debug:
-    msg: "using nexus_url: {{ nexus_url }}"
+- name: "Ensure Nexus is available before attempting to communicate"
+  include: wait-for-nexus.yml
 
-- name: "Ensure the Nexus Server is Up"
-  uri:
-    url: "http://{{ nexus_url }}/service/metrics/healthcheck"
-    method: GET
-    status_code: 200
-    user: "{{ nexus_user }}"
-    password: "{{ nexus_password }}"
-    force_basic_auth: yes
-  register: nexus_server_check_result
-  until: nexus_server_check_result | success
-  retries: '{{ nexus_server_poll_retries }}'
-  delay: '{{ nexus_server_poll_delay_in_seconds }}'
-
-- name: "Configured Red Hat Repos"
-  include: redhat-repos.yml
-  when: configure_redhat_repos == true
-
-- name: "Configured Labs Repos"
-  include: labs-repos.yml
-  when: configure_labs_repos == true
+- name: "Configured Repos"
+  include: configure-repos.yml
+  with_items:
+  - "{{ nexus_repos | default([]) }}"

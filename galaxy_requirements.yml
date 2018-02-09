@@ -1,0 +1,8 @@
+
+
+# This is the Ansible Galaxy requirements file to pull in the correct
+# dependencies to support this inventory
+
+# From 'rht-labs/labs-ci-cd'
+- src: https://github.com/rht-labs/labs-ci-cd
+  version: master
