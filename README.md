@@ -37,7 +37,8 @@ Currently, the following components have templates but are not yet integrated in
 * [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html)
 * [OpenShift CLI Tools](https://docs.openshift.com/container-platform/3.6/cli_reference/get_started_cli.html)
 * Access to the OpenShift cluster
-* libselinux-python (Should this be on the nodes?)
+* On local environments with SELinux (e.g., Fedora or RHEL) libselinux-python will also be needed.
+  - Install by running `yum install libselinux-python`
 
 
 ## Usage

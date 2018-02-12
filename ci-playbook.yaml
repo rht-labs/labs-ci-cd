@@ -1,7 +1,7 @@
 ---
 - hosts: seed-hosts[0]
   vars:
-    scm_url: "https://github.com/labs-robot/labs-ci-cd.git"
+    scm_url: "https://github.com/rht-labs/labs-ci-cd.git"
   roles:
     - make-demo-unique
     - casl-ansible/roles/openshift-applier
