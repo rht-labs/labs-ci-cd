@@ -87,12 +87,8 @@ node() {
 
             stage('Apply Inventory') {
                 dir('labs-ci-cd'){
-                    sh '''
-                        ansible-galaxy install -r requirements.yml --roles-path=roles
-                        cp -r roles/casl-ansible/roles/* roles/
-                        ls roles/
-                    '''
-                    sh "ansible-playbook ci-playbook.yaml -i inventory/ -e \"scm_ref=pr-${env.PR_ID} demo_projectname=pr-${env.PR_ID}\""
+                    sh 'ansible-galaxy install -r requirements.yml --roles-path=roles'
+                    sh "ansible-playbook unique-projects-playbook.yaml -i inventory/ -e \"project_name_postfix=pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                     sh """
                         oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_CI_CD_PROJECT_NAME}
                         oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEV_PROJECT_NAME}
