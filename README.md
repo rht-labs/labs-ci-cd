@@ -40,7 +40,6 @@ Currently, the following components have templates but are not yet integrated in
 * libselinux-python (only needed on Fedora, RHEL, and CentOS)
   - Install by running `yum install libselinux-python`.
 
-
 ## Usage
 
 1. Log on to an OpenShift server `oc login -u <user> https://<server>:<port>/`
