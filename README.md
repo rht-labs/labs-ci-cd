@@ -49,8 +49,10 @@ Currently, the following components have templates but are not yet integrated in
 2. Clone this repository
 3. Install the required [casl-ansible](https://github.com/redhat-cop/casl-ansible) dependency
     1. `[labs-ci-cd]$ ansible-galaxy install -r requirements.yml --roles-path=roles`
-4. Run the ansible playbook provided by the casl-ansible, replacing `my-project` with the project name that you'd like to use.
-    1. `[labs-ci-cd]$ ansible-playbook ci-playbook.yaml -i inventory/ -e demo_projectname=my-project -e scm_ref=HEAD`
+4. If you are running a cluster where you will have the only one copy of `labs-ci-cd`, run the ansible playbook provided by the casl-ansible role. Else, skip this step.
+    1. `[labs-ci-cd]$ ansible-playbook roles/casl-ansible/playbooks/openshift-cluster-seed.yml -i inventory/`
+5. If you need to make your projects name unique because your cluster has other copies of `labs-ci-cd`, run the below ansible playbook. Else, skip this step.
+    1. `[labs-ci-cd]$ ansible-playbook unique-projects-playbook.yaml -i inventory/ -e "project_name_postfix=<insert unique postfix here>"`
     2. Note that only numbers, lowercase letters, and dashes are allowed in project names.
 
 After running the playbook, the pipeline should execute in Jenkins, build the spring boot app, deploy artifacts to nexus, deploy the container to the dev stage and then wait approval to deploy to the demo stage. See Common Issues
