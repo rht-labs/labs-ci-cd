@@ -3,6 +3,9 @@
   include_tasks: update-params-file.yml
   with_items:
   - "{{ openshift_cluster_content }}"
+  when:
+  - item.content is defined
+  - item.content != ""
 
 - name: "Update 'namespace: ' entries with a custom filter"
   set_fact:
