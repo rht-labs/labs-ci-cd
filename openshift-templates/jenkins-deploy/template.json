@@ -139,24 +139,12 @@
                     "value": "${SONARQUBE_URL}"
                   },
                   {
-                    "name": "SLACK_BASE_URL",
-                    "value": "${SLACK_BASE_URL}"
-                  },
-                  {
-                    "name": "SLACK_ROOM",
-                    "value": "${SLACK_ROOM}"
-                  },
-                  {
-                    "name": "SLACK_TOKEN",
-                    "value": "${SLACK_TOKEN}"
-                  },
-                  {
                     "name": "HUBOT_URL",
                     "value": "${HUBOT_URL}"
                   },
                   {
-                    "name": "HUBOT_DEFAULT_ROOM",
-                    "value": "${HUBOT_DEFAULT_ROOM}"
+                    "name": "HUBOT_DEFAULT_SLACK_ROOM",
+                    "value": "${HUBOT_DEFAULT_SLACK_ROOM}"
                   }
                 ],
                 "resources": {
@@ -320,24 +308,9 @@
       "value": "http://sonarqube:9000"
     },
     {
-      "description": "The integration point with slack",
-      "displayName": "Slack Base URL",
-      "name": "SLACK_BASE_URL"
-    },
-    {
-      "description": "The default slack channel",
-      "displayName": "Default Slack Channel",
-      "name": "SLACK_ROOM"
-    },
-    {
-      "description": "Slack Token",
-      "displayName": "Slack Token",
-      "name": "SLACK_TOKEN"
-    },
-    {
       "description": "The default slack channel for the hubot. Defaults to jenkins",
       "displayName": "Default Hubot Slack Channel",
-      "name": "HUBOT_DEFAULT_ROOM",
+      "name": "HUBOT_DEFAULT_SLACK_ROOM",
       "value": "jenkins"
     },
     {
@@ -345,6 +318,11 @@
       "displayName": "Hubot URL",
       "name": "HUBOT_URL",
       "value": "http://hubot:8080/"
+    },
+    {
+      "description": "Add on start parameters for the Jenkins app",
+      "displayName": "Jenkins Opts",
+      "name": "JENKINS_OPTS"
     }
   ],
   "labels": {

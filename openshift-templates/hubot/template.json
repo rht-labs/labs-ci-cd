@@ -33,7 +33,8 @@
             "metadata": {
                 "name": "hubot",
                 "labels": {
-                    "app": "hubot"
+                    "app": "hubot",
+                    "type": "image"
                 }
             },
             "spec": {
@@ -61,7 +62,7 @@
                         "from": {
                             "kind": "ImageStreamTag",
                             "namespace": "openshift",
-                            "name": "nodejs:6"
+                            "name": "${BASE_NODE_IMAGE}"
                         }
                     }
                 },
@@ -229,13 +230,15 @@
           "name": "HUBOT_JENKINS_URL",
           "displayName": "Jenkins URL",
           "description": "Jenkins URL",
-          "value": "http://jenkins/"
+          "value": "http://jenkins/",
+          "required": true
         },
         {
           "name": "HUBOT_JENKINS_AUTH",
           "displayName": "Service Account Location",
           "description": "The location of the the serviceaccount token in the container",
-          "value": "/run/secrets/kubernetes.io/serviceaccount/token"
+          "value": "/run/secrets/kubernetes.io/serviceaccount/token",
+          "required": true
         },
         {
           "name": "NODE_TLS_REJECT_UNAUTHORIZED",
@@ -247,7 +250,8 @@
           "name": "SERVICE_ACCOUNT",
           "displayName": "Runtime Service Account",
           "description": "Runtime Service Account. Needs to be able to invoke Jenkins jobs",
-          "value": "jenkins"
+          "value": "jenkins",
+          "required": true
         },
         {
           "name": "SOURCE_REPOSITORY_URL",
@@ -259,12 +263,20 @@
           "name": "SOURCE_REPOSITORY_REF",
           "displayName": "Git Ref",
           "description": "Git Ref",
-          "value": "master"
+          "value": "master",
+          "required": true
         },
         {
           "name": "SOURCE_REPOSITORY_CONTEXT_DIR",
           "displayName": "Git Context Dir",
           "description": "Git Context Dir"
+        },
+        {
+          "name": "BASE_NODE_IMAGE",
+          "displayName": "The base node image",
+          "description": "The base node image",
+          "value": "nodejs:8",
+          "required": true
         }
     ]
 }

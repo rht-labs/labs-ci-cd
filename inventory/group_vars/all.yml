@@ -8,6 +8,7 @@ openshift_cluster_content:
     params: "{{ inventory_dir }}/../params/projectrequests/ci-cd"
     tags:
     - projects
+    - hubot
   - name: dev
     template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/master/files/projectrequest/template.yml"
     template_action: create
@@ -62,7 +63,7 @@ openshift_cluster_content:
 - object: ci-cd-deployments
   content:
   - name: jenkins-ephemeral
-    template: openshift//jenkins-ephemeral
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-deploy/template.json"
     params: "{{ inventory_dir }}/../params/jenkins/deploy"
     namespace: labs-ci-cd
     tags:
@@ -133,3 +134,10 @@ openshift_cluster_content:
     namespace: labs-ci-cd
     tags:
     - ci
+  - name: "hubot-test-pipeline"
+    namespace: "labs-ci-cd"
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yaml"
+    params: "{{ inventory_dir }}/../params/hubot/test-pipeline"
+    tags:
+    - ci
+    - hubot
