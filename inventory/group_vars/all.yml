@@ -28,13 +28,6 @@ openshift_cluster_content:
     namespace: labs-ci-cd
     tags:
     - jenkins
-  - name: jenkins-slave-ansible
-    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
-    params: "{{ inventory_dir }}/../params/jenkins-slave-ansible/build"
-    namespace: labs-ci-cd
-    tags:
-    - jenkins-slaves
-    - ansible-slave
   - name: jenkins-slave-mvn
     template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
     params: "{{ inventory_dir }}/../params/jenkins-slave-mvn/build"
