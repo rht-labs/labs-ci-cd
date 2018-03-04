@@ -15,22 +15,8 @@ A few additional guiding principles:
 
 ## How it Works
 
-There is ansible inventory which identifies all components to be deployed to an OpenShift cluster. The ansible layer is very thin. It simply provides a way to orchestrate the application of [OpenShift templates](https://docs.openshift.com/container-platform/3.6/dev_guide/templates.html) across one or more [OpenShift projects](https://docs.openshift.com/container-platform/3.6/architecture/core_concepts/projects_and_users.html#projects). All configuration for the applications should be defined by an OpenShift template and the corresponding parameters file.
+There is ansible inventory which identifies all components to be deployed to an OpenShift cluster. The ansible layer is very thin. It simply provides a way to orchestrate the application of [OpenShift templates](https://docs.openshift.com/container-platform/3.6/dev_guide/templates.html) across one or more [OpenShift projects](https://docs.openshift.com/container-platform/3.6/architecture/core_concepts/projects_and_users.html#projects). All configuration for the applications should be defined by an OpenShift template and the corresponding parameters file. Please see [the inventory](inventory/group_vars/all.yml) for an up to date list of components.
 
-Currently, the following components are included in this inventory:
-
-* Long lived CI/CD, Development and Demo OpenShift projects
-* Jenkins, including
-  * S2I build for Jenkins plugins and configuration
-  * maven and npm slaves for Jenkins
-* Sonatype Nexus
-* SonarQube
-* Example Java application and pipeline
-
-Currently, the following components have templates but are not yet integrated into the inventory:
-
-* Gitlab
-* Gogs
 
 ## Prerequisites
 
