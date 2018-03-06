@@ -49,6 +49,13 @@ openshift_cluster_content:
     tags:
     - jenkins-slaves
     - zap-slave
+  - name: jenkins-slave-arachni
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
+    params: "{{ inventory_dir }}/../params/jenkins-slave-arachni/build"
+    namespace: labs-ci-cd
+    tags:
+    - jenkins-slaves
+    - arachni-slave
   - name: jenkins-slave-ansible
     template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
     params: "{{ inventory_dir }}/../params/jenkins-slave-ansible/build"
