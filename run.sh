@@ -34,12 +34,7 @@ function printBanner(){
 ###########################
 printBanner
 
-if [ -d "roles/casl-ansible" ]; then
-    echo "casl-ansible is present. skipping ansible-galaxy install."
-else
-    echo "casl-ansible is missing. running ansible-galaxy install..."
-    ansible-galaxy install -r requirements.yml --roles-path=roles
-fi
+ansible-galaxy install -r requirements.yml --roles-path=roles
 
 if [[ "$#" == 0 ]]; then
     DOCKER_RUN_COMMAND='ansible-playbook -i /tmp/src/inventory /tmp/src/roles/casl-ansible/playbooks/openshift-cluster-seed.yml'
