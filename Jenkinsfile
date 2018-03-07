@@ -3,6 +3,16 @@ node() {
         stage('Initialization') {
             env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
             env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
+            timeout(time: 1, unit: 'HOURS') {
+                def userInput = input(
+                        id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
+                        [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
+                ])
+                env.PR_ID = userInput
+                if (env.PR_ID == null || env.PR_ID == ""){
+                    error('PR_ID cannot be null or empty')
+                }
+            }
         }
 
         node('jenkins-slave-ansible') {
@@ -26,27 +36,17 @@ node() {
                     git remote add ci git@github.com:labs-robot/labs-ci-cd.git
                 '''
 
-                timeout(time: 1, unit: 'HOURS') {
-                    def userInput = input(
-                            id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
-                            [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
-                    ])
-                    env.PR_ID = userInput
-                    env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret labs-robot-github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
-                    env.PR_GITHUB_USERNAME = 'labs-robot'
-                    env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
-                    env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
-                    env.PR_DEMO_PROJECT_NAME = "labs-demo-pr-${env.PR_ID}"
+                env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret labs-robot-github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
+                env.PR_GITHUB_USERNAME = 'labs-robot'
+                env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
+                env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
+                env.PR_DEMO_PROJECT_NAME = "labs-demo-pr-${env.PR_ID}"
 
-                    if (env.PR_ID == null || env.PR_ID == ""){
-                        error('PR_ID cannot be null or empty')
-                    }
-                    if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
-                        error('PR_GITHUB_TOKEN cannot be null or empty')
-                    }
-                    if (env.PR_GITHUB_USERNAME == null || env.PR_GITHUB_USERNAME == ""){
-                        error('PR_GITHUB_USERNAME cannot be null or empty')
-                    }
+                if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
+                    error('PR_GITHUB_TOKEN cannot be null or empty')
+                }
+                if (env.PR_GITHUB_USERNAME == null || env.PR_GITHUB_USERNAME == ""){
+                    error('PR_GITHUB_USERNAME cannot be null or empty')
                 }
 
                 dir('labs-ci-cd') {

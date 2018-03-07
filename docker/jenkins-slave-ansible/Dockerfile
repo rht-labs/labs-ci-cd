@@ -2,11 +2,12 @@ FROM openshift3/jenkins-slave-base-rhel7:latest
 
 USER root
 
-RUN INSTALL_PKGS="ansible" && \
-    yum install -y --setopt=tsflags=nodocs \
-      --disablerepo=* --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-extras-rpms \
-      $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS && \
+# Current we need ansible 2.5 which is not yet release
+# https://github.com/rht-labs/labs-ci-cd/issues/138 exists to move back to a RHEL supported ansible install once 2.5 is released
+RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm; \
+    yum install -y python-pip git; \
+    pip install --upgrade pip;  \
+    pip install git+https://github.com/ansible/ansible.git@devel && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
