@@ -42,6 +42,13 @@ openshift_cluster_content:
     tags:
     - jenkins-slaves
     - npm-slave
+  - name: jenkins-slave-mongodb
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
+    params: "{{ inventory_dir }}/../params/jenkins-slave-mongodb/build"
+    namespace: labs-ci-cd
+    tags:
+    - jenkins-slaves
+    - mongodb-slave
   - name: jenkins-slave-zap
     template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
     params: "{{ inventory_dir }}/../params/jenkins-slave-zap/build"
