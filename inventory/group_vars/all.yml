@@ -20,6 +20,20 @@ openshift_cluster_content:
     params: "{{ inventory_dir }}/../params/projectrequests/demo"
     tags:
     - projects
+- object: project-acls
+  content:
+  - name: "ci-cd-acl"
+    namespace: "ci-cd"
+    template: "{{ inventory_dir }}/../openshift-templates/project-acl/template.yml"
+    params: "{{ inventory_dir }}/../params/project-acl/all"
+    tags:
+    - project-acl
+  - name: "labs-dev-acl"
+    namespace: "labs-dev"
+    template: "{{ inventory_dir }}/../openshift-templates/project-acl/template.yml"
+    params: "{{ inventory_dir }}/../params/project-acl/all"
+    tags:
+    - project-acl
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i

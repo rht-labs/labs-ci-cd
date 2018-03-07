@@ -1,0 +1,34 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: project-acl
+  annotations:
+    openshift.io/display-name: CI CD Access template
+    description: RoleBinding to give access to project
+    iconClass: icon-jenkins
+objects:
+- apiVersion: v1
+  groupNames:
+  - ${GROUP_NAME}
+  kind: RoleBinding
+  metadata:
+    name: ${GROUP_NAME}_${ROLE_NAME}_role
+  roleRef:
+    name: ${ROLE_NAME}
+  subjects:
+  - kind: Group
+    name: ${GROUP_NAME}
+
+parameters:
+- name: GROUP_NAME
+  displayName: Group name
+  description: The group name that we will be assigned to the role.
+  required: true
+- name: ROLE_NAME
+  displayName: Role name
+  description: The role name that will be delegated to above group.
+  required: true
+  value: edit
+labels:
+  template: project-acl
