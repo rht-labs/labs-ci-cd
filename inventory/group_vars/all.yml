@@ -83,7 +83,7 @@ openshift_cluster_content:
     namespace: labs-ci-cd
     tags:
     - nexus
-    post_step:
+    post_steps:
     - role: "labs-ci-cd/roles/configure-nexus"
       vars:
         nexus_name: "nexus"
