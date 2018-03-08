@@ -1,11 +1,11 @@
 ---
 - hosts: seed-hosts[0]
   vars:
-    regexp_replace_pairs:
+    params_regexp_replace_pairs:
       - regexp: '^((?!.*DISPLAY_NAME))(.*NAMESPACE.*)=((?!.*{{ project_name_postfix }}))(.*)$'
         replace: '\2=\4{{ project_name_postfix }}'
       - regexp: '^(NAMESPACE_DISPLAY_NAME)=((?!.*\({{ project_name_postfix }}\)))(.*)$'
         replace: '\1=\3 ({{ project_name_postfix }})'  
   roles:
-    - make-projects-unique
+    - casl-ansible/roles/make-applier-projects-unique
     - casl-ansible/roles/openshift-applier

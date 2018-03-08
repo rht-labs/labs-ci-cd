@@ -1,6 +1,6 @@
 casl-ansible
 roles/*
-!roles/make-projects-unique
+!roles/configure-nexus
 *.pyc
 .idea
 *.iml

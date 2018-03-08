@@ -1,5 +1,6 @@
 ---
 openshift_cluster_content:
+- galaxy_requirements: "{{ inventory_dir }}/../galaxy_requirements.yml"
 - object: projectrequest
   content:
   - name: ci-cd
@@ -82,6 +83,8 @@ openshift_cluster_content:
     namespace: labs-ci-cd
     tags:
     - nexus
+    post_steps:
+    - role: "labs-ci-cd/roles/configure-nexus"
   - name: sonarqube
     template: "{{ inventory_dir }}/../openshift-templates/sonarqube/template.json"
     params: "{{ inventory_dir }}/../params/sonarqube/build-and-deploy"
