@@ -9,3 +9,8 @@ nexus_labs_script_name: labs-repos
 nexus_labs_script_file: ../files/labs-repos.json
 nexus_server_poll_retries: 100
 nexus_server_poll_delay_in_seconds: 5
+nexus_repos:
+- script_name: redhat-repos
+  script_file: ../files/redhat-repos.json
+- script_name: labs-repos
+  script_file: ../files/labs-repos.json  

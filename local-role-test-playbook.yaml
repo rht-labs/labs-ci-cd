@@ -1,11 +1,16 @@
 ---
+# I do not like that this thing exists. It;s need to test that the galaxy regex replace works, but it should go away soon for a better git repo structure.
+
 - hosts: seed-hosts[0]
   vars:
     params_regexp_replace_pairs:
       - regexp: '^((?!.*DISPLAY_NAME))(.*NAMESPACE.*)=((?!.*{{ project_name_postfix }}))(.*)$'
         replace: '\2=\4{{ project_name_postfix }}'
       - regexp: '^(NAMESPACE_DISPLAY_NAME)=((?!.*\({{ project_name_postfix }}\)))(.*)$'
-        replace: '\1=\3 ({{ project_name_postfix }})'  
+        replace: '\1=\3 ({{ project_name_postfix }})'
+    galaxy_regexp_replace_pairs:
+      - regexp: '(- src: )(https:\/\/github\.com\/rht-labs\/labs-ci-cd.*)((\n.*)+)(version: )(.*)'
+        replace: '\1{{ scm_url }}\3\5{{ scm_ref }}'
   roles:
     - casl-ansible/roles/make-applier-projects-unique
     - casl-ansible/roles/openshift-applier
