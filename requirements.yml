@@ -4,5 +4,5 @@
 # From 'casl-ansible'
 - src: https://github.com/redhat-cop/casl-ansible
   scm: git
-  version: v3.7.1
+  version: v3.7.2
   name: casl-ansible
