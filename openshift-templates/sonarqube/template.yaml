@@ -455,64 +455,51 @@ parameters:
     value: 5Gi
   - name: SONAR_LDAP_REALM
     value: None
-    description: The type of authentication that SonarQube should be using (None or LDAP)
+    description: The type of authentication that SonarQube should be using (None or LDAP) (Ref - https://docs.sonarqube.org/display/PLUG/LDAP+Plugin)
     displayName: SonarQube Authentication Realm
     required: true
   - name: SONAR_CREATE_USERS
-    value: false
+    value: 'false'
     description: When using an external authentication system, should SonarQube automatically create accounts for users?
     displayName: Enable auto-creation of users from external authentication systems?
     required: true
   - name: SONAR_LDAP_BIND_DN
     description: When using LDAP authentication, this is the Distinguished Name used for binding to the LDAP server
     displayName: LDAP Bind DN
-    required: false
   - name: SONAR_LDAP_BIND_PASSWORD
-    required: false
     description: When using LDAP for authentication, this is the password with which to bind to the LDAP server
     displayName: LDAP Bind Password
   - name: SONAR_LDAP_URL
     description: When using LDAP for authentication, this is the URL of the LDAP server in the form of ldap(s)://<hostname>:<port>
     displayName: LDAP Server URL
-    required: false
   - name: SONAR_LDAP_REALM
     description: When using LDAP, this allows for specifying a Realm within the directory server (Usually not used)
     displayName: LDAP Realm
-    required: false
   - name: SONAR_LDAP_AUTHENTICATION
     description: When using LDAP, this is the bind method (simple, GSSAPI, kerberos, CRAM-MD5, DIGEST-MD5)
     displayName: LDAP Bind Mode
-    required: false
   - name: SONAR_LDAP_USER_BASEDN
     description: The Base DN under which SonarQube should search for user accounts in the LDAP directory
     displayName: LDAP User Base DN
-    required: false
   - name: SONAR_LDAP_USER_REAL_NAME_ATTR
     description: The LDAP attribute which should be referenced to get a user's full name
     displayName: LDAP Real Name Attribute
-    required: false
   - name: SONAR_LDAP_USER_EMAIL_ATTR
     description: The LDAP attribute which should be referenced to get a user's e-mail address
     displayName: LDAP User E-Mail Attribute
-    required: false
   - name: SONAR_LDAP_USER_REQUEST
     description: An LDAP filter to be used to search for user objects in the LDAP directory
     displayName: LDAP User Request Filter
-    required: false
   - name: SONAR_LDAP_GROUP_BASEDN
     description: The Base DN under which SonarQube should search for groups in the LDAP directory
     displayName: LDAP Group Base DN
-    required: false
   - name: SONAR_LDAP_GROUP_REQUEST
     description: An LDAP filter to be used to search for group objects in the LDAP directory
     displayName: LDAP Group Request Filter
-    required: false
   - name: SONAR_LDAP_GROUP_ID_ATTR
     description: The LDAP attribute which should be referenced to get a group's ID
     displayName: LDAP Group Name Attribute
-    required: false
   - name: SONAR_LDAP_CONTEXTFACTORY
     description: The ContextFactory implementation to be used when communicating with the LDAP server
     displayName: LDAP Context Factory
     value: com.sun.jndi.ldap.LdapCtxFactory
-    required: false
