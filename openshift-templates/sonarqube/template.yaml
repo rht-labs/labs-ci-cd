@@ -240,6 +240,10 @@ objects:
             value: ${PROXY_HOST}
           - name: PROXY_PORT
             value: ${PROXY_PORT}
+          - name: PROXY_USER
+            value: ${PROXY_USER}
+          - name: PROXY_PASSWORD
+            value: ${PROXY_PASSWORD}
           - name: LDAP_URL
             value: ${SONAR_LDAP_URL}
           - name: LDAP_REALM
@@ -262,7 +266,7 @@ objects:
             value: ${SONAR_LDAP_GROUP_ID_ATTR}
           - name: LDAP_CONTEXTFACTORY
             value: ${SONAR_LDAP_CONTEXTFACTORY}
-          - name: SONAR_CREATE_USERS
+          - name: SONAR_AUTOCREATE_USERS
             value: ${SONAR_AUTOCREATE_USERS}
           - name: LDAP_BINDDN
             valueFrom:
@@ -458,11 +462,23 @@ parameters:
     description: The type of authentication that SonarQube should be using (None or LDAP) (Ref - https://docs.sonarqube.org/display/PLUG/LDAP+Plugin)
     displayName: SonarQube Authentication Realm
     required: true
-  - name: SONAR_CREATE_USERS
+  - name: SONAR_AUTOCREATE_USERS
     value: 'false'
     description: When using an external authentication system, should SonarQube automatically create accounts for users?
     displayName: Enable auto-creation of users from external authentication systems?
     required: true
+  - name: PROXY_HOST
+    description: Hostname of proxy server the SonarQube application should use to access the Internet
+    displayName: Proxy server hostname/IP
+  - name: PROXY_PORT
+    description: TCP port of proxy server the SonarQube application should use to access the Internet
+    displayName: Proxy server port
+  - name: PROXY_USER
+    description: Username credential when the Proxy Server requires authentication
+    displayName: Proxy server username
+  - name: PROXY_PASSWORD
+    description: Password credential when the Proxy Server requires authentication
+    displayName: Proxy server password
   - name: SONAR_LDAP_BIND_DN
     description: When using LDAP authentication, this is the Distinguished Name used for binding to the LDAP server
     displayName: LDAP Bind DN
