@@ -106,7 +106,7 @@ openshift_cluster_content:
 - object: app-builds
   content:
   - name: java-app-build
-    template: "{{ inventory_dir }}/../openshift-templates/s2i-app-build/template-no-secrets.json"
+    template: "{{ inventory_dir }}/../openshift-templates/s2i-app-build/template-no-secrets.yaml"
     params: "{{ inventory_dir }}/../params/java-app/build"
     namespace: labs-ci-cd
     tags:
