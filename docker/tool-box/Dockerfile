@@ -1,15 +1,16 @@
 FROM fedora:latest
 
-ENV PACKAGE_LIST git ansible tree vim unzip
 ENV OC_CLIENT_MIRROR https://mirror.openshift.com/pub/openshift-v3/clients/3.7.23/linux/oc.tar.gz
 ENV HOME /home/tool-box
 
 RUN dnf -y update && \
-    dnf -y install $PACKAGE_LIST && \
+    INSTALL_PKGS="git tree vim unzip" && \
+    dnf -y install $INSTALL_PKGS && \
     dnf clean all && \
     curl $OC_CLIENT_MIRROR | tar -C /usr/local/bin/ -xzf - && \
     mkdir -m 775 $HOME && \
-    chmod 775 /etc/passwd
+    chmod 775 /etc/passwd && \
+    pip install git+https://github.com/ansible/ansible.git@devel
     
 WORKDIR $HOME
 
