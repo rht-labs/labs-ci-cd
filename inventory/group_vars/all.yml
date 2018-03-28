@@ -106,9 +106,11 @@ openshift_cluster_content:
 - object: app-builds
   content:
   - name: java-app-build
-    template: "{{ inventory_dir }}/../openshift-templates/s2i-app-build/template-no-secrets.json"
+    template: "{{ inventory_dir }}/../openshift-templates/s2i-app-build/template-no-secrets.yaml"
     params: "{{ inventory_dir }}/../params/java-app/build"
     namespace: labs-ci-cd
+    tags:
+    - java-build
 - object: dev-stage
   content:
   - name: java-app
@@ -116,13 +118,13 @@ openshift_cluster_content:
     params: "{{ inventory_dir }}/../params/java-app/deploy_dev"
     namespace: labs-dev
     tags:
-    - java-app
+    - java-deploy
   - name: fabric8-rolebinding
     template: "{{ inventory_dir }}/../openshift-templates/fabric8-role-bindings/template.json"
     params: "{{ inventory_dir }}/../params/java-app/fabric8_dev"
     namespace: labs-dev
     tags:
-    - java-app
+    - java-deploy
 - object: demo-stage
   content:
   - name: java-app
@@ -130,13 +132,13 @@ openshift_cluster_content:
     params: "{{ inventory_dir }}/../params/java-app/deploy_demo"
     namespace: labs-demo
     tags:
-    - java-app
+    - java-deploy
   - name: fabric8-rolebinding
     template: "{{ inventory_dir }}/../openshift-templates/fabric8-role-bindings/template.json"
     params: "{{ inventory_dir }}/../params/java-app/fabric8_demo"
     namespace: labs-demo
     tags:
-    - java-app
+    - java-deploy
 - object: ci-for-labs-ci-cd
   content:
   - name: pipeline
