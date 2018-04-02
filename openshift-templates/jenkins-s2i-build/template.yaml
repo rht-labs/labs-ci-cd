@@ -19,17 +19,17 @@ objects:
 - kind: ImageStream
   apiVersion: v1
   metadata:
-    name: jenkins-2-rhel7
+    name: ${BUILDER_IMAGE_STREAM_NAME}
     annotations:
-      description: Tracks the Red Hat Jenkins base image, since openshift doesn't ship v3.7 tag in the default install. Importing the image to the labs-ci-cd namespsace, instead of openshift, allows normal users to run the playbook.
+      description: Tracks the Red Hat Jenkins base image, since openshift may not ship with the tag we need. Importing the image allows normal users to run the playbook.
   spec:
     tags:
     - annotations: null
       from:
         kind: DockerImage
-        name: registry.access.redhat.com/openshift3/jenkins-2-rhel7:v3.7
+        name: registry.access.redhat.com/openshift3/jenkins-2-rhel7:${BUILDER_IMAGE_STREAM_TAG_NAME}
       importPolicy: {}
-      name: v3.7
+      name: ${BUILDER_IMAGE_STREAM_TAG_NAME}
       referencePolicy:
         type: Source
 - kind: BuildConfig
@@ -64,7 +64,7 @@ objects:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: "${BUILDER_IMAGE_STREAM_TAG}"
+          name: "${BUILDER_IMAGE_STREAM_NAME}:${BUILDER_IMAGE_STREAM_TAG_NAME}"
           namespace: "${IMAGE_STREAM_NAMESPACE}"
     output:
       to:
@@ -91,11 +91,16 @@ parameters:
 - name: SOURCE_REPOSITORY_CONTEXT_DIR
   displayName: Git Reference
   description: The directory in the source repository where the SonarQube docker build is.
-- name: BUILDER_IMAGE_STREAM_TAG
-  displayName: Builder Image Stream Tag
-  description: The Jenkins builder Image Stream Tag (e.g. jenkins:v3.7)
+- name: BUILDER_IMAGE_STREAM_NAME
+  displayName: Builder Image Stream Name
+  description: The Jenkins builder Image Stream Tag (e.g. jenkins)
   required: true
-  value: jenkins:v3.7
+  value: jenkins
+- name: BUILDER_IMAGE_STREAM_TAG_NAME
+  displayName: Builder Image Stream Tag Name
+  description: The Jenkins builder Image Stream Tag Name (e.g. v3.9)
+  required: true
+  value: v3.9 
 - name: IMAGE_STREAM_NAMESPACE
   displayName: Builder ImageSteam Tag
   description: The namespace where the Jenkins builder Image Stream lives
