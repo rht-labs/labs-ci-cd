@@ -7,7 +7,7 @@ USER root
 RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm; \
     yum install -y python-pip git; \
     pip install --upgrade pip;  \
-    pip install git+https://github.com/ansible/ansible.git@devel && \
+    pip install git+https://github.com/ansible/ansible.git@stable-2.5 && \
     yum clean all -y && \
     rm -rf /var/cache/yum
 
