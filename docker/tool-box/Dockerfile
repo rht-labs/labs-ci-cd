@@ -10,7 +10,7 @@ RUN dnf -y update && \
     curl $OC_CLIENT_MIRROR | tar -C /usr/local/bin/ -xzf - && \
     mkdir -m 775 $HOME && \
     chmod 775 /etc/passwd && \
-    pip install git+https://github.com/ansible/ansible.git@devel
+    pip install git+https://github.com/ansible/ansible.git@stable-2.5
     
 WORKDIR $HOME
 
