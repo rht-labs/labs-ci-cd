@@ -36,6 +36,13 @@ openshift_cluster_content:
     tags:
     - jenkins-slaves
     - mvn-slave
+  - name: jenkins-slave-gradle
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
+    params: "{{ inventory_dir }}/../params/jenkins-slave-gradle/build"
+    namespace: labs-ci-cd
+    tags:
+    - jenkins-slaves
+    - gradle-slave
   - name: jenkins-slave-npm
     template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
     params: "{{ inventory_dir }}/../params/jenkins-slave-npm/build"
