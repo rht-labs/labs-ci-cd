@@ -4,8 +4,8 @@ This container exists to help folks that can't install ansible, git or other nec
 
 ## What's in the box?
 
-- `oc` version 3.6.173.0.21.
-- `ansible` latest in fedora
+- `oc` version 3.9.14
+- `ansible` 2.5 (stable from `pip`)
 - `git`
 - `tree`
 - `unzip`
@@ -16,7 +16,7 @@ If you need something not here, let us know in an issue or submit a PR.
 
 ### OpenShift
 
-Assuming you have the [CLI installed](https://docs.openshift.com/container-platform/3.6/cli_reference/get_started_cli.html)
+Assuming you have the [CLI installed](https://docs.openshift.com/container-platform/latest/cli_reference/get_started_cli.html)
 
 Build the container and deploy it in OpenShift:
 
