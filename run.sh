@@ -34,10 +34,10 @@ function printBanner(){
 ###########################
 printBanner
 
-ansible-galaxy install -r requirements.yml --roles-path=roles
+ansible-galaxy install -r requirements.yml --roles-path=galaxy
 
 if [[ "$#" == 0 ]]; then
-    DOCKER_RUN_COMMAND='ansible-playbook -i /tmp/src/inventory /tmp/src/roles/casl-ansible/playbooks/openshift-cluster-seed.yml'
+    DOCKER_RUN_COMMAND='ansible-playbook -i /tmp/src/inventory /tmp/src/galaxy/openshift-applier/playbooks/openshift-cluster-seed.yml'
     printf "no arguments passed to run.sh. using default docker run command:\n- $DOCKER_RUN_COMMAND\n\n"
 else
     DOCKER_RUN_COMMAND="$@"
