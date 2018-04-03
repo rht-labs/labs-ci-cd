@@ -12,5 +12,5 @@
       - regexp: '(- src: )(https:\/\/github\.com\/rht-labs\/labs-ci-cd.*)((\n.*)+)(version: )(.*)'
         replace: '\1{{ scm_url }}\3\5{{ scm_ref }}'
   roles:
-    - casl-ansible/roles/make-applier-projects-unique
-    - casl-ansible/roles/openshift-applier
+    - openshift-applier/roles/make-applier-projects-unique
+    - openshift-applier/roles/openshift-applier

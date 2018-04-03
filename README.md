@@ -3,7 +3,7 @@
 The goal of this repository is to:
 
  1. bootstrap Labs residencies will all the tools necessary for a comprehensive, OpenShift native CI/CD pipeline
- 2. serve as a reference implementation of the [openshift-applier](https://github.com/redhat-cop/casl-ansible/tree/master/roles/openshift-applier) model for Infrastructure-as-Code (IaC)
+ 2. serve as a reference implementation of the [openshift-applier](https://github.com/redhat-cop/openshift-applier/tree/master/roles/openshift-applier) model for Infrastructure-as-Code (IaC)
 
 A few additional guiding principles:
 
@@ -60,10 +60,10 @@ It's possible that you cannot run docker on your machine for some reason. No fea
 1. Log on to an OpenShift server `oc login -u <user> https://<server>:<port>/`
     - Your user needs permissions to deploy ProjectRequest objects.
 2. Clone this repository.
-3. Install the required [casl-ansible](https://github.com/redhat-cop/casl-ansible) dependency:
-    - `[labs-ci-cd]$ ansible-galaxy install -r requirements.yml --roles-path=roles`
+3. Install the required [openshift-applier](https://github.com/redhat-cop/openshift-applier) dependency:
+    - `[labs-ci-cd]$ ansible-galaxy install -r requirements.yml --roles-path=galaxy`
 4. If `labs-ci-cd` doesn't yet exist on your OpenShift cluster, run the "cluster seed" playbook:
-  - `[labs-ci-cd]$ ansible-playbook roles/casl-ansible/playbooks/openshift-cluster-seed.yml -i inventory/`
+  - `[labs-ci-cd]$ ansible-playbook galaxy/openshift-applier/playbooks/openshift-cluster-seed.yml -i inventory/`
 5. If `labs-ci-cd` already exists on your OpenShift cluster and you want to create a new instance of `labs-ci-cd` with its own name, run the "unique projects" playbook:
     - `[labs-ci-cd]$ ansible-playbook unique-projects-playbook.yaml -i inventory/ -e "project_name_postfix=<insert unique postfix here>"`
     - This playbook works (in part) by changing the contents of the files in `params`. The playbook is idempotent, so it will only change these files once, but you should expect changes.
@@ -75,22 +75,22 @@ After running the playbook, the pipeline should execute in Jenkins, build the sp
 
 ## Running a Subset of the Inventory
 
-1. See [the docs](https://github.com/redhat-cop/casl-ansible/tree/master/roles/openshift-applier#filtering-content-based-on-tags) in casl-ansible
+1. See [the docs](https://github.com/redhat-cop/openshift-applier/tree/master/roles/openshift-applier#filtering-content-based-on-tags) in the openshift-applier repo.
 2. The only required tag to deploy objects within the inventory is **projects**, all other tags are *optional*
 3. If using `./run.sh` and docker, here is an example that runs the tags that provision projects, ci, and jenkins objects:
 ```
-./run.sh ansible-playbook /tmp/src/roles/casl-ansible/playbooks/openshift-cluster-seed.yml -i /tmp/src/inventory/ -e "filter_tags=jenkins,ci,projects"
+./run.sh ansible-playbook /tmp/src/galaxy/openshift-applier/playbooks/openshift-cluster-seed.yml -i /tmp/src/inventory/ -e "filter_tags=jenkins,ci,projects"
 ```
 
 If not using docker/`./run.sh`, here is the same example:
 
 ```
-ansible-playbook -i inventory/ roles/casl-ansible/playbooks/openshift-cluster-seed.yml -e="filter_tags=jenkins,ci,projects"
+ansible-playbook -i inventory/ galaxy/openshift-applier/playbooks/openshift-cluster-seed.yml -e="filter_tags=jenkins,ci,projects"
 ```
 
 ## Layout
 - `inventory`: a standard [ansible inventory](http://docs.ansible.com/ansible/latest/intro_inventory.html).
-  - the `group_vars` are written according to [the convention defined by the openshift-applier role](https://github.com/redhat-cop/casl-ansible/tree/master/roles/openshift-applier#sourcing-openshift-object-definitions).
+  - the `group_vars` are written according to [the convention defined by the openshift-applier role](https://github.com/redhat-cop/openshift-applier/tree/master/roles/openshift-applier#sourcing-openshift-object-definitions).
   -  the `hosts` file reflects the fact that the playbook will use the OpenShift CLI on your localhost to interact with the cluster
 - `openshift-templates`: a set [OpenShift templates](https://docs.openshift.com/container-platform/3.6/dev_guide/templates.html) to be sourced from the inventory. OpenShift provides a lot of templates out of the box, so these are only to fill in gaps. If possible, reuse or update these templates before writing new ones.
 - `params`: a set of [parameter files](https://docs.openshift.com/container-platform/3.6/dev_guide/templates.html#templates-parameters) to be processed along with their respective OpenShift template. the convention here is to group files by their application.
