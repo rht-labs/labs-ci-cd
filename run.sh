@@ -43,12 +43,12 @@ else
     
 fi 
 
-DOCKER_RUN_COMMAND="yum -y install git && ansible-galaxy install -r /tmp/src/requirements.yml --roles-path=/tmp/src/galaxy && $DOCKER_RUN_COMMAND"
+DOCKER_RUN_COMMAND="ansible-galaxy install -r /tmp/src/requirements.yml --roles-path=/tmp/src/galaxy && $DOCKER_RUN_COMMAND"
 
 docker run --rm -i \
     -v $(pwd):/tmp/src:z \
     -v $HOME/.kube:/root/.kube:z \
-    -t redhatcop/openshift-applier \
+    -t redhatcop/openshift-applier:v3.9.0 \
     /bin/sh -c "$DOCKER_RUN_COMMAND"
 
 
