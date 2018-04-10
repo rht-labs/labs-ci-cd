@@ -14,7 +14,7 @@ metadata:
     template.openshift.io/support-url: https://hoverfly.io
   name: hoverfly
 objects:
-- apiversion: v1
+- apiVersion: v1
   kind: Route
   metadata:
     name: ${HOVERFLY_SERVICE_NAME}
