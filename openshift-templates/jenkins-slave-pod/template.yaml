@@ -103,6 +103,6 @@ parameters:
 - name: DOCKERFILE_PATH
   displayName: Path to the Dockerfile
   description: Path to the Dockerfile
-  value: Jenkinsfile
+  value: Dockerfile
 labels:
   template: build-pod-template
