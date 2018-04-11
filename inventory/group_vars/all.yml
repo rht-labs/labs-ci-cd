@@ -30,28 +30,28 @@ openshift_cluster_content:
     tags:
     - jenkins
   - name: jenkins-slave-mvn
-    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.yaml"
     params: "{{ inventory_dir }}/../params/jenkins-slave-mvn/build"
     namespace: labs-ci-cd
     tags:
     - jenkins-slaves
     - mvn-slave
   - name: jenkins-slave-npm
-    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.yaml"
     params: "{{ inventory_dir }}/../params/jenkins-slave-npm/build"
     namespace: labs-ci-cd
     tags:
     - jenkins-slaves
     - npm-slave
   - name: jenkins-slave-zap
-    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.yaml"
     params: "{{ inventory_dir }}/../params/jenkins-slave-zap/build"
     namespace: labs-ci-cd
     tags:
     - jenkins-slaves
     - zap-slave
   - name: jenkins-slave-ansible
-    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.json"
+    template: "{{ inventory_dir }}/../openshift-templates/jenkins-slave-pod/template.yaml"
     params: "{{ inventory_dir }}/../params/jenkins-slave-ansible/build"
     namespace: labs-ci-cd
     tags:
