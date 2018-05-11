@@ -99,7 +99,6 @@ matrix-auth:1.7
 matrix-project:1.12
 maven-plugin:3.1
 mercurial:2.2
-metrics:3.0.0
 metrics:3.1.2.11
 momentjs:1.1.1
 mq-notifier:1.2.1
