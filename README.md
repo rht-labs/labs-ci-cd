@@ -88,7 +88,7 @@ After running the playbook, the pipeline should execute in Jenkins, build the sp
 2. The only required tag to deploy objects within the inventory is **projects**, all other tags are *optional*
 3. If using `./run.sh` and docker, here is an example that runs the tags that provision projects, ci, and jenkins objects:
 ```
-./run.sh ansible-playbook apply.yml -i /tmp/src/inventory/ -e target=tools -e "filter_tags=jenkins,ci,projects"
+./run.sh ansible-playbook /tmp/src/apply.yml -i /tmp/src/inventory/ -e target=tools -e "filter_tags=jenkins,ci,projects"
 ```
 
 If not using docker/`./run.sh`, here is the same example:
