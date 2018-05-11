@@ -16,6 +16,10 @@ if ( !repository.repositoryManager.exists( 'labs-releases' ) ){
     repository.createMavenHosted( 'labs-releases', BlobStoreManager.DEFAULT_BLOBSTORE_NAME, true, VersionPolicy.RELEASE, WritePolicy.ALLOW_ONCE, LayoutPolicy.STRICT)
 }
 
+if ( !repository.repositoryManager.exists( 'labs-static' ) ){
+    repository.createRawHosted('labs-static');
+}
+
 if ( !repository.repositoryManager.exists( 'jenkins-public' ) ){
     repository.createMavenProxy('jenkins-public','http://repo.jenkins-ci.org/public')
 }
