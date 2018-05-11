@@ -1,0 +1,86 @@
+---
+ansible_connection: local
+openshift_cluster_content:
+- object: ci-cd-builds
+  content:
+  - name: jenkins-s2i
+    template: "{{ playbook_dir }}/openshift-templates/jenkins-s2i-build/template.yaml"
+    params: "{{ playbook_dir }}/params/jenkins/build"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+    - jenkins
+  - name: jenkins-slave-mvn
+    template: "{{ playbook_dir }}/openshift-templates/jenkins-slave-pod/template.yaml"
+    params: "{{ playbook_dir }}/params/jenkins-slave-mvn/build"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+    - jenkins-slaves
+    - mvn-slave
+  - name: jenkins-slave-npm
+    template: "{{ playbook_dir }}/openshift-templates/jenkins-slave-pod/template.yaml"
+    params: "{{ playbook_dir }}/params/jenkins-slave-npm/build"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+    - jenkins-slaves
+    - npm-slave
+  - name: jenkins-slave-zap
+    template: "{{ playbook_dir }}/openshift-templates/jenkins-slave-pod/template.yaml"
+    params: "{{ playbook_dir }}/params/jenkins-slave-zap/build"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+    - jenkins-slaves
+    - zap-slave
+  - name: jenkins-slave-ansible
+    template: "{{ playbook_dir }}/openshift-templates/jenkins-slave-pod/template.yaml"
+    params: "{{ playbook_dir }}/params/jenkins-slave-ansible/build"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+      - jenkins-slaves
+      - ansible-slave
+  - name: tool-box
+    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yaml"
+    params: "{{ playbook_dir }}/params/tool-box/build"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+      - tool-box
+  - name: hoverfly
+    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yaml"
+    params: "{{ playbook_dir }}/params/hoverfly/build"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+      - hoverfly
+- object: ci-cd-deployments
+  content:
+  - name: jenkins-persistent
+    template: "{{ playbook_dir }}/openshift-templates/jenkins/jenkins-persistent-template.yaml"
+    params: "{{ playbook_dir }}/params/jenkins/deploy"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+    - jenkins
+  - name: nexus
+    template: "{{ playbook_dir }}/openshift-templates/nexus/template.json"
+    params: "{{ playbook_dir }}/params/nexus/deploy"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+    - nexus
+    post_steps:
+    - role: "{{ ci_cd_namespace }}/roles/configure-nexus"
+  - name: sonarqube
+    template: "{{ playbook_dir }}/openshift-templates/sonarqube/template.json"
+    params: "{{ playbook_dir }}/params/sonarqube/build-and-deploy"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+    - sonar
+  - name: sonarqube-postgresql
+    template: "openshift//postgresql-persistent"
+    params: "{{ playbook_dir }}/params/sonarqube/postgresql"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+    - sonar
+  - name: hoverfly
+    template: "{{ playbook_dir }}/openshift-templates/hoverfly/template.yaml"
+    params: "{{ playbook_dir }}/params/hoverfly/deploy"
+    namespace: {{ ci_cd_namespace }}
+    tags:
+    - hoverfly
+

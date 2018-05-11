@@ -1,0 +1,10 @@
+---
+- name: Deploy {{ target }} 
+  hosts: "{{ target }}"
+  vars:
+    ci_cd_namespace: labs-ci-cd
+    dev_namespace: labs-dev
+    test_namespace: labs-test
+  tasks:
+    - include_role:
+        name: openshift-applier/roles/openshift-applier
