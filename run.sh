@@ -35,7 +35,7 @@ function printBanner(){
 printBanner
 
 if [[ "$#" == 0 ]]; then
-    DOCKER_RUN_COMMAND='ansible-playbook -i /tmp/src/inventory /tmp/src/galaxy/openshift-applier/playbooks/openshift-cluster-seed.yml'
+    DOCKER_RUN_COMMAND='ansible-playbook -i /tmp/src/inventory /tmp/src/apply.yml -e target=bootstrap && ansible-playbook -i /tmp/src/inventory /tmp/src/apply.yml -e target=tools'
     printf "no arguments passed to run.sh. using default docker run command:\n- $DOCKER_RUN_COMMAND\n\n"
 else
     DOCKER_RUN_COMMAND="$@"
@@ -43,7 +43,7 @@ else
     
 fi 
 
-DOCKER_RUN_COMMAND="ansible-galaxy install -r /tmp/src/requirements.yml --roles-path=/tmp/src/galaxy && $DOCKER_RUN_COMMAND"
+DOCKER_RUN_COMMAND="ansible-galaxy install -r /tmp/src/requirements.yml --roles-path=/tmp/src/roles && $DOCKER_RUN_COMMAND"
 
 docker run --rm -i \
     -v $(pwd):/tmp/src:z \
