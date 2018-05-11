@@ -29,7 +29,6 @@ blueocean-rest:1.4.2
 blueocean-web:1.4.2
 blueocean:1.4.2
 bouncycastle-api:2.16.2
-bouncycastle-api:2.16.2
 branch-api:2.0.19
 build-failure-analyzer:1.19.2
 build-flow-plugin:0.10
@@ -49,7 +48,6 @@ config-file-provider:2.18
 copy-to-slave:1.4.4
 credentials-binding:1.13
 credentials:2.1.16
-cucumber-reports:3.15.0
 cucumber-reports:3.15.0
 cvs:2.11
 dashboard-view:2.9.11
@@ -82,7 +80,6 @@ hue-light:1.2.0
 icon-shim:2.0.3
 jackson2-api:2.7.3
 javadoc:1.4
-javadoc:1.4
 jenkins-design-language:1.4.2
 jira:2.5
 job-dsl:1.68
@@ -106,7 +103,6 @@ metrics:3.0.0
 metrics:3.1.2.11
 momentjs:1.1.1
 mq-notifier:1.2.1
-multiple-scms:0.6
 multiple-scms:0.6
 nexus-artifact-uploader:2.10
 nexus-jenkins-plugin:3.0.20180214-134325.e135900
