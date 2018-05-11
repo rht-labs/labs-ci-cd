@@ -1,0 +1,475 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<com.sonyericsson.jenkins.plugins.bfa.PluginImpl plugin="build-failure-analyzer@1.19.0">
+  <noCausesMessage>No problems were identified. If you know why this problem occurred, please add a suitable Cause for it.</noCausesMessage>
+  <globalEnabled>true</globalEnabled>
+  <doNotAnalyzeAbortedJob>false</doNotAnalyzeAbortedJob>
+  <gerritTriggerEnabled>true</gerritTriggerEnabled>
+  <knowledgeBase class="com.sonyericsson.jenkins.plugins.bfa.db.LocalFileKnowledgeBase">
+    <causes>
+      <entry>
+        <string>6a0ee661-11c8-45cf-8741-a9c30c20281a</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>6a0ee661-11c8-45cf-8741-a9c30c20281a</id>
+          <name>fe-test-fails</name>
+          <description>${1,1} Tests Failed out of ${1,2}</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*TOTAL: (\d+) FAILED, (\d+) SUCCESS.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2017-11-28 10:15:11.116 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>f9efb439-39d3-4d02-9c93-19095f25edd7</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>f9efb439-39d3-4d02-9c93-19095f25edd7</id>
+          <name>jest-fe-tests</name>
+          <description>${1,1} Tests failed out of ${1,2}</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*Tests:       (\d+) passed, (\d+) total.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-14 12:07:25.146 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-14 12:07:11.947 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>faf361ee-70f0-4914-b9ad-2357afa2b4a0</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>faf361ee-70f0-4914-b9ad-2357afa2b4a0</id>
+          <name>missing-dependencies</name>
+          <description>Cannot find :: ${1,1}</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*missing dependency (.*)</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2017-12-20 12:30:50.354 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>1600a968-22a8-42ed-843c-847dd0479d24</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>1600a968-22a8-42ed-843c-847dd0479d24</id>
+          <name>500-internal-server-error</name>
+          <description>500 Internal Server Error</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*500 Internal Server Error.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-01-05 23:49:59.110 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>b668deec-e100-4521-9e6a-eec41cd5ec83</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>b668deec-e100-4521-9e6a-eec41cd5ec83</id>
+          <name>server-not-reached-to-build</name>
+          <description>Error from server (BadRequest): cannot upload file to build</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*Error\ from\ server\ \(BadRequest\)\:\ cannot\ upload\ file\ to\ build.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2017-11-22 15:12:30.361 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2017-11-22 15:10:31.917 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2017-11-22 15:10:02.513 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2017-11-22 15:09:25.101 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>02ca6572-c5d1-408a-b867-17c8faee9d4c</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>02ca6572-c5d1-408a-b867-17c8faee9d4c</id>
+          <name>code-coverage-too-low</name>
+          <description>The code coverage is too low. The build was marked as UNSTABLE</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*Build step &apos;Publish Cobertura Coverage Report&apos; changed build result to UNSTABLE.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2017-11-28 14:47:53.482 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2017-11-28 14:44:17.352 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>5bf76eee-7d19-4ad6-9bbf-0bb3afa2ef94</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>5bf76eee-7d19-4ad6-9bbf-0bb3afa2ef94</id>
+          <name>gitlabs-connection-issue</name>
+          <description>Could not connect to GitLabs</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*ERROR: Error cloning remote repo.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2017-12-20 07:19:08.649 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>082b9e5f-e620-4cf7-ba72-8e39e14e1a0e</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>082b9e5f-e620-4cf7-ba72-8e39e14e1a0e</id>
+          <name>zap-test-fail-new</name>
+          <description>FAIL-NEW: ${1,1}  </description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*FAIL-NEW: ([1-9]+).*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:26:24.0 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:21:37.384 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:13:56.192 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:12:45.20 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:10:58.168 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:05:39.339 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:03:49.530 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>neiln-admin</user>
+              <time>2018-02-27 13:36:46.826 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>neiln-admin</user>
+              <time>2018-02-27 13:28:30.337 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>neiln-admin</user>
+              <time>2018-02-27 13:24:57.737 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>neiln-admin</user>
+              <time>2018-02-27 13:21:35.720 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>96fa5f54-bede-400e-81d1-ed688244735e</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>96fa5f54-bede-400e-81d1-ed688244735e</id>
+          <name>504-gateway-timeout</name>
+          <description>504 Gateway Time-out</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*The requested URL returned error: 504 Gateway Time-out.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-09 07:49:44.190 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>59e2c10d-dc62-4c0b-8c80-3501d36f681e</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>59e2c10d-dc62-4c0b-8c80-3501d36f681e</id>
+          <name>tests-failed</name>
+          <description>${1,2} Tests Failed out of ${1,1}</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>(\d+) tests completed, (\d+) failed</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 07:32:45.6 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 07:31:11.881 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 07:26:53.919 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 07:24:58.420 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 07:23:26.170 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 07:23:14.951 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 07:20:55.35 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 07:16:43.962 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>aaa556d5-cdf9-4efe-9304-3f99627863db</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>aaa556d5-cdf9-4efe-9304-3f99627863db</id>
+          <name>zap-test-warn-new</name>
+          <description>WARN-NEW: ${1,1}</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*WARN-NEW: ([1-9]+).*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:27:04.87 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:16:01.725 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>0f5e0a74-a197-4502-a426-1e34a5f736d2</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>0f5e0a74-a197-4502-a426-1e34a5f736d2</id>
+          <name>zap-test-fail-inprog</name>
+          <description>FAIL-INPROG:  ${1,1}</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*FAIL-INPROG: ([1-9]+).*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:27:14.738 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:15:01.619 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>275af97a-3f33-4bae-802a-d19087a4a07d</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>275af97a-3f33-4bae-802a-d19087a4a07d</id>
+          <name>zap-test-fails-warn-new</name>
+          <description>WARN-INPROG: ${1,1}</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*WARN-INPROG: ([1-9]+).*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:27:24.156 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-27 14:16:39.998 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>bf0a4900-fb07-4e90-97da-f219d0d2d9cb</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>bf0a4900-fb07-4e90-97da-f219d0d2d9cb</id>
+          <name>404-not-found</name>
+          <description>404 Not Found</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*404 Not Found.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-01-05 23:39:05.104 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-01-04 14:03:28.766 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>c56d101e-b44e-4e51-a94e-9effe5a53b9c</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>c56d101e-b44e-4e51-a94e-9effe5a53b9c</id>
+          <name>unauthorized-access</name>
+          <description>Cannot run test(s) due to unauthorised access</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*Testing (.*) 401.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 14:15:40.808 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 14:12:09.597 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>tpage-admin</user>
+              <time>2018-01-04 14:10:06.428 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>a4845757-2790-4726-9d8b-d7ac26146845</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>a4845757-2790-4726-9d8b-d7ac26146845</id>
+          <name>ginkgo-test-fails</name>
+          <description>${1,1} tests passed out of ${1,2}</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*Suite - (\d+)\/(\d+) specs.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2018-02-14 12:11:51.469 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+      <entry>
+        <string>cba84bf4-f593-4867-926f-e8964b58cdd7</string>
+        <com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+          <id>cba84bf4-f593-4867-926f-e8964b58cdd7</id>
+          <name>selenium-not-started</name>
+          <description>Is selenium server started?</description>
+          <comment></comment>
+          <indications>
+            <com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+              <pattern>.*Is\ selenium\ server\ started.*</pattern>
+            </com.sonyericsson.jenkins.plugins.bfa.model.indication.BuildLogIndication>
+          </indications>
+          <modifications class="linked-list">
+            <com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+              <user>generated-by-s2i</user>
+              <time>2017-11-06 18:41:45.173 UTC</time>
+            </com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseModification>
+          </modifications>
+        </com.sonyericsson.jenkins.plugins.bfa.model.FailureCause>
+      </entry>
+    </causes>
+  </knowledgeBase>
+  <nrOfScanThreads>3</nrOfScanThreads>
+  <maxLogSize>0</maxLogSize>
+  <graphsEnabled>false</graphsEnabled>
+  <testResultParsingEnabled>false</testResultParsingEnabled>
+  <testResultCategories></testResultCategories>
+  <sodVariables>
+    <minimumSodWorkerThreads>1</minimumSodWorkerThreads>
+    <maximumSodWorkerThreads>1</maximumSodWorkerThreads>
+    <sodThreadKeepAliveTime>15</sodThreadKeepAliveTime>
+    <sodWaitForJobShutdownTimeout>30</sodWaitForJobShutdownTimeout>
+    <sodCorePoolNumberOfThreads>5</sodCorePoolNumberOfThreads>
+  </sodVariables>
+</com.sonyericsson.jenkins.plugins.bfa.PluginImpl>
