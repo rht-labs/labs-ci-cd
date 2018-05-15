@@ -1,6 +1,7 @@
 ---
 ansible_connection: local
 openshift_cluster_content:
+- galaxy_requirements: "{{ playbook_dir }}/galaxy_requirements.yml"
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
@@ -64,7 +65,7 @@ openshift_cluster_content:
     tags:
     - nexus
     post_steps:
-    - role: "{{ ci_cd_namespace }}/roles/configure-nexus"
+    - role: "labs-ci-cd/roles/configure-nexus"
   - name: sonarqube
     template: "{{ playbook_dir }}/openshift-templates/sonarqube/template.json"
     params: "{{ playbook_dir }}/params/sonarqube/build-and-deploy"
