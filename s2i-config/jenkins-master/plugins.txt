@@ -145,7 +145,7 @@ run-condition:1.0
 scm-api:2.2.6
 script-security:1.43
 slack:2.3
-sonar:2.61
+sonar:2.6.1
 sse-gateway:1.15
 ssh-agent:1.15
 ssh-credentials:1.13
