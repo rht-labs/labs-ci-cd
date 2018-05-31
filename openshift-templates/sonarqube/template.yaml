@@ -5,6 +5,18 @@ metadata:
   name: "sonarqube"
 objects:
 - apiVersion: v1
+  kind: Secret
+  stringData:
+    database-name: ${POSTGRES_DATABASE_NAME}
+    database-password: ${POSTGRES_PASSWORD}
+    database-user: ${POSTGRES_USERNAME}
+  metadata:
+    labels:
+      app: sonarqube
+      template: postgresql-persistent-template
+    name: sonardb
+  type: Opaque
+- apiVersion: v1
   stringData:
     password: ${SONAR_LDAP_BIND_PASSWORD}
     username: ${SONAR_LDAP_BIND_DN}
@@ -56,21 +68,17 @@ objects:
     resources: {}
     runPolicy: Serial
     source:
+      contextDir: "${SOURCE_REPOSITORY_CONTEXT_DIR}"
       git:
-        ref: master
-        uri: https://github.com/rht-labs/openshift-sonarqube.git
-      sourceSecret:
-        name: bitbucket
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
       type: Git
     strategy:
       dockerStrategy:
         from:
-          kind: ImageStreamTag
-          name: sonarqube:latest
-          namespace: openshift
+          kind: DockerImage
+          name: 'sonarqube:latest'
         noCache: true
-        pullSecret:
-          name: nexus
       type: Docker
     triggers:
     - type: ConfigChange
@@ -182,11 +190,13 @@ objects:
     - imageChangeParams:
         automatic: true
         containerNames:
-        - postgresql
+          - postgresql
         from:
           kind: ImageStreamTag
-          name: postgresql-95-rhel7:latest
+          name: 'postgresql:9.6'
           namespace: openshift
+        lastTriggeredImage: >-
+          registry.access.redhat.com/rhscl/postgresql-96-rhel7@sha256:2fea3ba5978862cc04ce5921462e9ca9caaec03f095c9b5c7be074358861b5c7
       type: ImageChange
     - type: ConfigChange
 - apiVersion: v1
@@ -388,18 +398,6 @@ objects:
   status:
     loadBalancer: {}
 - apiVersion: v1
-  kind: Secret
-  stringData:
-    database-name: ${POSTGRES_DATABASE_NAME}
-    database-password: ${POSTGRES_PASSWORD}
-    database-user: ${POSTGRES_USERNAME}
-  metadata:
-    labels:
-      app: sonarqube
-      template: postgresql-persistent-template
-    name: sonardb
-  type: Opaque
-- apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
     labels:
@@ -457,11 +455,10 @@ parameters:
     displayName: SonarQube Storage Space Size
     required: true
     value: 5Gi
-  - name: SONAR_LDAP_REALM
-    value: None
+  - name: SONAR_AUTH_REALM
+    value: ''
     description: The type of authentication that SonarQube should be using (None or LDAP) (Ref - https://docs.sonarqube.org/display/PLUG/LDAP+Plugin)
     displayName: SonarQube Authentication Realm
-    required: true
   - name: SONAR_AUTOCREATE_USERS
     value: 'false'
     description: When using an external authentication system, should SonarQube automatically create accounts for users?
@@ -519,3 +516,15 @@ parameters:
     description: The ContextFactory implementation to be used when communicating with the LDAP server
     displayName: LDAP Context Factory
     value: com.sun.jndi.ldap.LdapCtxFactory
+  - name: SOURCE_REPOSITORY_URL
+    description: The Git repository where the Docker build resources can be found
+    displayName: Repository URL
+    value: https://github.com/rht-labs/labs-ci-cd
+  - name: SOURCE_REPOSITORY_REF
+    value: master
+    description: Branch from which to get docker build resources
+    displayName: Repository branch
+  - name: SOURCE_REPOSITORY_CONTEXT_DIR
+    value: docker/sonarqube
+    description: Directory path within the repository where the docker build resources can be found
+    displayName: Context directory
