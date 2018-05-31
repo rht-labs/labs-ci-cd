@@ -42,6 +42,15 @@ node() {
                 env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
                 env.PR_DEMO_PROJECT_NAME = "labs-demo-pr-${env.PR_ID}"
 
+                // Delete projects if they already exist (In order to prevent issues with the projects already existing). 
+                // Then wait some time to prevent trying to create a project when the delete command is still being tried as this can take a while
+                sh """
+                    oc delete project ${env.PR_CI_CD_PROJECT_NAME} || rc=$?
+                    oc delete project ${env.PR_DEV_PROJECT_NAME} || rc=$?
+                    oc delete project ${env.PR_DEMO_PROJECT_NAME} || rc=$?
+                    sleep 30
+                """
+
                 if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                     error('PR_GITHUB_TOKEN cannot be null or empty')
                 }
