@@ -1,3 +1,1 @@
-SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd
-SOURCE_REPOSITORY_REF=Issue-176-fix-sonarqube-params
 SOURCE_REPOSITORY_CONTEXT_DIR=docker/sonarqube
