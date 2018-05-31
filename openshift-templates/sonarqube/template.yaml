@@ -195,6 +195,8 @@ objects:
           kind: ImageStreamTag
           name: 'postgresql:9.6'
           namespace: openshift
+        lastTriggeredImage: >-
+          registry.access.redhat.com/rhscl/postgresql-96-rhel7@sha256:2fea3ba5978862cc04ce5921462e9ca9caaec03f095c9b5c7be074358861b5c7
       type: ImageChange
     - type: ConfigChange
 - apiVersion: v1
