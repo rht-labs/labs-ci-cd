@@ -67,7 +67,7 @@ openshift_cluster_content:
     post_steps:
     - role: "labs-ci-cd/roles/configure-nexus"
   - name: sonarqube
-    template: "{{ playbook_dir }}/openshift-templates/sonarqube/template.json"
+    template: "{{ playbook_dir }}/openshift-templates/sonarqube/template.yaml"
     params: "{{ playbook_dir }}/params/sonarqube/build-and-deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:
