@@ -1,0 +1,3 @@
+NAMESPACE=labs-ci-cd
+MEMORY_LIMIT=2Gi
+HOVERFLY_IMAGE_STREAM_TAG=hoverfly:latest

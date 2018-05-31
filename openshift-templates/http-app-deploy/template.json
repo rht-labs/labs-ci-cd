@@ -168,7 +168,7 @@
             "apiVersion": "v1",
             "kind": "RoleBinding",
             "metadata": {
-                "name": "edit"
+                "name": "jenkins_pipeline_edit"
             },
             "roleRef": {
                 "name": "edit"

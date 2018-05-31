@@ -1,7 +1,8 @@
-casl-ansible
+openshift-applier
 roles/*
-!roles/make-demo-unique
+!roles/configure-nexus
 *.pyc
 .idea
 *.iml
 gdsl
+*.retry
