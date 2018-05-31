@@ -68,9 +68,10 @@ objects:
     resources: {}
     runPolicy: Serial
     source:
+      contextDir: "${SOURCE_REPOSITORY_CONTEXT_DIR}"
       git:
-        ref: master
-        uri: https://github.com/rht-labs/openshift-sonarqube.git
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
       sourceSecret:
         name: bitbucket
       type: Git
@@ -519,3 +520,15 @@ parameters:
     description: The ContextFactory implementation to be used when communicating with the LDAP server
     displayName: LDAP Context Factory
     value: com.sun.jndi.ldap.LdapCtxFactory
+  - name: SOURCE_REPOSITORY_URL
+    description: The Git repository where the Docker build resources can be found
+    displayName: Repository URL
+    value: https://github.com/rht-labs/labs-ci-cd
+  - name: SOURCE_REPOSITORY_REF
+    value: master
+    description: Branch from which to get docker build resources
+    displayName: Repository branch
+  - name: SOURCE_REPOSITORY_CONTEXT_DIR
+    value: docker/sonarqube
+    description: Directory path within the repository where the docker build resources can be found
+    displayName: Context directory
