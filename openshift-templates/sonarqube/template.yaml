@@ -456,7 +456,7 @@ parameters:
     required: true
     value: 5Gi
   - name: SONAR_AUTH_REALM
-    value: None
+    value: ''
     description: The type of authentication that SonarQube should be using (None or LDAP) (Ref - https://docs.sonarqube.org/display/PLUG/LDAP+Plugin)
     displayName: SonarQube Authentication Realm
     required: true
