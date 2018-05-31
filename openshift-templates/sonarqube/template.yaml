@@ -76,9 +76,8 @@ objects:
     strategy:
       dockerStrategy:
         from:
-          kind: ImageStreamTag
-          name: sonarqube:latest
-          namespace: openshift
+          kind: DockerImage
+          name: 'sonarqube:latest'
         noCache: true
       type: Docker
     triggers:
