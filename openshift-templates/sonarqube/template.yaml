@@ -190,10 +190,10 @@ objects:
     - imageChangeParams:
         automatic: true
         containerNames:
-        - postgresql
+          - postgresql
         from:
           kind: ImageStreamTag
-          name: postgresql-95-rhel7:latest
+          name: 'postgresql:9.6'
           namespace: openshift
       type: ImageChange
     - type: ConfigChange
@@ -453,7 +453,7 @@ parameters:
     displayName: SonarQube Storage Space Size
     required: true
     value: 5Gi
-  - name: SONAR_LDAP_REALM
+  - name: SONAR_AUTH_REALM
     value: None
     description: The type of authentication that SonarQube should be using (None or LDAP) (Ref - https://docs.sonarqube.org/display/PLUG/LDAP+Plugin)
     displayName: SonarQube Authentication Realm
