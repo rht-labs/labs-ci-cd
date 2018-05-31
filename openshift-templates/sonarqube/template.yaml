@@ -72,8 +72,6 @@ objects:
       git:
         ref: ${SOURCE_REPOSITORY_REF}
         uri: ${SOURCE_REPOSITORY_URL}
-      sourceSecret:
-        name: bitbucket
       type: Git
     strategy:
       dockerStrategy:
@@ -82,8 +80,6 @@ objects:
           name: sonarqube:latest
           namespace: openshift
         noCache: true
-        pullSecret:
-          name: nexus
       type: Docker
     triggers:
     - type: ConfigChange
