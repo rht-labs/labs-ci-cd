@@ -459,7 +459,6 @@ parameters:
     value: ''
     description: The type of authentication that SonarQube should be using (None or LDAP) (Ref - https://docs.sonarqube.org/display/PLUG/LDAP+Plugin)
     displayName: SonarQube Authentication Realm
-    required: true
   - name: SONAR_AUTOCREATE_USERS
     value: 'false'
     description: When using an external authentication system, should SonarQube automatically create accounts for users?
