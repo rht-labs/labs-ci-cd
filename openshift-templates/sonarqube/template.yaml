@@ -5,6 +5,18 @@ metadata:
   name: "sonarqube"
 objects:
 - apiVersion: v1
+  kind: Secret
+  stringData:
+    database-name: ${POSTGRES_DATABASE_NAME}
+    database-password: ${POSTGRES_PASSWORD}
+    database-user: ${POSTGRES_USERNAME}
+  metadata:
+    labels:
+      app: sonarqube
+      template: postgresql-persistent-template
+    name: sonardb
+  type: Opaque
+- apiVersion: v1
   stringData:
     password: ${SONAR_LDAP_BIND_PASSWORD}
     username: ${SONAR_LDAP_BIND_DN}
@@ -387,18 +399,6 @@ objects:
     type: ClusterIP
   status:
     loadBalancer: {}
-- apiVersion: v1
-  kind: Secret
-  stringData:
-    database-name: ${POSTGRES_DATABASE_NAME}
-    database-password: ${POSTGRES_PASSWORD}
-    database-user: ${POSTGRES_USERNAME}
-  metadata:
-    labels:
-      app: sonarqube
-      template: postgresql-persistent-template
-    name: sonardb
-  type: Opaque
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
