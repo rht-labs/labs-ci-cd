@@ -15,6 +15,19 @@ node() {
             }
         }
 
+        def deleteProjectCommand = """
+                    printenv
+                    oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
+                    oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
+                    oc delete project $PR_DEMO_PROJECT_NAME || rc=\$?
+                    while \${unfinished}
+                    do
+                        oc get project $PR_CI_CD_PROJECT_NAME || \
+                        oc get project $PR_DEV_PROJECT_NAME || \
+                        oc get project $PR_DEMO_PROJECT_NAME || unfinished=false
+                    done
+                """
+
         node('jenkins-slave-ansible') {
 
 
@@ -44,20 +57,8 @@ node() {
 
                 // Delete projects if they already exist (In order to prevent issues with the projects already existing). 
                 // Then wait some time to prevent trying to create a project when the delete command is still being tried as this can take a while
-                def command = """
-                    printenv
-                    oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
-                    oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
-                    oc delete project $PR_DEMO_PROJECT_NAME || rc=\$?
-                    while \${unfinished}
-                    do
-                        oc get project $PR_CI_CD_PROJECT_NAME || \
-                        oc get project $PR_DEV_PROJECT_NAME || \
-                        oc get project $PR_DEMO_PROJECT_NAME || unfinished=false
-                    done
-                """
-
-                sh command
+                
+                sh deleteProjectCommand
 
                 if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                     error('PR_GITHUB_TOKEN cannot be null or empty')
@@ -191,7 +192,7 @@ node() {
 
             sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
 
-            sh command
+            sh deleteProjectCommand
         }
 
     }
