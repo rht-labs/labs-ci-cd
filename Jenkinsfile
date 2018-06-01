@@ -40,7 +40,7 @@ node() {
                 env.PR_GITHUB_USERNAME = 'labs-robot'
                 env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
                 env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
-                env.PR_DEMO_PROJECT_NAME = "labs-demo-pr-${env.PR_ID}"
+                env.PR_TEST_PROJECT_NAME = "labs-test-pr-${env.PR_ID}"
 
                 if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                     error('PR_GITHUB_TOKEN cannot be null or empty')
@@ -88,11 +88,13 @@ node() {
             stage('Apply Inventory') {
                 dir('labs-ci-cd'){
                     sh 'ansible-galaxy install -r requirements.yml --roles-path=roles'
-                    sh "ansible-playbook ci-playbook.yaml -i inventory/ -e \"project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                    sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=bootstrap project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                    sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=tools project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                    sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=apps project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                     sh """
                         oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_CI_CD_PROJECT_NAME}
                         oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEV_PROJECT_NAME}
-                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEMO_PROJECT_NAME}
+                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_TEST_PROJECT_NAME}
                     """
                 }
             }

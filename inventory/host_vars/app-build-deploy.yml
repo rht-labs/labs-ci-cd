@@ -1,0 +1,40 @@
+
+---
+ansible_connection: local
+openshift_cluster_content:
+- object: app-builds
+  content:
+  - name: java-app-build
+    template: "{{ playbook_dir }}/openshift-templates/s2i-app-build/template-no-secrets.yaml"
+    params: "{{ playbook_dir }}/params/java-app/build"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - java-build
+- object: dev-stage
+  content:
+  - name: java-app
+    template: "{{ playbook_dir }}/openshift-templates/automation-api-hsql/template.json"
+    params: "{{ playbook_dir }}/params/java-app/deploy_dev"
+    namespace: "{{ dev_namespace }}"
+    tags:
+    - java-deploy
+  - name: fabric8-rolebinding
+    template: "{{ playbook_dir }}/openshift-templates/fabric8-role-bindings/template.json"
+    params: "{{ playbook_dir }}/params/java-app/fabric8_dev"
+    namespace: "{{ dev_namespace }}"
+    tags:
+    - java-deploy
+- object: test-stage
+  content:
+  - name: java-app
+    template: "{{ playbook_dir }}/openshift-templates/automation-api-hsql/template.json"
+    params: "{{ playbook_dir }}/params/java-app/deploy_test"
+    namespace: "{{ test_namespace }}"
+    tags:
+    - java-deploy
+  - name: fabric8-rolebinding
+    template: "{{ playbook_dir }}/openshift-templates/fabric8-role-bindings/template.json"
+    params: "{{ playbook_dir }}/params/java-app/fabric8_test"
+    namespace: "{{ test_namespace }}"
+    tags:
+    - java-deploy
