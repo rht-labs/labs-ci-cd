@@ -44,19 +44,20 @@ node() {
 
                 // Delete projects if they already exist (In order to prevent issues with the projects already existing). 
                 // Then wait some time to prevent trying to create a project when the delete command is still being tried as this can take a while
-                sh """
-                    oc delete project ${env.PR_CI_CD_PROJECT_NAME} || rc=$?
-                    oc delete project ${env.PR_DEV_PROJECT_NAME} || rc=$?
-                    oc delete project ${env.PR_DEMO_PROJECT_NAME} || rc=$?
-                    # Wait for the projects to delete. When they have deleted they will return a RC != 0. 
-                    # Once all projects have deleted ${unfinished} will be false and the loop will stop.
-                    while ${unfinished}
+                def command = """
+                    printenv
+                    oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
+                    oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
+                    oc delete project $PR_DEMO_PROJECT_NAME || rc=\$?
+                    while \${unfinished}
                     do
-                        oc get project ${env.PR_CI_CD_PROJECT_NAME} || \
-                        oc get project ${env.PR_DEV_PROJECT_NAME} || \
-                        oc get project ${env.PR_DEMO_PROJECT_NAME} || unfinished=false
+                        oc get project $PR_CI_CD_PROJECT_NAME || \
+                        oc get project $PR_DEV_PROJECT_NAME || \
+                        oc get project $PR_DEMO_PROJECT_NAME || unfinished=false
                     done
                 """
+
+                sh command
 
                 if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                     error('PR_GITHUB_TOKEN cannot be null or empty')
