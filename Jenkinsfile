@@ -48,7 +48,13 @@ node() {
                     oc delete project ${env.PR_CI_CD_PROJECT_NAME} || rc=$?
                     oc delete project ${env.PR_DEV_PROJECT_NAME} || rc=$?
                     oc delete project ${env.PR_DEMO_PROJECT_NAME} || rc=$?
-                    sleep 30
+                    echo "waiting for projects to delete"
+                    while ${unfinished}
+                    do
+                        oc get project ${env.PR_CI_CD_PROJECT_NAME} || \
+                        oc get project ${env.PR_DEV_PROJECT_NAME} || \
+                        oc get project ${env.PR_DEMO_PROJECT_NAME} || unfinished=false
+                    done
                 """
 
                 if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
