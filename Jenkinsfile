@@ -192,6 +192,8 @@ node() {
             }'''
 
             sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+
+            sh command
         }
 
     }
