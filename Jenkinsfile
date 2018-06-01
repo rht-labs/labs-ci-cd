@@ -48,7 +48,8 @@ node() {
                     oc delete project ${env.PR_CI_CD_PROJECT_NAME} || rc=$?
                     oc delete project ${env.PR_DEV_PROJECT_NAME} || rc=$?
                     oc delete project ${env.PR_DEMO_PROJECT_NAME} || rc=$?
-                    echo "waiting for projects to delete"
+                    # Wait for the projects to delete. When they have deleted they will return a RC != 0. 
+                    # Once all projects have deleted ${unfinished} will be false and the loop will stop.
                     while ${unfinished}
                     do
                         oc get project ${env.PR_CI_CD_PROJECT_NAME} || \
