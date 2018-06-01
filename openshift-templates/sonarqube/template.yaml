@@ -168,6 +168,8 @@ objects:
             limits:
               memory: ${POSTGRES_CONTAINER_MEMORY_SIZE_LIMIT}
               cpu: ${POSTGRES_CONTAINER_CPU_LIMIT}
+            requests:
+              memory: 1Gi
           securityContext:
             capabilities: {}
             privileged: false

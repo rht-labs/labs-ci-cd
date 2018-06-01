@@ -28,7 +28,7 @@ There are two ways to use Labs CI/CD. The preferred approach is to run the playb
 ### Prerequisites
 
 * [Docker CE](https://www.docker.com/community-edition#/download)
-* [OpenShift CLI Tools](https://docs.openshift.com/container-platform/3.7/cli_reference/get_started_cli.html)
+* [OpenShift CLI Tools](https://docs.openshift.com/container-platform/latest/cli_reference/get_started_cli.html)
 * Access to the OpenShift cluster
 
 ### Usage
@@ -54,7 +54,7 @@ It's possible that you cannot run docker on your machine for some reason. No fea
 
 * [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) 2.5 or above. Until 2.5 is GA, that likely means you need the following command:
   - `pip install git+https://github.com/ansible/ansible.git@devel`
-* [OpenShift CLI Tools](https://docs.openshift.com/container-platform/3.7/cli_reference/get_started_cli.html)
+* [OpenShift CLI Tools](https://docs.openshift.com/container-platform/latest/cli_reference/get_started_cli.html)
 * Access to the OpenShift cluster
 * libselinux-python (only needed on Fedora, RHEL, and CentOS)
   - Install by running `yum install libselinux-python`.
@@ -73,7 +73,7 @@ It's possible that you cannot run docker on your machine for some reason. No fea
 6. To deploy the reference Java App, run the "apps" inventory. This will apply all the `app-build-deploy` content from `host_vars`:
   - `[labs-ci-cd]$ ansible-playbook apply.yml -i inventory/ -e target=apps`
 
-#### Cusomised Install
+#### Customised Install
 If `labs-ci-cd` already exists on your OpenShift cluster and you want to create a new instance of `labs-ci-cd` with its own name eg `john-ci-cd`, run the "unique projects" playbook:
     - `[labs-ci-cd]$ ansible-playbook unique-projects-playbook.yaml -i inventory/ -e "project_name_postfix=<insert unique postfix here> target=<thing you're targeting eg tools>"`
     - This playbook works (in part) by changing the contents of the files in `params`. The playbook is idempotent, so it will only change these files once, but you should expect changes.
