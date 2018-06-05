@@ -60,11 +60,6 @@ node() {
                 
                 sh deleteProjectCommand
 
-                // Delete projects if they already exist (In order to prevent issues with the projects already existing). 
-                // Then wait some time to prevent trying to create a project when the delete command is still being tried as this can take a while
-                
-                sh deleteProjectCommand
-
                 if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                     error('PR_GITHUB_TOKEN cannot be null or empty')
                 }
