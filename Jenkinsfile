@@ -19,12 +19,12 @@ node() {
                     printenv
                     oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
                     oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
-                    oc delete project $PR_DEMO_PROJECT_NAME || rc=\$?
+                    oc delete project $PR_TEST_PROJECT_NAME || rc=\$?
                     while \${unfinished}
                     do
                         oc get project $PR_CI_CD_PROJECT_NAME || \
                         oc get project $PR_DEV_PROJECT_NAME || \
-                        oc get project $PR_DEMO_PROJECT_NAME || unfinished=false
+                        oc get project $PR_TEST_PROJECT_NAME || unfinished=false
                     done
                 """
 
