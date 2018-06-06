@@ -222,6 +222,12 @@ node() {
 
             sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
 
+            sh '''
+                oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
+                oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
+                oc delete project $PR_TEST_PROJECT_NAME || rc=\$?
+            '''
+            
             throw e
         }
     }
