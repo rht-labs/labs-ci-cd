@@ -2,4 +2,3 @@ NAMESPACE=labs-ci-cd
 MEMORY_LIMIT=2Gi
 JENKINS_IMAGE_STREAM_TAG=jenkins:latest
 JENKINS_OPTS=--sessionTimeout=720
-JENKINS_URL=https://jenkins-ci-cd.apps.rht-labs.com/
