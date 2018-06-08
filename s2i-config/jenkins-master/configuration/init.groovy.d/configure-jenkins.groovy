@@ -7,6 +7,9 @@ import hudson.tools.InstallSourceProperty
 import java.util.logging.Level
 import java.util.logging.Logger
 import static hudson.plugins.sonar.utils.SQServerVersions.SQ_5_3_OR_HIGHER
+import org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud
+import jenkins.model.JenkinsLocationConfiguration
+
 final def LOG = Logger.getLogger("LABS")
 
 LOG.log(Level.INFO,  'running configure-jenkins.groovy' )
@@ -37,3 +40,29 @@ System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
 
 // This is a helper to delete views in the Jenkins script console if needed
 // Jenkins.instance.views.findAll{ view -> view instanceof com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView }.each{ view -> Jenkins.instance.deleteView( view ) }
+
+println("WORKAROUND FOR BUILD_URL ISSUE, see: https://issues.jenkins-ci.org/browse/JENKINS-28466")
+
+def sout = new StringBuilder(), serr = new StringBuilder()
+def proc = 'oc get route jenkins -o jsonpath={.spec.host}'.execute()
+proc.consumeProcessOutput(sout, serr)
+proc.waitForOrKill(3000)
+println "out> $sout err> $serr"
+
+def jlc = jenkins.model.JenkinsLocationConfiguration.get()
+jlc.setUrl("https://" + sout)
+
+println("Configuring container cap for k8s, so pipelines won't hang when booting up slaves")
+
+try{
+    def kc = Jenkins.instance.clouds.get(0)
+
+    println "cloud found: ${Jenkins.instance.clouds}"
+
+    kc.setContainerCapStr("100")
+}
+finally {
+    //if we don't null kc, jenkins will try to serialise k8s objects and that will fail, so we won't see actual error
+    kc = null
+}
+
