@@ -79,8 +79,6 @@ objects:
             value: ${JNLP_SERVICE_NAME}
           - name: JENKINS_OPTS
             value: ${JENKINS_OPTS}
-          - name: _JENKINS_URL
-            value: ${JENKINS_URL}
           image: ' '
           imagePullPolicy: IfNotPresent
           livenessProbe:
@@ -216,7 +214,3 @@ parameters:
   displayName: Jenkins Arguments
   name: JENKINS_OPTS
   value: --sessionTimeout=0
-- description: The URL of Jenkins, to resolve the save/BUILD_URL bug
-  displayName: Jenkins URL
-  name: JENKINS_URL
-  value: https://jenkins-namespace.apps.rht-labs.com/

@@ -41,11 +41,16 @@ System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
 // This is a helper to delete views in the Jenkins script console if needed
 // Jenkins.instance.views.findAll{ view -> view instanceof com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView }.each{ view -> Jenkins.instance.deleteView( view ) }
 
-
 println("WORKAROUND FOR BUILD_URL ISSUE, see: https://issues.jenkins-ci.org/browse/JENKINS-28466")
+
+def sout = new StringBuilder(), serr = new StringBuilder()
+def proc = 'oc get route jenkins -o jsonpath={.spec.host}'.execute()
+proc.consumeProcessOutput(sout, serr)
+proc.waitForOrKill(3000)
+println "out> $sout err> $serr"
+
 def jlc = jenkins.model.JenkinsLocationConfiguration.get()
-def url = System.getenv('_JENKINS_URL')
-jlc.setUrl(url)
+jlc.setUrl("https://" + sout)
 
 println("Configuring container cap for k8s, so pipelines won't hang when booting up slaves")
 
