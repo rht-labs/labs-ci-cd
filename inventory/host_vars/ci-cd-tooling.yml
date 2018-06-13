@@ -52,20 +52,6 @@ openshift_cluster_content:
       - hoverfly
 - object: ci-cd-deployments
   content:
-  - name: jenkins-persistent
-    template: "{{ playbook_dir }}/openshift-templates/jenkins/jenkins-persistent-template.yaml"
-    params: "{{ playbook_dir }}/params/jenkins/deploy"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-    - jenkins
-  - name: nexus
-    template: "{{ playbook_dir }}/openshift-templates/nexus/template.json"
-    params: "{{ playbook_dir }}/params/nexus/deploy"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-    - nexus
-    post_steps:
-    - role: "labs-ci-cd/roles/configure-nexus"
   - name: sonarqube
     template: "{{ playbook_dir }}/openshift-templates/sonarqube/template.yaml"
     params: "{{ playbook_dir }}/params/sonarqube/build-and-deploy"
@@ -78,6 +64,20 @@ openshift_cluster_content:
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - sonar
+  - name: nexus
+    template: "{{ playbook_dir }}/openshift-templates/nexus/template.json"
+    params: "{{ playbook_dir }}/params/nexus/deploy"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - nexus
+    post_steps:
+    - role: "labs-ci-cd/roles/configure-nexus"
+  - name: jenkins-persistent
+    template: "{{ playbook_dir }}/openshift-templates/jenkins/jenkins-persistent-template.yaml"
+    params: "{{ playbook_dir }}/params/jenkins/deploy"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - jenkins
   - name: hoverfly
     template: "{{ playbook_dir }}/openshift-templates/hoverfly/template.yaml"
     params: "{{ playbook_dir }}/params/hoverfly/deploy"
