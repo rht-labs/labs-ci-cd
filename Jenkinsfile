@@ -42,6 +42,20 @@ node() {
                 env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
                 env.PR_TEST_PROJECT_NAME = "labs-test-pr-${env.PR_ID}"
 
+                // Delete projects if they already exist (In order to prevent issues with the projects already existing). 
+                // Then wait some time to prevent trying to create a project when the delete command is still being tried as this can take a while
+                sh """
+                    oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
+                    oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
+                    oc delete project $PR_TEST_PROJECT_NAME || rc=\$?
+                    while \${unfinished}
+                    do
+                        oc get project $PR_CI_CD_PROJECT_NAME || \
+                        oc get project $PR_DEV_PROJECT_NAME || \
+                        oc get project $PR_TEST_PROJECT_NAME || unfinished=false
+                    done
+                """
+
                 if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                     error('PR_GITHUB_TOKEN cannot be null or empty')
                 }
@@ -176,7 +190,13 @@ node() {
 
             sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
         }
-
+        stage('Clean up projects') {
+            sh '''
+                oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
+                oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
+                oc delete project $PR_TEST_PROJECT_NAME || rc=\$?
+            '''
+        }
     }
     catch (e) {
 
@@ -193,7 +213,7 @@ node() {
             }'''
 
             sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
-
+            
             throw e
         }
     }
