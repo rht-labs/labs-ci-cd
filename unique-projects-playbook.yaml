@@ -1,6 +1,9 @@
 ---
-- hosts: seed-hosts[0]
+- hosts: "{{ target }}"
   vars:
+    ci_cd_namespace: labs-ci-cd
+    dev_namespace: labs-dev
+    test_namespace: labs-test
     params_regexp_replace_pairs:
       - regexp: '^((?!.*DISPLAY_NAME))(.*NAMESPACE.*)=((?!.*{{ project_name_postfix }}))(.*)$'
         replace: '\2=\4{{ project_name_postfix }}'

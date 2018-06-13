@@ -97,6 +97,8 @@ objects:
           resources:
             limits:
               memory: ${MEMORY_LIMIT}
+            requests:
+              memory: 512Mi
           terminationMessagePath: /dev/termination-log
           imagePullPolicy: IfNotPresent
         restartPolicy: Always

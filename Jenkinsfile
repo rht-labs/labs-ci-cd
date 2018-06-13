@@ -40,7 +40,21 @@ node() {
                 env.PR_GITHUB_USERNAME = 'labs-robot'
                 env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
                 env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
-                env.PR_DEMO_PROJECT_NAME = "labs-demo-pr-${env.PR_ID}"
+                env.PR_TEST_PROJECT_NAME = "labs-test-pr-${env.PR_ID}"
+
+                // Delete projects if they already exist (In order to prevent issues with the projects already existing). 
+                // Then wait some time to prevent trying to create a project when the delete command is still being tried as this can take a while
+                sh """
+                    oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
+                    oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
+                    oc delete project $PR_TEST_PROJECT_NAME || rc=\$?
+                    while \${unfinished}
+                    do
+                        oc get project $PR_CI_CD_PROJECT_NAME || \
+                        oc get project $PR_DEV_PROJECT_NAME || \
+                        oc get project $PR_TEST_PROJECT_NAME || unfinished=false
+                    done
+                """
 
                 if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                     error('PR_GITHUB_TOKEN cannot be null or empty')
@@ -88,11 +102,13 @@ node() {
             stage('Apply Inventory') {
                 dir('labs-ci-cd'){
                     sh 'ansible-galaxy install -r requirements.yml --roles-path=roles'
-                    sh "ansible-playbook ci-playbook.yaml -i inventory/ -e \"project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                    sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=bootstrap project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                    sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=tools project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                    sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=apps project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                     sh """
                         oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_CI_CD_PROJECT_NAME}
                         oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEV_PROJECT_NAME}
-                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEMO_PROJECT_NAME}
+                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_TEST_PROJECT_NAME}
                     """
                 }
             }
@@ -174,7 +190,13 @@ node() {
 
             sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
         }
-
+        stage('Clean up projects') {
+            sh '''
+                oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
+                oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
+                oc delete project $PR_TEST_PROJECT_NAME || rc=\$?
+            '''
+        }
     }
     catch (e) {
 
@@ -191,7 +213,7 @@ node() {
             }'''
 
             sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
-
+            
             throw e
         }
     }

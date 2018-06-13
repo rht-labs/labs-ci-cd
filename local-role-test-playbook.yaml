@@ -1,7 +1,7 @@
 ---
 # I do not like that this thing exists. It;s need to test that the galaxy regex replace works, but it should go away soon for a better git repo structure.
 
-- hosts: seed-hosts[0]
+- hosts: "{{ target }}"
   vars:
     params_regexp_replace_pairs:
       - regexp: '^((?!.*DISPLAY_NAME))(.*NAMESPACE.*)=((?!.*{{ project_name_postfix }}))(.*)$'

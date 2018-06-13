@@ -1,7 +1,11 @@
 ---
-- hosts: seed-hosts[0]
+- name: Running CI for Labs CI/CD 
+  hosts: "{{ target }}"
   vars:
     scm_url: https://github.com/labs-robot/labs-ci-cd.git
+    ci_cd_namespace: labs-ci-cd
+    dev_namespace: labs-dev
+    test_namespace: labs-test
     params_regexp_replace_pairs:
       - regexp: '^((?!.*DISPLAY_NAME))(.*NAMESPACE.*)=((?!.*{{ project_name_postfix }}))(.*)$'
         replace: '\2=\4{{ project_name_postfix }}'
