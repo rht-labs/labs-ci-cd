@@ -1,6 +1,6 @@
-casl-ansible
+openshift-applier
 roles/*
-!roles/make-projects-unique
+!roles/configure-nexus
 *.pyc
 .idea
 *.iml

@@ -4,7 +4,7 @@ apiVersion: v1
 metadata:
   name: project-acl
   annotations:
-    openshift.io/display-name: CI CD Access template
+    openshift.io/display-name: Group and role binding Access template
     description: RoleBinding to give access to project
     iconClass: icon-jenkins
 objects:

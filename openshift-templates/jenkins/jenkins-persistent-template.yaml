@@ -98,6 +98,8 @@ objects:
           resources:
             limits:
               memory: ${MEMORY_LIMIT}
+            requests:
+              memory: 512Mi
           securityContext:
             capabilities: {}
             privileged: false

@@ -1,6 +1,11 @@
 # Jenkins Master Configuration
 This repo is used to build a customized OpenShift Jenkins 2 image with [source to image (S2I)](https://github.com/openshift/source-to-image). The base OpenShift Jenkins S2I can be found at `registry.access.redhat.com/openshift3/jenkins-2-rhel7`. The resulting image is a Jenkins master, and should be used in a master / slaves architecture. This image is configured to provide slaves as k8s pods via the [k8s Jenkins plugin](https://docs.openshift.com/container-platform/3.5/using_images/other_images/jenkins.html#using-the-jenkins-kubernetes-plug-in-to-run-jobs). Thus, this repo doesn't define any build tools or the like, as they are the responsibility of the slaves.
 
+## Building and Testing Locally
+With `s2i` installed; you can run the following to build and test your changes to the S2I locally.
+```bash
+s2i build --loglevel 5 jenkins-master openshift/jenkins-2-centos7 jenkins-s2i:latest
+```
 
 ## How This Repo Works
 
@@ -20,6 +25,9 @@ To Integrate with slack follow the steps at https://github.com/jenkinsci/slack-p
 ## SonarQube Integration
  
  By default the deployment will attempt to connect to SonarQube and configure its setup including an authentication token. The default url is http://sonarqube:9000. This can be overriden adding an environment variable named `SONARQUBE_URL`. To disable SonarQube entirely set an environment variable named `DISABLE_SONAR` with any value.
+
+## Git Creds
+Inject the `git` credentials to Jenkins-s2i when it is being built by editing `configuration/init.groovy.d/configure-credentials.groovy` or by exposing a new environment Variable to the Jenkins deployment tempate.
 
 ## Contributing
 
