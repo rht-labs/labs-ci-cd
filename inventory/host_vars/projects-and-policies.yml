@@ -21,23 +21,23 @@ openshift_cluster_content:
     params: "{{ playbook_dir }}/params/projectrequests/test"
     tags:
     - projects
-- object: project-acls
+- object: group-role-binding
   content:
   - name: "ci-cd-acl"
     namespace: "{{ ci_cd_namespace }}"
-    template: "{{ playbook_dir }}/openshift-templates/project-acl/template.yml"
-    params: "{{ playbook_dir }}/params/project-acl/all"
+    template: "{{ playbook_dir }}/openshift-templates/rolebinding-group/template.yml"
+    params: "{{ playbook_dir }}/params/rolebinding-group/all"
     tags:
-    - project-acl
+    - rolebinding-group
   - name: "labs-dev-acl"
     namespace: "{{ dev_namespace }}"
-    template: "{{ playbook_dir }}/openshift-templates/project-acl/template.yml"
-    params: "{{ playbook_dir }}/params/project-acl/all"
+    template: "{{ playbook_dir }}/openshift-templates/rolebinding-group/template.yml"
+    params: "{{ playbook_dir }}/params/rolebinding-group/all"
     tags:
-    - project-acl
+    - rolebinding-group
   - name: "labs-dev-acl"
     namespace: "{{ test_namespace }}"
-    template: "{{ playbook_dir }}/openshift-templates/project-acl/template.yml"
-    params: "{{ playbook_dir }}/params/project-acl/all"
+    template: "{{ playbook_dir }}/openshift-templates/rolebinding-group/template.yml"
+    params: "{{ playbook_dir }}/params/rolebinding-group/all"
     tags:
-    - project-acl
+    - rolebinding-group
