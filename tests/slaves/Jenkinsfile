@@ -1,7 +1,6 @@
 pipeline {
 
     agent {
-        // label "" also could have been 'agent any' - that has the same meaning.
         label "master"
     }
 
@@ -9,6 +8,7 @@ pipeline {
         // GLobal Vars
         JOB_NAME = "${JOB_NAME}".replace("/", "-")
         GIT_SSL_NO_VERIFY = true
+        URL_TO_TEST = "https://google.com"
     }
 
     // The options directive is for configuration that applies to the whole job.
@@ -19,18 +19,7 @@ pipeline {
         timestamps()
     }
 
-    stages {
-        // stage("add status to PR") {
-        //     agent {
-        //         node {
-        //             label "master"
-        //         }
-        //     }
-        //     steps {
-        //         script {
-        //         }
-        //     }
-        // }        
+    stages { 
         stage("Running Slave Tests") {
             parallel {
                 stage('ansible') {
@@ -114,11 +103,25 @@ pipeline {
                     }
                     steps {
                         sh '''
-                            /zap/zap-baseline.py -r index.html -t https://google.com
+                            /zap/zap-baseline.py -r index.html -t ${URL_TO_TEST}
                         '''
                     }
                 }
-
+                stage('') {
+                    agent {
+                        node {
+                            label "jenkins-slave-arachni"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            /arachni/bin/arachni ${URL_TO_TEST} --report-save-path=arachni-report.afr
+                        '''
+                    }
+                }
+                //
+                //  TEMPLATE FOR SLAVES
+                // 
                 // stage('') {
                 //     agent {
                 //         node {
