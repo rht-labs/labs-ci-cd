@@ -104,6 +104,7 @@ node() {
                     sh 'ansible-galaxy install -r requirements.yml --roles-path=roles'
                     sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=bootstrap project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                     sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=tools project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                    sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=ci-for-labs project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                     sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=apps project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                     sh """
                         oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_CI_CD_PROJECT_NAME}
@@ -115,6 +116,50 @@ node() {
 
         }
 
+        stage('Test Slaves') {
+            try { 
+                def pending = '''
+                    {
+                        "state": "pending",
+                        "description": "test are running...",
+                        "context": "Jenkins Slave Tests"
+                    }
+                '''
+                sh "curl -u ${env.USER_PASS} -d '${pending}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+
+
+                sh """
+                    oc start-build test-slaves-pipeline -w -n ${env.PR_CI_CD_PROJECT_NAME}
+                """
+                openshiftVerifyBuild(
+                        apiURL: "${env.OCP_API_SERVER}",
+                        authToken: "${env.OCP_TOKEN}",
+                        buildConfig: "test-slaves-pipeline",
+                        namespace: "${env.PR_CI_CD_PROJECT_NAME}",
+                        waitTime: '10',
+                        waitUnit: 'min'
+                )   
+                def json = '''\
+                {
+                    "state": "success",
+                    "description": "the job passed! :)",
+                    "context": "Jenkins Slave Tests"
+                }'''
+
+                sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+
+             }
+            catch(err) {
+                def failed = '''
+                {
+                    "state": "failure",
+                    "description": "the job failed :(",
+                    "context": "Jenkins Slave Tests"
+                }'''
+                sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+            }           
+        }
+        
         stage('Verify Results') {
             parallel(
                     'CI Builds': {
