@@ -180,6 +180,24 @@ node() {
                         }
                     }, failFast: true
             )
+        }
+
+        stage('Verify Slaves') {
+            parallel(
+                    'Ansible': {
+                        node('jenkins-slave-ansible'){
+                            // your stuff for testing the slave
+                            sh 'ansible --version'
+                        }
+                    },
+                    'Golang': {
+                        node('jenkins-slave-golang'){
+                            // your stuff for testing the slave
+                            sh 'go version'
+                        }
+                    },
+                    failFast: true
+            )
 
             def json = '''\
             {
@@ -190,7 +208,8 @@ node() {
 
             sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
         }
-        stage('Clean up projects') {
+        
+        stage('Clean up projects') {   
             sh '''
                 oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
                 oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
