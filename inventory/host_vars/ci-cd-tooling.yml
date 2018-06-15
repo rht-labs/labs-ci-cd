@@ -5,19 +5,19 @@ openshift_cluster_content:
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
-    template: "{{ playbook_dir }}/openshift-templates/jenkins-s2i-build/template.yaml"
+    template: "{{ playbook_dir }}/openshift-templates/jenkins-s2i-build/template.yml"
     params: "{{ playbook_dir }}/params/jenkins/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins
   - name: tool-box
-    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yaml"
+    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yml"
     params: "{{ playbook_dir }}/params/tool-box/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - tool-box
   - name: hoverfly
-    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yaml"
+    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yml"
     params: "{{ playbook_dir }}/params/hoverfly/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -76,7 +76,7 @@ openshift_cluster_content:
 - object: ci-cd-deployments
   content:
   - name: sonarqube
-    template: "{{ playbook_dir }}/openshift-templates/sonarqube/template.yaml"
+    template: "{{ playbook_dir }}/openshift-templates/sonarqube/template.yml"
     params: "{{ playbook_dir }}/params/sonarqube/build-and-deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -88,7 +88,7 @@ openshift_cluster_content:
     tags:
     - sonar
   - name: nexus
-    template: "{{ playbook_dir }}/openshift-templates/nexus/template.json"
+    template: "{{ playbook_dir }}/openshift-templates/nexus/template.yml"
     params: "{{ playbook_dir }}/params/nexus/deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -96,13 +96,13 @@ openshift_cluster_content:
     post_steps:
     - role: "labs-ci-cd/roles/configure-nexus"
   - name: jenkins-persistent
-    template: "{{ playbook_dir }}/openshift-templates/jenkins/jenkins-persistent-template.yaml"
+    template: "{{ playbook_dir }}/openshift-templates/jenkins/jenkins-persistent-template.yml"
     params: "{{ playbook_dir }}/params/jenkins/deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins
   - name: hoverfly
-    template: "{{ playbook_dir }}/openshift-templates/hoverfly/template.yaml"
+    template: "{{ playbook_dir }}/openshift-templates/hoverfly/template.yml"
     params: "{{ playbook_dir }}/params/hoverfly/deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -110,7 +110,7 @@ openshift_cluster_content:
 - object: ci-for-labs-ci-cd
   content:
   - name: pipeline
-    template: "{{ playbook_dir }}/openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yaml"
+    template: "{{ playbook_dir }}/openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yml"
     params: "{{ playbook_dir }}/params/ci-for-labs-ci-cd/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
