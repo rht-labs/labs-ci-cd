@@ -106,19 +106,18 @@ pipeline {
                         '''
                     }
                 }
-                // stage('ZAP') {
-                //     agent {
-                //         node {
-                //             label "jenkins-slave-zap"
-                //         }
-                //     }
-                //     steps {
-                //         sh '''
-                //             /zap/zap-baseline.py -r index.html -t https://google.com || return_code=$?
-                //             echo "exit value was  - " $return_code
-                //         '''
-                //     }
-                // }
+                stage('ZAP') {
+                    agent {
+                        node {
+                            label "jenkins-slave-zap"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            /zap/zap-baseline.py -r index.html -t https://google.com
+                        '''
+                    }
+                }
 
                 // stage('') {
                 //     agent {
