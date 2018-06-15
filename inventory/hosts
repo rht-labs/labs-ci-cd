@@ -6,3 +6,6 @@ ci-cd-tooling
 
 [apps]
 app-build-deploy
+
+[ci-for-labs]
+ci-for-labs-ci-cd

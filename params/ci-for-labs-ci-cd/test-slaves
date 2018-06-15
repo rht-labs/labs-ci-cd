@@ -1,0 +1,5 @@
+NAME=test-slaves
+PIPELINE_SOURCE_REPOSITORY_REF=master
+PIPELINE_SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd.git
+RUN_POLICY=Parallel
+PIPELINE_FILENAME=tests/slaves/Jenkinsfile

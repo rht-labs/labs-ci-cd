@@ -107,11 +107,3 @@ openshift_cluster_content:
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - hoverfly
-- object: ci-for-labs-ci-cd
-  content:
-  - name: pipeline
-    template: "{{ playbook_dir }}/openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yml"
-    params: "{{ playbook_dir }}/params/ci-for-labs-ci-cd/build"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-    - ci
