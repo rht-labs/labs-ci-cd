@@ -106,11 +106,6 @@ node() {
                     sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=tools project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                     sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=ci-for-labs project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                     sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=apps project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-                    sh """
-                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_CI_CD_PROJECT_NAME}
-                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEV_PROJECT_NAME}
-                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_TEST_PROJECT_NAME}
-                    """
                 }
             }
 
