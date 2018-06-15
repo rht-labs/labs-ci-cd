@@ -39,7 +39,7 @@ There are two ways to use Labs CI/CD. The preferred approach is to run the playb
 3. If `labs-ci-cd` doesn't yet exist on your OpenShift cluster, just run the default `run.sh` script:
     - `[labs-ci-cd]$ ./run.sh`
 4. If `labs-ci-cd` already exists on your OpenShift cluster and you want to create a new instance of `labs-ci-cd` with its own name, run the "unique projects" playbook. Since the command will run in the container, the paths need to be prefixed with `/tmp/src/`:
-    - `[labs-ci-cd]$ ./run.sh ansible-playbook /tmp/src/unique-projects-playbook.yaml -i /tmp/src/inventory/ -e "project_name_postfix=<insert unique postfix here>" -e "target=<thing you're targeting eg tools>"`
+    - `[labs-ci-cd]$ ./run.sh ansible-playbook /tmp/src/unique-projects-playbook.yml -i /tmp/src/inventory/ -e "project_name_postfix=<insert unique postfix here>" -e "target=<thing you're targeting eg tools>"`
       - bootstrap - Creates the projects inside of the cluster
       - tools - Deploys the CI/CD tools into the `labs-ci-cd-<postfix>` project
       - apps - Deploys the example applications and their associated CI/CD pipelines
@@ -78,7 +78,7 @@ It's possible that you cannot run docker on your machine for some reason. No fea
 
 #### Customised Install
 If `labs-ci-cd` already exists on your OpenShift cluster and you want to create a new instance of `labs-ci-cd` with its own name eg `john-ci-cd`, run the "unique projects" playbook:
-    - `[labs-ci-cd]$ ansible-playbook unique-projects-playbook.yaml -i inventory/ -e "project_name_postfix=<insert unique postfix here> target=<thing you're targeting eg tools>"`
+    - `[labs-ci-cd]$ ansible-playbook unique-projects-playbook.yml -i inventory/ -e "project_name_postfix=<insert unique postfix here> target=<thing you're targeting eg tools>"`
     - This playbook works (in part) by changing the contents of the files in `params`. The playbook is idempotent, so it will only change these files once, but you should expect changes.
     - This playbook is useful if you're developing labs-ci-cd and want to test your changes. With a unique project name, you can safely try out your changes in a test cluster that others are using.
     - Note that only numbers, lowercase letters, and dashes are allowed in project names.
