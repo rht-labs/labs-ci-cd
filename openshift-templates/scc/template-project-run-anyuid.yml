@@ -20,7 +20,7 @@ objects:
   fsGroup:
     type: RunAsAny
   apiVersion: v1
-  priority: "${{PRIORITY_LEVEL}}"
+  priority: "${PRIORITY_LEVEL}"
   volumes:
   - configMap
   - downwardAPI
@@ -35,7 +35,6 @@ objects:
   requiredDropCapabilities:
   - MKNOD
   metadata:
-    creationTimestamp: 
     annotations:
       kubernetes.io/description: anyuid provides all features of the restricted SCC
         but allows users to run with any UID and any GID.
@@ -57,5 +56,4 @@ parameters:
     to the most privileged.
   name: PRIORITY_LEVEL
 metadata:
-  creationTimestamp: 
   name: "${NAME}"

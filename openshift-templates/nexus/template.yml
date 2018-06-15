@@ -54,7 +54,6 @@ objects:
       type: Recreate
     template:
       metadata:
-        creationTimestamp:
         labels:
           name: "${NAME}"
       spec:

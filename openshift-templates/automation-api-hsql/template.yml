@@ -38,7 +38,6 @@ objects:
       type: Rolling
     template:
       metadata:
-        creationTimestamp: 
         labels:
           name: "${NAME}"
       spec:
