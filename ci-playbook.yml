@@ -14,7 +14,7 @@
       - regexp: '(SOURCE_REPOSITORY_URL)=(https:\/\/github\.com\/rht-labs\/labs-ci-cd.*)((\n.*)+)(SOURCE_REPOSITORY_REF)=(.*)'
         replace: '\1={{ scm_url }}\3\5={{ scm_ref }}'
       - regexp: '^(PIPELINE_SOURCE_REPOSITORY_REF)=((?!.*\({{ scm_ref }}\)))(.*)$'
-        replace: '\1=\3 ({{ scm_ref }})'
+        replace: '\1={{ scm_ref }}'
     galaxy_regexp_replace_pairs:
       - regexp: '(- src: )(https:\/\/github\.com\/rht-labs\/labs-ci-cd.*)((\n.*)+)(version: )(.*)'
         replace: '\1{{ scm_url }}\3\5{{ scm_ref }}'
