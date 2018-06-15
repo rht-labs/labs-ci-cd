@@ -1,0 +1,112 @@
+pipeline {
+
+    agent {
+        // label "" also could have been 'agent any' - that has the same meaning.
+        label "master"
+    }
+
+    environment {
+        // GLobal Vars
+        JOB_NAME = "${JOB_NAME}".replace("/", "-")
+        GIT_SSL_NO_VERIFY = true
+    }
+
+    // The options directive is for configuration that applies to the whole job.
+    options {
+        buildDiscarder(logRotator(numToKeepStr:'10'))
+        timeout(time: 15, unit: 'MINUTES')
+        ansiColor('xterm')
+        timestamps()
+    }
+
+    stages {
+        stage("Running Slave Tests") {
+            parallel {
+                stage('ansible') {
+                    node {
+                        label "jenkins-slave-ansible"
+                    }
+                    steps {
+                        sh '''
+                            ansible --version
+                        '''
+                    }
+                }
+                stage('mvn') {
+                    node {
+                        label "jenkins-slave-mvn"
+                    }
+                    steps {
+                        sh '''
+                            mvn  -version
+                        '''
+                    }
+                }
+                stage('golang') {
+                    node {
+                        label "jenkins-slave-golang"
+                    }
+                    steps {
+                        sh '''
+                            go version
+                        '''
+                    }
+                }
+                stage('mongodb') {
+                    node {
+                        label "jenkins-slave-mongodb"
+                    }
+                    steps {
+                        sh '''
+                            mongoimport --version
+                        '''
+                    }
+                }
+                stage('npm') {
+                    node {
+                        label "jenkins-slave-npm"
+                    }
+                    steps {
+                        sh '''
+                            node --version
+                            npm --version
+                        '''
+                    }
+                }
+                stage('gradle') {
+                    node {
+                        label "jenkins-slave-gradle"
+                    }
+                    steps {
+                        sh '''
+                            gradle -version
+                        '''
+                    }
+                }
+                // stage('ZAP') {
+                //     node {
+                //         label "jenkins-slave-zap"
+                //     }
+                //     steps {
+                //         sh '''
+                //             /zap/zap-baseline.py -r index.html -t https://google.com || return_code=$?
+                //             echo "exit value was  - " $return_code
+                //         '''
+                //     }
+                // }
+
+                // stage('') {
+                //     node {
+                //         label "jenkins-slave-"
+                //     }
+                //     steps {
+                //         sh '''
+                //               -version
+                //         '''
+                //     }
+                // }
+            
+            }
+     }
+    }
+}
