@@ -139,14 +139,14 @@ node() {
                         waitTime: '10',
                         waitUnit: 'min'
                 )   
-                def json = '''\
+                def success = '''\
                 {
                     "state": "success",
                     "description": "the job passed! :)",
                     "context": "Jenkins Slave Tests"
                 }'''
 
-                sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+                sh "curl -u ${env.USER_PASS} -d '${success}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
 
              }
             catch(err) {
@@ -156,7 +156,7 @@ node() {
                     "description": "the job failed :(",
                     "context": "Jenkins Slave Tests"
                 }'''
-                sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+                sh "curl -u ${env.USER_PASS} -d '${failed}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
             }           
         }
         
