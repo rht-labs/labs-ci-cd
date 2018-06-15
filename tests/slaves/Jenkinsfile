@@ -20,11 +20,24 @@ pipeline {
     }
 
     stages {
+        // stage("add status to PR") {
+        //     agent {
+        //         node {
+        //             label "master"
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //         }
+        //     }
+        // }        
         stage("Running Slave Tests") {
             parallel {
                 stage('ansible') {
-                    node {
-                        label "jenkins-slave-ansible"
+                    agent {
+                        node {
+                            label "jenkins-slave-ansible"
+                        }
                     }
                     steps {
                         sh '''
@@ -33,8 +46,10 @@ pipeline {
                     }
                 }
                 stage('mvn') {
-                    node {
-                        label "jenkins-slave-mvn"
+                    agent {
+                        node {
+                            label "jenkins-slave-mvn"
+                        }
                     }
                     steps {
                         sh '''
@@ -43,8 +58,10 @@ pipeline {
                     }
                 }
                 stage('golang') {
-                    node {
-                        label "jenkins-slave-golang"
+                    agent {
+                        node {
+                            label "jenkins-slave-golang"
+                        }
                     }
                     steps {
                         sh '''
@@ -53,8 +70,10 @@ pipeline {
                     }
                 }
                 stage('mongodb') {
-                    node {
-                        label "jenkins-slave-mongodb"
+                    agent {
+                        node {
+                            label "jenkins-slave-mongodb"
+                        }
                     }
                     steps {
                         sh '''
@@ -63,8 +82,10 @@ pipeline {
                     }
                 }
                 stage('npm') {
-                    node {
-                        label "jenkins-slave-npm"
+                    agent {
+                        node {
+                            label "jenkins-slave-npm"
+                        }
                     }
                     steps {
                         sh '''
@@ -74,8 +95,10 @@ pipeline {
                     }
                 }
                 stage('gradle') {
-                    node {
-                        label "jenkins-slave-gradle"
+                    agent {
+                        node {
+                            label "jenkins-slave-gradle"
+                        }
                     }
                     steps {
                         sh '''
@@ -84,8 +107,10 @@ pipeline {
                     }
                 }
                 // stage('ZAP') {
-                //     node {
-                //         label "jenkins-slave-zap"
+                //     agent {
+                //         node {
+                //             label "jenkins-slave-zap"
+                //         }
                 //     }
                 //     steps {
                 //         sh '''
@@ -96,8 +121,10 @@ pipeline {
                 // }
 
                 // stage('') {
-                //     node {
-                //         label "jenkins-slave-"
+                //     agent {
+                //         node {
+                //             label "jenkins-slave-"
+                //         }
                 //     }
                 //     steps {
                 //         sh '''
@@ -107,6 +134,7 @@ pipeline {
                 // }
             
             }
-     }
+        }
+
     }
 }
