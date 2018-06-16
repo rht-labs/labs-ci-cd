@@ -36,7 +36,7 @@ pipeline {
     // The options directive is for configuration that applies to the whole job.
     options {
         buildDiscarder(logRotator(numToKeepStr:'10'))
-        timeout(time: 20, unit: 'MINUTES')
+        timeout(time: 35, unit: 'MINUTES')
         // ansiColor('xterm')
         // timestamps()
     }
@@ -381,7 +381,7 @@ pipeline {
         }
 
         // Clear any old or existing projects from the cluster to ensure a clean slate to test against
-        stage('clear existing projects') {
+        stage('clean up CI projects created') {
             steps {
                 echo "Removing old PR projects if they exist"
                 clearProjects()
