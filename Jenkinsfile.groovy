@@ -50,6 +50,7 @@ pipeline {
                 }
             }
             steps {
+                echo "Setting up environment variables"
                 script {
                     env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
                     env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
@@ -78,8 +79,9 @@ pipeline {
         }
 
         // Clear any old or existing projects from the cluster to ensure a clean slate to test against
-        stage('clear projects') {
+        stage('clear existing projects') {
             steps {
+                echo "Removing old PR projects if they exist"
                 clearProjects()
             }
         }
@@ -126,7 +128,7 @@ pipeline {
 
                 notifyGitHub('''{
                             "state": "pending",
-                            "description": "ALL CI jobs are running U+1F914 ...",
+                            "description": "ALL CI jobs are running...",
                             "context": "Jenkins"
                         }''')
 
@@ -151,7 +153,7 @@ pipeline {
             steps {
                 notifyGitHub('''{
                             "state": "pending",
-                            "description": "job is running U+1F914 ...",
+                            "description": "job is running...",
                             "context": "Apply Inventory"
                         }''')
 
@@ -168,17 +170,221 @@ pipeline {
                 success {
                     notifyGitHub('''{
                                 "state": "success",
-                                "description": "job completed U+1F600",
+                                "description": "job completed :)",
                                 "context": "Apply Inventory"
                             }''')
                 }
                 failure {
                     notifyGitHub('''{
                                 "state": "failure",
-                                "description": "job failed U+1F615",
+                                "description": "job failed :(",
                                 "context": "Apply Inventory"
                             }''')
                 }
+            }
+        }
+
+        // Run a start-build of the tests/slave/Jenkinsfile in the newly created Jenkins namespace
+        // it contains a simple Jenkinsfile that starts each slave in paralle
+        // and verifies the type of on it is eg that the npm slave has npm on the path 
+        stage("test slaves") {
+            steps {
+                notifyGitHub('''{
+                        "state": "pending",
+                        "description": "test are running...",
+                        "context": "Jenkins Slave Tests"
+                    }''')
+
+                echo "Running test-slaves-pipeline and verifyin it's been successful"
+                sh """
+                    oc start-build test-slaves-pipeline -w -n ${env.PR_CI_CD_PROJECT_NAME}
+                """
+                openshiftVerifyBuild(
+                        apiURL: "${env.OCP_API_SERVER}",
+                        authToken: "${env.OCP_TOKEN}",
+                        bldCfg: "test-slaves-pipeline",
+                        namespace: "${env.PR_CI_CD_PROJECT_NAME}",
+                        waitTime: '10',
+                        waitUnit: 'min'
+                )       
+            }
+            // Post can be used both on individual stages and for the entire build.
+            post {
+                success {
+                    notifyGitHub('''{
+                                "state": "success",
+                                "description": "job completed :)",
+                                "context": "Jenkins Slave Tests"
+                            }''')
+                }
+                failure {
+                    notifyGitHub('''{
+                                "state": "failure",
+                                "description": "job failed :(",
+                                "context": "Jenkins Slave Tests"
+                            }''')
+                }
+            }
+        }
+        
+        // parallel executiont to validate the JAVA App has deployed correctly and the 
+        // sonar, nexus and jenkins instances have come alive as expected.
+        stage("Verifying Inventory") {
+            parallel {
+                stage("CI Builds") {
+                    steps {
+                        notifyGitHub('''{
+                                "state": "pending",
+                                "description": " job is running...",
+                                "context": "CI Builds"
+                            }''')
+
+                        echo "Verifying the CI Builds have completed successfully"
+                        script {
+                            def ciPipelineResponse = sh(returnStdout: true, script:"oc get bc -l type=pipeline -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
+                            def ciPipelineList = []
+                            for (entry in ciPipelineResponse.split()){
+                                ciPipelineList += entry.replace('buildconfigs/','').replace('-pipeline','')
+                            }
+
+                            def ciBuildsResponse = sh(returnStdout: true, script:"oc get bc -l type=image -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
+                            def ciBuildsList = ciBuildsResponse.split()
+
+                            for (String build : ciBuildsList) {
+                                String buildName = build.replace('buildconfigs/','')
+                                if( ciPipelineList.contains(buildName) ){
+                                    // we have an image build with a corresponding pipeline build
+                                    // for now, these builds aren't compatible with the openshiftVerifyBuild test we are going to do
+                                    // so skip them here, but we'll test them indirectly via the deploy tests
+                                } else {
+                                    openshiftVerifyBuild(
+                                            apiURL: "${env.OCP_API_SERVER}",
+                                            authToken: "${env.OCP_TOKEN}",
+                                            buildConfig: buildName,
+                                            namespace: "${env.PR_CI_CD_PROJECT_NAME}",
+                                            waitTime: '10',
+                                            waitUnit: 'min'
+                                    )
+                                }
+                            }
+                        }     
+                    }
+                    // Post can be used both on individual stages and for the entire build.
+                    post {
+                        success {
+                            notifyGitHub('''{
+                                        "state": "success",
+                                        "description": "job completed :)",
+                                        "context": "CI Builds"
+                                    }''')
+                        }
+                        failure {
+                            notifyGitHub('''{
+                                        "state": "failure",
+                                        "description": "job failed :(",
+                                        "context": "CI Builds"
+                                    }''')
+                        }
+                    }
+                }
+                stage("CI Deploys") {
+                    steps {
+                        notifyGitHub('''{
+                                "state": "pending",
+                                "description": " job is running...",
+                                "context": "CI Deploys"
+                            }''')
+
+                        echo "Verifying the CI Deploys have completed successfully"
+                        script {
+                            def ciDeploysResponse = sh(returnStdout: true, script:"oc get dc -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
+                            def ciDeploysList = ciDeploysResponse.split()
+
+                            for (String deploy : ciDeploysList) {
+                                def deployName = deploy.replace('deploymentconfigs/','')
+                                openshiftVerifyDeployment(
+                                        apiURL: "${env.OCP_API_SERVER}",
+                                        authToken: "${env.OCP_TOKEN}",
+                                        depCfg: deployName,
+                                        namespace: "${env.PR_CI_CD_PROJECT_NAME}",
+                                        verifyReplicaCount: true,
+                                        waitTime: '10',
+                                        waitUnit: 'min'
+                                )
+                            }
+                        }    
+                    }
+                    // Post can be used both on individual stages and for the entire build.
+                    post {
+                        success {
+                            notifyGitHub('''{
+                                        "state": "success",
+                                        "description": "job completed :)",
+                                        "context": "CI Deploys"
+                                    }''')
+                        }
+                        failure {
+                            notifyGitHub('''{
+                                        "state": "failure",
+                                        "description": "job failed :(",
+                                        "context": "CI Deploys"
+                                    }''')
+                        }
+                    }
+                }
+                stage("App Deploys") {
+                    steps {
+                        notifyGitHub('''{
+                                "state": "pending",
+                                "description": " job is running...",
+                                "context": "CI Deploys"
+                            }''')
+
+                        echo "Verifying the App Deploys (JAVA) have completed successfully"
+                        script {
+                            def appDeploysResponse = sh(returnStdout: true, script:"oc get dc -n ${env.PR_DEV_PROJECT_NAME} -o name")
+                            def appDeploysList = appDeploysResponse.split()
+
+                            for (String app : appDeploysList) {
+                                def appName = app.replace('deploymentconfigs/','')
+                                openshiftVerifyDeployment(
+                                        apiURL: "${env.OCP_API_SERVER}",
+                                        authToken: "${env.OCP_TOKEN}",
+                                        depCfg: appName,
+                                        namespace: "${env.PR_DEV_PROJECT_NAME}",
+                                        verifyReplicaCount: true,
+                                        waitTime: '15',
+                                        waitUnit: 'min'
+                                )
+                            }
+                        }    
+                    }
+                    // Post can be used both on individual stages and for the entire build.
+                    post {
+                        success {
+                            notifyGitHub('''{
+                                        "state": "success",
+                                        "description": "job completed :)",
+                                        "context": "App Deploys"
+                                    }''')
+                        }
+                        failure {
+                            notifyGitHub('''{
+                                        "state": "failure",
+                                        "description": "job failed :(",
+                                        "context": "App Deploys"
+                                    }''')
+                        }
+                    }
+                }    
+            }
+        }
+
+        // Clear any old or existing projects from the cluster to ensure a clean slate to test against
+        stage('clear existing projects') {
+            steps {
+                echo "Removing old PR projects if they exist"
+                clearProjects()
             }
         }
     }
@@ -187,14 +393,14 @@ pipeline {
         success {
             notifyGitHub('''{
                         "state": "success",
-                        "description": "master ci job completed U+1F60B",
+                        "description": "master ci job completed :)",
                         "context": "Jenkins"
                     }''')
         }
         failure {
             notifyGitHub('''{
                         "state": "failure",
-                        "description": "master ci job failed U+1F62D",
+                        "description": "master ci job failed :(",
                         "context": "Jenkins"
                     }''')
         }
