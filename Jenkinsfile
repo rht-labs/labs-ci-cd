@@ -1,3 +1,7 @@
+def notifyGitHub(state) {
+    sh "curl -u ${env.USER_PASS} -d '${state}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+}
+
 node() {
     try {
         stage('Initialization') {
@@ -120,8 +124,7 @@ node() {
                         "context": "Jenkins Slave Tests"
                     }
                 '''
-                sh "curl -u ${env.USER_PASS} -d '${pending}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
-
+                notifyGitHub(pending);
 
                 sh """
                     oc start-build test-slaves-pipeline -w -n ${env.PR_CI_CD_PROJECT_NAME}
@@ -134,15 +137,14 @@ node() {
                         waitTime: '10',
                         waitUnit: 'min'
                 )   
-                def success = '''\
-                {
-                    "state": "success",
-                    "description": "the job passed! :)",
-                    "context": "Jenkins Slave Tests"
-                }'''
-
-                sh "curl -u ${env.USER_PASS} -d '${success}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
-
+                def success = '''
+                    {
+                        "state": "success",
+                        "description": "the job passed! :)",
+                        "context": "Jenkins Slave Tests"
+                    }
+                '''
+                notifyGitHub(success);
              }
             catch(err) {
                 def failed = '''
@@ -151,7 +153,7 @@ node() {
                     "description": "the job failed :(",
                     "context": "Jenkins Slave Tests"
                 }'''
-                sh "curl -u ${env.USER_PASS} -d '${failed}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+                notifyGitHub(failed)
             }           
         }
         
