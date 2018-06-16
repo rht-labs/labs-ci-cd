@@ -107,7 +107,7 @@ pipeline {
                         '''
                     }
                 }
-                stage('') {
+                stage('arachni') {
                     agent {
                         node {
                             label "jenkins-slave-arachni"
