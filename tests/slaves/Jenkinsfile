@@ -19,8 +19,24 @@ pipeline {
         timestamps()
     }
 
-    stages { 
-        stage("Running Slave Tests") {
+    stages {
+        //
+        //  TEMPLATE FOR SLAVES
+        // 
+        // stage('') {
+        //     agent {
+        //         node {
+        //             label "jenkins-slave-"
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //               -version
+        //         '''
+        //     }
+        // }
+
+        stage("Running Slave Tests 1/2") {
             parallel {
                 stage('ansible') {
                     agent {
@@ -70,6 +86,10 @@ pipeline {
                         '''
                     }
                 }
+            }
+        }
+        stage("Running Slave Tests  2/2") {
+            parallel {
                 stage('npm') {
                     agent {
                         node {
