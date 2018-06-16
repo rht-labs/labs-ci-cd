@@ -195,6 +195,10 @@ pipeline {
                         "context": "Jenkins Slave Tests"
                     }''')
 
+                echo "Trigger builds of all the slaves"
+                sh """
+                    oc get bc -n labs-ci-cd-pr-191 -o name | grep jenkins-slave | cut -d'/'  -f 2 |awk -v namespace=\$PR_CI_CD_PROJECT_NAME {'print "oc start-build "\$0" -n "namespace '}  | sh
+                """
                 echo "Running test-slaves-pipeline and verifyin it's been successful"
                 sh """
                     oc start-build test-slaves-pipeline -w -n ${env.PR_CI_CD_PROJECT_NAME}
