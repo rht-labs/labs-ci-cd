@@ -341,7 +341,7 @@ pipeline {
                         notifyGitHub('''{
                                 "state": "pending",
                                 "description": " job is running...",
-                                "context": "CI Deploys"
+                                "context": "App Deploys"
                             }''')
 
                         echo "Verifying the App Deploys (JAVA) have completed successfully"
