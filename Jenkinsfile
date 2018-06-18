@@ -197,9 +197,9 @@ pipeline {
 
                 echo "Trigger builds of all the slaves"
                 sh """
-                    oc get bc -n labs-ci-cd-pr-191 -o name | grep jenkins-slave | cut -d'/'  -f 2 |awk -v namespace=\$PR_CI_CD_PROJECT_NAME {'print "oc start-build "\$0" -n "namespace '}  | sh
+                    oc get bc -n ${env.PR_CI_CD_PROJECT_NAME} -o name | grep jenkins-slave | cut -d'/'  -f 2 |awk -v namespace=\$PR_CI_CD_PROJECT_NAME {'print "oc start-build "\$0" -n "namespace '}  | sh
                 """
-                echo "Running test-slaves-pipeline and verifyin it's been successful"
+                echo "Running test-slaves-pipeline and verifying it's been successful"
                 sh """
                     oc start-build test-slaves-pipeline -w -n ${env.PR_CI_CD_PROJECT_NAME}
                 """
@@ -387,7 +387,7 @@ pipeline {
         // Clear any old or existing projects from the cluster to ensure a clean slate to test against
         stage('clean up CI projects created') {
             steps {
-                echo "Removing old PR projects if they exist"
+                echo "Removing created PR projects"
                 clearProjects()
             }
         }
