@@ -106,7 +106,8 @@ pipeline {
                     chmod 0600 $HOME/.ssh/id_rsa
                     echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> $HOME/.ssh/config
 
-                    git clone https://github.com/rht-labs/labs-ci-cd.git .
+                    git clone https://github.com/rht-labs/labs-ci-cd.git 
+                    cd labs-ci-cd
                     git remote add ci git@github.com:labs-robot/labs-ci-cd.git
                     git fetch origin pull/${env.PR_ID}/head:pr
                     git checkout pr
@@ -132,7 +133,8 @@ pipeline {
                             "context": "Jenkins"
                         }''')
 
-                sh """
+                sh """ 
+                    cd labs-ci-cd
                     git checkout master
                     git fetch origin pull/${env.PR_ID}/head:pr
                     git merge pr --ff
@@ -159,6 +161,7 @@ pipeline {
 
                 unstash 'source'
                 echo "Applying inventory"
+                sh 'cd labs-ci-cd'
                 sh 'ansible-galaxy install -r requirements.yml --roles-path=roles'
                 sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=bootstrap project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                 sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=tools project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
