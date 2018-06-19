@@ -2,11 +2,11 @@
 
 ## What's in the box?
 
-This project is an Ansible inventory for loading an OpenShift cluster with some frequently used projects, apps & tools on a Red Hat Open Innovation Lab residencies. Using the `openshift-applier`, cluster content is loaded from templates & param files in a repeatable, config-as-code way.
+This project is an Ansible inventory for loading an OpenShift cluster with some frequently used projects, apps and tools on a Red Hat Open Innovation Lab residencies. Using the `openshift-applier`, cluster content is loaded from templates and param files in a repeatable, config-as-code way.
 
- Running this Ansible inventory will first create three project namespaces `labs-ci-cd`, `labs-dev` && `labs-test`. Subsequently it will create a bunch of commonly used `ci-cd-tools` such as Jenkins, Nexus & Sonar. It will also create a collection of `jenkins-slaves` that can be used in builds such as `npm`, `maven` and `golang` to name a few. Apps can also be added by applying their `Jenkinsfile` as a buildConfig with an example (java-app) included as a reference.
+ Running this Ansible inventory will first create three project namespaces: `labs-ci-cd`, `labs-dev` and `labs-test`. Subsequently it will create a bunch of commonly used `ci-cd-tools` such as Jenkins, Nexus and Sonar. It will also create a collection of `jenkins-slaves` that can be used in builds such as `npm`, `maven` and `golang` to name a few. Apps can be added also by applying their `Jenkinsfile` as a buildConfig with an example (java-app) is included as a reference.
 
- The diagaram below shows the components that get created by running the playbook's `bootstrap` & `tools` inventories.
+ The diagaram below shows the components that get created by running the playbook's `bootstrap` and `tools` inventories.
 ![whats-in-the-box.png](whats-in-the-box.png)
 
 ## How it Works
@@ -32,11 +32,11 @@ The layout of the project is like most standard `ansible-playbooks` with a simpl
 └── s2i-config
     └── jenkins-master
 ```
- * `apply.yml` is a playbook that sets up some variables and drives the openShift-applier role.
+ * `apply.yml` is a playbook that sets up some variables and drives the `openshift-applier` role.
  * `requirements.yml` is a manifest which contains the Ansible modules needed to run the playbook 
- * `docker` folder contains our Docker image customisations and are built in the cluster
+ * `docker` folder contains our container images customisations in Docker format and are built in the cluster
  * `inventory/host_vars/*.yml` is the collection of objects we want to insert into the cluster written according to [the convention defined by the openshift-applier role](https://github.com/redhat-cop/openshift-applier/tree/master/roles/openshift-applier#sourcing-openshift-object-definitions).
- * `inventory/hosts` is where the `targets` are defined for grouping of the various inventories to be run eg `bootsrap` for creating projects & roles bindings
+ * `inventory/hosts` is where the `targets` are defined for grouping of the various inventories to be run eg `bootsrap` for creating projects and roles bindings
  * `openshift-templates` is a set [OpenShift templates](https://docs.openshift.com/container-platform/3.6/dev_guide/templates.html) to be sourced from the inventory. OpenShift provides a lot of templates out of the box, so these are only to fill in gaps. If possible, reuse or update these templates before writing new ones.
  * `params` is a set of [parameter files](https://docs.openshift.com/container-platform/;latest/dev_guide/templates.html#templates-parameters) to be processed along with their respective OpenShift template. The convention here is to group files by their application.
  * `jenkins-s2i` contains the configuration and plugins we want to bring jenkins to life with
@@ -177,7 +177,7 @@ A few additional guiding principles:
 
 ## Common Issues
 
-* S2I Build fails to push image to registry with `error: build error: Failed to push image: unauthorized: authentication required`. See[this issue](https://github.com/openshift/origin/issues/4518)
+* S2I Build fails to push image to registry with `error: build error: Failed to push image: unauthorized: authentication required`. See [this issue](https://github.com/openshift/origin/issues/4518)
 
 ## License
 [ASL 2.0](LICENSE)
