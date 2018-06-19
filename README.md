@@ -2,9 +2,9 @@
 
 ## What's in the box?
 
-This project is an ansible inventory for loading an OpenShift cluster with some frequently used projects, apps & tools on a Red Hat Open Innovation Lab residencies. Using the `openshift-applier`, cluster content is loaded from templates & param files in a repeatable, config-as-code way.
+This project is an Ansible inventory for loading an OpenShift cluster with some frequently used projects, apps & tools on a Red Hat Open Innovation Lab residencies. Using the `openshift-applier`, cluster content is loaded from templates & param files in a repeatable, config-as-code way.
 
- Running this ansible inventory will first create three project namespaces `labs-ci-cd`, `labs-dev` && `labs-test`. Subsequently it will create a bunch of commonly used `ci-cd-tools` such as Jenkins, Nexus & Sonar. It will also create a collection of `jenkins-slaves` that can be used in builds such as `npm`, `maven` and `golang` to name a few. Apps can also be added by applying their `Jenkinsfile` as a buildConfig with an example (java-app) included as a reference.
+ Running this Ansible inventory will first create three project namespaces `labs-ci-cd`, `labs-dev` && `labs-test`. Subsequently it will create a bunch of commonly used `ci-cd-tools` such as Jenkins, Nexus & Sonar. It will also create a collection of `jenkins-slaves` that can be used in builds such as `npm`, `maven` and `golang` to name a few. Apps can also be added by applying their `Jenkinsfile` as a buildConfig with an example (java-app) included as a reference.
 
  The diagaram below shows the components that get created by running the playbook's `bootstrap` & `tools` inventories.
 ![whats-in-the-box.png](whats-in-the-box.png)
@@ -33,7 +33,7 @@ The layout of the project is like most standard `ansible-playbooks` with a simpl
     └── jenkins-master
 ```
  * `apply.yml` is a playbook that sets up some variables and drives the openShift-applier role.
- * `requirements.yml` is a manifest which contains the ansible modules needed to run the playbook 
+ * `requirements.yml` is a manifest which contains the Ansible modules needed to run the playbook 
  * `docker` folder contains our Docker image customisations and are built in the cluster
  * `inventory/host_vars/*.yml` is the collection of objects we want to insert into the cluster written according to [the convention defined by the openshift-applier role](https://github.com/redhat-cop/openshift-applier/tree/master/roles/openshift-applier#sourcing-openshift-object-definitions).
  * `inventory/hosts` is where the `targets` are defined for grouping of the various inventories to be run eg `bootsrap` for creating projects & roles bindings
@@ -42,9 +42,9 @@ The layout of the project is like most standard `ansible-playbooks` with a simpl
  * `jenkins-s2i` contains the configuration and plugins we want to bring jenkins to life with
 
 ### Multiple inventories
-The ansible layer is very thin; it simply provides a way to orchestrate the application of [OpenShift templates](https://docs.openshift.com/container-platform/latest/dev_guide/templates.html) across one or more [OpenShift projects](https://docs.openshift.com/container-platform/latest/architecture/core_concepts/projects_and_users.html#projects). All configuration for the applications should be defined by an OpenShift template and the corresponding parameters file.
+The Ansible layer is very thin; it simply provides a way to orchestrate the application of [OpenShift templates](https://docs.openshift.com/container-platform/latest/dev_guide/templates.html) across one or more [OpenShift projects](https://docs.openshift.com/container-platform/latest/architecture/core_concepts/projects_and_users.html#projects). All configuration for the applications should be defined by an OpenShift template and the corresponding parameters file.
 
-There are multiple ansible inventories which divide the type of components to be built and deployed to an OpenShift cluster. These are broken down into three sections:
+There are multiple Ansible inventories which divide the type of components to be built and deployed to an OpenShift cluster. These are broken down into three sections:
 * `bootstrap` - Located in `inventory/host_vars/projects-and-policies.yml` contains a collection of objects used to create project namespaces and bind roles to groups for those namespace in OpenShift
 * `tools` -  Located in `inventory/host_vars/ci-cd-tooling.yml` contains the collection of Jenkins slaves, Jenkins S2I and other CI/CD tooling deployments such as SonarQube, Nexus and others.
 * `apps` - Located in `inventory/host_vars/app-build-deploy.yml` contains definitions for the Java reference app's build and deploy
