@@ -52,6 +52,13 @@ openshift_cluster_content:
     tags:
       - jenkins-slaves
       - ansible-slave
+  - name: jenkins-slave-arachni
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    params: "{{ playbook_dir }}/params/jenkins-slaves/arachni"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+      - jenkins-slaves
+      - arachni-slave
   - name: jenkins-slave-gradle
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/gradle"
@@ -107,11 +114,3 @@ openshift_cluster_content:
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - hoverfly
-- object: ci-for-labs-ci-cd
-  content:
-  - name: pipeline
-    template: "{{ playbook_dir }}/openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yml"
-    params: "{{ playbook_dir }}/params/ci-for-labs-ci-cd/build"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-    - ci

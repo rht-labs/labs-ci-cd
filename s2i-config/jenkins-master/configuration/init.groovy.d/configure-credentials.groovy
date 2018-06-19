@@ -5,6 +5,10 @@ import com.cloudbees.plugins.credentials.common.*
 import com.cloudbees.plugins.credentials.domains.*
 import com.cloudbees.plugins.credentials.impl.*
 
+import jenkins.*
+import hudson.model.*
+import hudson.security.*
+
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -24,3 +28,12 @@ usernameAndPassword = new UsernamePasswordCredentialsImpl(
   gitPassword
 )
 store.addCredentials(domain, usernameAndPassword)
+
+// Add annoymouse access for git webhooks to trigger builds
+def strategy = new GlobalMatrixAuthorizationStrategy()
+//  Setting Anonymous Permissions
+strategy.add(hudson.model.Item.BUILD,'anonymous')
+strategy.add(hudson.model.Item.CANCEL,'anonymous')
+def instance = Jenkins.getInstance()
+instance.setAuthorizationStrategy(strategy)
+instance.save()

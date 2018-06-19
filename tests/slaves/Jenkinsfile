@@ -1,0 +1,162 @@
+pipeline {
+
+    agent {
+        label "master"
+    }
+
+    environment {
+        // GLobal Vars
+        JOB_NAME = "${JOB_NAME}".replace("/", "-")
+        GIT_SSL_NO_VERIFY = true
+        URL_TO_TEST = "https://google.com"
+    }
+
+    // The options directive is for configuration that applies to the whole job.
+    options {
+        buildDiscarder(logRotator(numToKeepStr:'10'))
+        timeout(time: 15, unit: 'MINUTES')
+        ansiColor('xterm')
+        timestamps()
+    }
+
+    stages {
+        //
+        //  TEMPLATE FOR SLAVES
+        // 
+        // stage('') {
+        //     agent {
+        //         node {
+        //             label "jenkins-slave-"
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //               -version
+        //         '''
+        //     }
+        // }
+
+        stage("Running Slave Tests 1/2") {
+            parallel {
+                stage('ansible') {
+                    agent {
+                        node {
+                            label "jenkins-slave-ansible"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            ansible --version
+                        '''
+                    }
+                }
+                stage('mvn') {
+                    agent {
+                        node {
+                            label "jenkins-slave-mvn"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            mvn  -version
+                        '''
+                    }
+                }
+                stage('golang') {
+                    agent {
+                        node {
+                            label "jenkins-slave-golang"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            go version
+                        '''
+                    }
+                }
+                stage('mongodb') {
+                    agent {
+                        node {
+                            label "jenkins-slave-mongodb"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            mongoimport --version
+                        '''
+                    }
+                }
+            }
+        }
+        stage("Running Slave Tests  2/2") {
+            parallel {
+                stage('npm') {
+                    agent {
+                        node {
+                            label "jenkins-slave-npm"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            node --version
+                            npm --version
+                        '''
+                    }
+                }
+                stage('gradle') {
+                    agent {
+                        node {
+                            label "jenkins-slave-gradle"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            gradle -version
+                        '''
+                    }
+                }
+                stage('ZAP') {
+                    agent {
+                        node {
+                            label "jenkins-slave-zap"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            /zap/zap-baseline.py -r index.html -t ${URL_TO_TEST}
+                        '''
+                    }
+                }
+                stage('arachni') {
+                    agent {
+                        node {
+                            label "jenkins-slave-arachni"
+                        }
+                    }
+                    steps {
+                        sh '''
+                            /arachni/bin/arachni ${URL_TO_TEST} --report-save-path=arachni-report.afr
+                        '''
+                    }
+                }
+                //
+                //  TEMPLATE FOR SLAVES
+                // 
+                // stage('') {
+                //     agent {
+                //         node {
+                //             label "jenkins-slave-"
+                //         }
+                //     }
+                //     steps {
+                //         sh '''
+                //               -version
+                //         '''
+                //     }
+                // }
+            
+            }
+        }
+
+    }
+}

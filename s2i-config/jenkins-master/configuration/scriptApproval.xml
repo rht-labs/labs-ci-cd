@@ -5,7 +5,10 @@
     <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods drop java.lang.CharSequence int</string>
     <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods reverse java.lang.String</string>
     <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods minus java.lang.String</string>
+    <string>staticMethod org.codehaus.groovy.runtime.EncodingGroovyMethods decodeBase64 java.lang.String</string>
     <string>method hudson.plugins.git.GitSCM getUserRemoteConfigs</string>
+    <string>new java.lang.String byte[]</string>
+    <string>staticMethod java.lang.System getenv java.lang.String</string>
     <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods execute java.lang.String</string>
     <string>staticMethod org.codehaus.groovy.runtime.ProcessGroovyMethods getText java.lang.Process</string>
   </approvedSignatures>

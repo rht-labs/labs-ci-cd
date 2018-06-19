@@ -1,0 +1,18 @@
+---
+ansible_connection: local
+openshift_cluster_content:
+- galaxy_requirements: "{{ playbook_dir }}/galaxy_requirements.yml"
+- object: ci-for-labs-ci-cd
+  content:
+  - name: pipeline
+    template: "{{ playbook_dir }}/openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yml"
+    params: "{{ playbook_dir }}/params/ci-for-labs-ci-cd/build"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - ci
+  - name: pipeline-slaves
+    template: "{{ playbook_dir }}/openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yml"
+    params: "{{ playbook_dir }}/params/ci-for-labs-ci-cd/test-slaves"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - ci
