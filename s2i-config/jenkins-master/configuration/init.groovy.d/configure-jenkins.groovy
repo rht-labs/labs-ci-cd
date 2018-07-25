@@ -43,16 +43,24 @@ System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
 
 println("WORKAROUND FOR BUILD_URL ISSUE, see: https://issues.jenkins-ci.org/browse/JENKINS-28466")
 
+def env = System.getenv();
+def envList = [];
+env.each() { k,v -> envList.push( "$k=$v" ) }
+
 def hostname = System.getenv('HOSTNAME')
 println "hostname> $hostname"
 
+envList.push( "HOSTNAME=$hostname" )
+
 def sout = new StringBuilder(), serr = new StringBuilder()
-def proc = 'oc get po $HOSTNAME -o jsonpath={.metadata.labels.name}'.execute(["HOSTNAME=$hostname"], null)
+def proc = 'oc get pod $HOSTNAME -o jsonpath={.metadata.labels.name}'.execute(envList, null)
 proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(3000)
 println "out> $sout err> $serr"
 
-proc = 'oc get route $SOUT -o jsonpath={.spec.host}'.execute(["SOUT=$sout"], null)
+envList.push( "SOUT=$sout" )
+
+proc = 'oc get route $SOUT -o jsonpath={.spec.host}'.execute(envList, null)
 proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(3000)
 println "out> $sout err> $serr"
