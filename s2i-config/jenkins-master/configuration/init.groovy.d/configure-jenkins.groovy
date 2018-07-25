@@ -52,13 +52,14 @@ proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(3000)
 println "out> $sout err> $serr"
 
+def sout2 = new StringBuilder(), serr2 = new StringBuilder()
 proc = "oc get route ${sout} -o jsonpath={.spec.host}".execute()
-proc.consumeProcessOutput(sout, serr)
+proc.consumeProcessOutput(sout2, serr2)
 proc.waitForOrKill(3000)
-println "out> $sout err> $serr"
+println "out> $sout2 err> $serr2"
 
 def jlc = jenkins.model.JenkinsLocationConfiguration.get()
-jlc.setUrl("https://" + sout)
+jlc.setUrl("https://" + sout2)
 
 println("Configuring container cap for k8s, so pipelines won't hang when booting up slaves")
 
