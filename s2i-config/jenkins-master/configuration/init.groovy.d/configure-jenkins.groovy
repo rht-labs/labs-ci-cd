@@ -59,7 +59,7 @@ proc.waitForOrKill(3000)
 println "out> $sout2 err> $serr2"
 
 def jlc = jenkins.model.JenkinsLocationConfiguration.get()
-jlc.setUrl("https://" + sout2)
+jlc.setUrl("https://" + sout2.trim())
 
 println("Configuring container cap for k8s, so pipelines won't hang when booting up slaves")
 
