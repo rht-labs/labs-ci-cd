@@ -43,8 +43,11 @@ System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
 
 println("WORKAROUND FOR BUILD_URL ISSUE, see: https://issues.jenkins-ci.org/browse/JENKINS-28466")
 
+def hostname = env['HOSTNAME']
+println "hostname> $hostname"
+
 def sout = new StringBuilder(), serr = new StringBuilder()
-def proc = 'oc get po $HOSTNAME -o jsonpath={.metadata.labels.name}'.execute()
+def proc = 'oc get po ${hostname} -o jsonpath={.metadata.labels.name}'.execute()
 proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(3000)
 println "out> $sout err> $serr"
