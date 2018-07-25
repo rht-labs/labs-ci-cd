@@ -43,7 +43,7 @@ System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
 
 println("WORKAROUND FOR BUILD_URL ISSUE, see: https://issues.jenkins-ci.org/browse/JENKINS-28466")
 
-def hostname = env['HOSTNAME']
+def hostname = System.getenv('HOSTNAME')
 println "hostname> $hostname"
 
 def sout = new StringBuilder(), serr = new StringBuilder()
