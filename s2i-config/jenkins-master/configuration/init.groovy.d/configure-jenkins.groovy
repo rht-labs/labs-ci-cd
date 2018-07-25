@@ -47,12 +47,12 @@ def hostname = System.getenv('HOSTNAME')
 println "hostname> $hostname"
 
 def sout = new StringBuilder(), serr = new StringBuilder()
-def proc = 'oc get po ${hostname} -o jsonpath={.metadata.labels.name}'.execute()
+def proc = 'oc get po $hostname -o jsonpath={.metadata.labels.name}'.execute()
 proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(3000)
 println "out> $sout err> $serr"
 
-proc = 'oc get route ${sout} -o jsonpath={.spec.host}'.execute()
+proc = 'oc get route $sout -o jsonpath={.spec.host}'.execute()
 proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(3000)
 println "out> $sout err> $serr"
