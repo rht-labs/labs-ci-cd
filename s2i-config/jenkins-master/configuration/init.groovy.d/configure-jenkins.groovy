@@ -47,13 +47,13 @@ def env = System.getenv();
 def envList = [];
 env.each() { k,v -> envList.push( "$k=$v" ) }
 
-def hostname = System.getenv('HOSTNAME')
-println "hostname> $hostname"
+//def hostname = System.getenv('HOSTNAME')
+println "envList> $envList"
 
-envList.push( "HOSTNAME=$hostname" )
+//envList.push( "HOSTNAME=$hostname" )
 
 def sout = new StringBuilder(), serr = new StringBuilder()
-def proc = 'oc get pod $HOSTNAME -o jsonpath={.metadata.labels.name}'.execute(envList, null)
+def proc = 'oc get pod ${HOSTNAME} -o jsonpath={.metadata.labels.name}'.execute(envList, null)
 proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(3000)
 println "out> $sout err> $serr"
