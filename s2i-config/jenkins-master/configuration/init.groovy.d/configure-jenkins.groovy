@@ -43,14 +43,23 @@ System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
 
 println("WORKAROUND FOR BUILD_URL ISSUE, see: https://issues.jenkins-ci.org/browse/JENKINS-28466")
 
+def hostname = System.getenv('HOSTNAME')
+println "hostname> $hostname"
+
 def sout = new StringBuilder(), serr = new StringBuilder()
-def proc = 'oc get route jenkins -o jsonpath={.spec.host}'.execute()
+def proc = "oc get pod ${hostname} -o jsonpath={.metadata.labels.name}".execute()
 proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(3000)
 println "out> $sout err> $serr"
 
+def sout2 = new StringBuilder(), serr2 = new StringBuilder()
+proc = "oc get route ${sout} -o jsonpath={.spec.host}".execute()
+proc.consumeProcessOutput(sout2, serr2)
+proc.waitForOrKill(3000)
+println "out> $sout2 err> $serr2"
+
 def jlc = jenkins.model.JenkinsLocationConfiguration.get()
-jlc.setUrl("https://" + sout)
+jlc.setUrl("https://" + sout2.trim())
 
 println("Configuring container cap for k8s, so pipelines won't hang when booting up slaves")
 
