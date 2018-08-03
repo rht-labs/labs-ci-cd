@@ -30,32 +30,49 @@ if(sonarHost == null) {
 
 def tokenName = 'Jenkins'
 
-// Make a POST request to delete any existing admin tokens named "Jenkins"
-LOG.log(Level.INFO, 'Delete existing SonarQube Jenkins token')
-def revokeToken = new URL("${sonarHost}/api/user_tokens/revoke").openConnection()
-def message = "name=Jenkins&login=admin"
-revokeToken.setRequestMethod("POST")
-revokeToken.setDoOutput(true)
-revokeToken.setRequestProperty("Accept", "application/json")
-def authString = "admin:admin".bytes.encodeBase64().toString()
-revokeToken.setRequestProperty("Authorization", "Basic ${authString}")
-revokeToken.getOutputStream().write(message.getBytes("UTF-8"))
-def rc = revokeToken.getResponseCode()
-
-// Create a new admin token named "Jenkins" and capture the value
-LOG.log(Level.INFO, 'Generate new auth token for SonarQube/Jenkins integration')
-def generateToken = new URL("${sonarHost}/api/user_tokens/generate").openConnection()
-message = "name=${tokenName}&login=admin"
-generateToken.setRequestMethod("POST")
-generateToken.setDoOutput(true)
-generateToken.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
-generateToken.setRequestProperty("Authorization", "Basic ${authString}")
-generateToken.getOutputStream().write(message.getBytes("UTF-8"))
-rc = generateToken.getResponseCode()
-
 def token = null
+def failCount = 0
+
+def rc = 0
+
+while (rc != 200) {
+    def testConnect = new URL("${sonarHost}").openConnection()
+    testConnect.setRequestMethod("GET")
+
+    rc = testConnect.getResponseCode()
+    if (rc != 200) {
+        failCount += 1
+        LOG.log(Level.INFO, "Waiting for SonarQube to start: ${failCount}")
+        if (failCount>=20) {
+            break
+        }
+        sleep(6000)
+    }
+}
 
 if (rc == 200) {
+    // Make a POST request to delete any existing admin tokens named "Jenkins"
+    LOG.log(Level.INFO, 'Delete existing SonarQube Jenkins token')
+    def revokeToken = new URL("${sonarHost}/api/user_tokens/revoke").openConnection()
+    def message = "name=${tokenName}&login=admin"
+    revokeToken.setRequestMethod("POST")
+    revokeToken.setDoOutput(true)
+    revokeToken.setRequestProperty("Accept", "application/json")
+    def authString = "admin:admin".bytes.encodeBase64().toString()
+    revokeToken.setRequestProperty("Authorization", "Basic ${authString}")
+    revokeToken.getOutputStream().write(message.getBytes("UTF-8"))
+    rc = revokeToken.getResponseCode()
+
+    // Create a new admin token named "Jenkins" and capture the value
+    LOG.log(Level.INFO, 'Generate new auth token for SonarQube/Jenkins integration')
+    def generateToken = new URL("${sonarHost}/api/user_tokens/generate").openConnection()
+    message = "name=${tokenName}&login=admin"
+    generateToken.setRequestMethod("POST")
+    generateToken.setDoOutput(true)
+    generateToken.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+    generateToken.setRequestProperty("Authorization", "Basic ${authString}")
+    generateToken.getOutputStream().write(message.getBytes("UTF-8"))
+
     LOG.log(Level.INFO, 'Successfully generated SonarQube auth token')
     def jsonBody = generateToken.getInputStream().getText()
     def jsonParser = new JsonSlurper()
@@ -82,6 +99,23 @@ if (rc == 200) {
     sonarRunner.setInstallations(sinst)
 
     sonarRunner.save()
+    
+    def addWebhook = new URL("${sonarHost}/api/settings/set").openConnection()
+    def fieldValues = URLEncoder.encode('{"name":"Jenkins","url":"http://jenkins/sonarqube-webhook/"}', 'UTF-8')
+    def postBody = "key=sonar.webhooks.global&fieldValues=${fieldValues}"
+    addWebhook.setRequestMethod('POST')
+    addWebhook.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+    addWebhook.setRequestProperty("Authorization", "Basic ${authString}")
+    addWebhook.setDoOutput(true)
+    addWebhook.setDoInput(true)
+    addWebhook.getOutputStream().write(postBody.getBytes())
+    rc = addWebhook.getResponseCode()
+    if (rc == 204) {
+        LOG.log(Level.INFO, 'SonarQube Webhook successfully configured')
+    } else {
+        LOG.log(Level.WARNING, 'SonarQube Webhook configuration FAILED')
+        LOG.log(Level.WARNING, addWebhook.getInputStream().text)
+    }
 
     LOG.log(Level.INFO, 'SonarQube configuration complete')
 } else {
