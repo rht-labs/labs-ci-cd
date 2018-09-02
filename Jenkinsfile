@@ -86,8 +86,10 @@ pipeline {
             }
         }
 
-        // Merge PR to labs robot branch 
-         stage("merge PR") {
+        // Merge PR to labs robot branch
+        // uses sequential stages so same slave / workspace is preserved i.e. no need for stash
+        // https://jenkins.io/blog/2018/07/02/whats-new-declarative-piepline-13x-sequential-stages/
+        stage ('spin up shared ansible slave') {
             agent {
                 node {
                     label "jenkins-slave-ansible"
@@ -96,96 +98,95 @@ pipeline {
             when { 
                 expression { return env.PR_ID }
             }
-            steps {
-                echo "Configuring Git, cloning labs-ci-cd & pushing revision to labs-robot/labs-ci-cd.git"
-                sh """
-                    git config --global user.email "labs.robot@gmail.com"
-                    git config --global user.name "Labs Robot"
-                    mkdir $HOME/.ssh
-                    oc get secret labs-robot-ssh-privatekey --template=\'{{index .data \"ssh-privatekey\"}}\' | base64 -d >> $HOME/.ssh/id_rsa
-                    chmod 0600 $HOME/.ssh/id_rsa
-                    echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> $HOME/.ssh/config
+            stages {
+                stage("merge PR") {
 
-                    git clone https://github.com/rht-labs/labs-ci-cd.git 
-                    cd labs-ci-cd
-                    git remote add ci git@github.com:labs-robot/labs-ci-cd.git
-                    git fetch origin pull/${env.PR_ID}/head:pr
-                    git checkout pr
-                    git rev-parse HEAD
-                """
+                    steps {
+                        echo "Configuring Git, cloning labs-ci-cd & pushing revision to labs-robot/labs-ci-cd.git"
+                        sh """
+                            git config --global user.email "labs.robot@gmail.com"
+                            git config --global user.name "Labs Robot"
+                            mkdir $HOME/.ssh
+                            oc get secret labs-robot-ssh-privatekey --template=\'{{index .data \"ssh-privatekey\"}}\' | base64 -d >> $HOME/.ssh/id_rsa
+                            chmod 0600 $HOME/.ssh/id_rsa
+                            echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> $HOME/.ssh/config
 
-                echo "Pushing build state to the PR"
-                dir('labs-ci-cd') {
-                    script {
-                        // set the vars
-                        env.COMMIT_SHA = sh(returnStdout: true, script: "git rev-parse HEAD")
-                        // env.COMMIT_SHA = "git rev-parse HEAD".execute().text.minus("'").minus("'")
-                        if (env.COMMIT_SHA == null || env.COMMIT_SHA == ""){
-                            error('could not get COMMIT_SHA')
+                            git clone https://github.com/rht-labs/labs-ci-cd.git 
+                            cd labs-ci-cd
+                            git remote add ci git@github.com:labs-robot/labs-ci-cd.git
+                            git fetch origin pull/${env.PR_ID}/head:pr
+                            git checkout pr
+                            git rev-parse HEAD
+                        """
+
+                        echo "Pushing build state to the PR"
+                        dir('labs-ci-cd') {
+                            script {
+                                // set the vars
+                                env.COMMIT_SHA = sh(returnStdout: true, script: "git rev-parse HEAD")
+                                // env.COMMIT_SHA = "git rev-parse HEAD".execute().text.minus("'").minus("'")
+                                if (env.COMMIT_SHA == null || env.COMMIT_SHA == ""){
+                                    error('could not get COMMIT_SHA')
+                                }
+                                env.PR_STATUS_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/statuses/${env.COMMIT_SHA}"
+                            }
                         }
-                        env.PR_STATUS_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/statuses/${env.COMMIT_SHA}"
+
+                        notifyGitHub('''{
+                                    "state": "pending",
+                                    "description": "ALL CI jobs are running...",
+                                    "context": "Jenkins"
+                                }''')
+
+                        sh """ 
+                            cd labs-ci-cd
+                            git checkout master
+                            git fetch origin pull/${env.PR_ID}/head:pr
+                            git merge pr --ff
+                            git push ci master:pr-${env.PR_ID} -f
+                        """
                     }
                 }
 
-                notifyGitHub('''{
-                            "state": "pending",
-                            "description": "ALL CI jobs are running...",
-                            "context": "Jenkins"
-                        }''')
+                // Apply ansible inventory of ci-cd and it's ci-fo-ci-cd
+                stage("apply inventory") {
+                    steps {
 
-                sh """ 
-                    cd labs-ci-cd
-                    git checkout master
-                    git fetch origin pull/${env.PR_ID}/head:pr
-                    git merge pr --ff
-                    git push ci master:pr-${env.PR_ID} -f
-                """
-                // save git source for next stage
-                stash 'source'
-            }
-        }
-
-        // Apply ansible inventory of ci-cd and it's ci-fo-ci-cd
-        stage("apply inventory") {
-            agent {
-                node {
-                    label "jenkins-slave-ansible"
-                }
-            }
-            steps {
-                notifyGitHub('''{
-                            "state": "pending",
-                            "description": "job is running...",
-                            "context": "Apply Inventory"
-                        }''')
-
-                unstash 'source'
-                echo "Applying inventory"
-                sh 'cd labs-ci-cd'
-                sh 'ansible-galaxy install -r requirements.yml --roles-path=roles'
-                sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=bootstrap project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-                sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=tools project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-                sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=ci-for-labs project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-                sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=apps project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-            }
-            // Post can be used both on individual stages and for the entire build.
-            post {
-                success {
-                    notifyGitHub('''{
-                                "state": "success",
-                                "description": "job completed :)",
-                                "context": "Apply Inventory"
-                            }''')
-                }
-                failure {
-                    notifyGitHub('''{
-                                "state": "failure",
-                                "description": "job failed :(",
-                                "context": "Apply Inventory"
-                            }''')
+                        echo "Applying inventory"
+                        dir('labs-ci-cd') {
+                            // each its own line to that in blue ocean UI they show seperately
+                            sh "ansible-galaxy install -r requirements.yml --roles-path=roles"
+                            sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=bootstrap project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                            sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=tools project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                            sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=ci-for-labs project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                            sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=apps project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                        }
+   
+                    }
+                    // Post can be used both on individual stages and for the entire build.
+                    post {
+                        success {
+                            notifyGitHub('''{
+                                        "state": "success",
+                                        "description": "job completed :)",
+                                        "context": "Apply Inventory"
+                                    }''')
+                        }
+                        failure {
+                            notifyGitHub('''{
+                                        "state": "failure",
+                                        "description": "job failed :(",
+                                        "context": "Apply Inventory"
+                                    }''')
+                        }
+                    }
                 }
             }
         }
+        
+         
+
+        
 
         // Run a start-build of the tests/slave/Jenkinsfile in the newly created Jenkins namespace
         // it contains a simple Jenkinsfile that starts each slave in paralle
