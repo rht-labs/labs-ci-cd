@@ -3,3 +3,4 @@ SOURCE_CONTEXT_DIR=jenkins-slaves/jenkins-slave-ansible
 BUILDER_IMAGE_NAME=registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7:latest
 NAME=jenkins-slave-ansible
 SOURCE_REPOSITORY_REF=v1.3
+DOCKERFILE_PATH=Dockerfile
