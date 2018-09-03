@@ -31,56 +31,56 @@ openshift_cluster_content:
 - object: jenkins-slave-nodes
   content:
   - name: jenkins-slave-mvn
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/mvn"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - mvn-slave
   - name: jenkins-slave-npm
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/npm"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - npm-slave
   - name: jenkins-slave-zap
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/zap"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - zap-slave
   - name: jenkins-slave-ansible
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/ansible"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - ansible-slave
   - name: jenkins-slave-arachni
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/arachni"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - arachni-slave
   - name: jenkins-slave-gradle
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/gradle"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - gradle-slave
   - name: jenkins-slave-golang
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/golang"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - golang-slave
   - name: jenkins-slave-mongodb
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.1/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/mongodb"
     namespace: "{{ ci_cd_namespace }}"
     tags:
