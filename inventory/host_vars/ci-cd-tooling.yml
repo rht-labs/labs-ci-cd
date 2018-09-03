@@ -22,6 +22,12 @@ openshift_cluster_content:
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - hoverfly
+  - name: sonarqube
+    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yml"
+    params: "{{ playbook_dir }}/params/sonarqube/build"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+      - sonarqube     
 - object: jenkins-slave-nodes
   content:
   - name: jenkins-slave-mvn
@@ -91,16 +97,16 @@ openshift_cluster_content:
   content:
   - name: sonarqube
     template: "{{ playbook_dir }}/openshift-templates/sonarqube/template.yml"
-    params: "{{ playbook_dir }}/params/sonarqube/build-and-deploy"
+    params: "{{ playbook_dir }}/params/sonarqube/deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - sonar
+    - sonarqube
   - name: sonarqube-postgresql
     template: "openshift//postgresql-persistent"
     params: "{{ playbook_dir }}/params/sonarqube/postgresql"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - sonar
+    - sonarqube
   - name: nexus
     template: "{{ playbook_dir }}/openshift-templates/nexus/template.yml"
     params: "{{ playbook_dir }}/params/nexus/deploy"
