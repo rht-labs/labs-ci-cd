@@ -7,9 +7,9 @@ These images have been move to the [Red Hat CoP Containers Quickstarts](https://
 ```bash
 SOURCE_REPOSITORY_URL=https://github.com/redhat-cop/containers-quickstarts
 SOURCE_CONTEXT_DIR=jenkins-slaves/jenkins-slave-ansible
-BUILDER_IMAGE_NAME=registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7:latest
+BUILDER_IMAGE_NAME=registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7:v3.10
 NAME=jenkins-slave-ansible
-SOURCE_REPOSITORY_REF=v1.1
+SOURCE_REPOSITORY_REF=v1.3
 ```
 
 2. Create a new Ansible object in the `inventory/host_vars/ci-cd-tooling.yml` file as follows, pointing to the `params/jenkins-slaves/` file  created in step 1. Continuing the `ansible`example:
