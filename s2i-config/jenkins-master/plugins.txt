@@ -163,7 +163,7 @@ rebuild:1.28
 resource-disposer:0.12
 ruby-runtime:0.12
 slack:2.3
-sonar:2.8
+sonar:2.6.1
 ssh-agent:1.16
 ssh-slaves:1.28
 summary_report:1.15
