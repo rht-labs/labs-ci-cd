@@ -1,0 +1,23 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: jenkins-rolebinding
+objects:
+- apiVersion: v1
+  kind: RoleBinding
+  metadata:
+    name: jenkins_pipeline_edit
+  roleRef:
+    name: edit
+  subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: "${JENKINS_NAMESPACE}"
+  userNames:
+  - system:serviceaccount:${JENKINS_NAMESPACE}:jenkins
+parameters:
+- name: JENKINS_NAMESPACE
+  displayName: Project/Namespace for Jenkins Pipelines
+  description: The project/namespace where the Jenkins executing pipelines is deployed.
+  required: true

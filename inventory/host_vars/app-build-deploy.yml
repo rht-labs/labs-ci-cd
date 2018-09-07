@@ -19,7 +19,7 @@ openshift_cluster_content:
     tags:
     - java-deploy
   - name: fabric8-rolebinding
-    template: "{{ playbook_dir }}/openshift-templates/fabric8-role-bindings/template.yml"
+    template: "{{ playbook_dir }}/openshift-templates/role-bindings/rolebinding-template-fabric8.yml"
     params: "{{ playbook_dir }}/params/java-app/fabric8_dev"
     namespace: "{{ dev_namespace }}"
     tags:
@@ -33,7 +33,7 @@ openshift_cluster_content:
     tags:
     - java-deploy
   - name: fabric8-rolebinding
-    template: "{{ playbook_dir }}/openshift-templates/fabric8-role-bindings/template.yml"
+    template: "{{ playbook_dir }}/openshift-templates/role-bindings/rolebinding-template-fabric8.yml"
     params: "{{ playbook_dir }}/params/java-app/fabric8_test"
     namespace: "{{ test_namespace }}"
     tags:

@@ -25,19 +25,19 @@ openshift_cluster_content:
   content:
   - name: "ci-cd-acl"
     namespace: "{{ ci_cd_namespace }}"
-    template: "{{ playbook_dir }}/openshift-templates/rolebinding-group/template.yml"
+    template: "{{ playbook_dir }}/openshift-templates/role-bindings/rolebinding-template-group.yml"
     params: "{{ playbook_dir }}/params/rolebinding-group/all"
     tags:
     - rolebinding-group
   - name: "labs-dev-acl"
     namespace: "{{ dev_namespace }}"
-    template: "{{ playbook_dir }}/openshift-templates/rolebinding-group/template.yml"
+    template: "{{ playbook_dir }}/openshift-templates/role-bindings/rolebinding-template-group.yml"
     params: "{{ playbook_dir }}/params/rolebinding-group/all"
     tags:
     - rolebinding-group
   - name: "labs-dev-acl"
     namespace: "{{ test_namespace }}"
-    template: "{{ playbook_dir }}/openshift-templates/rolebinding-group/template.yml"
+    template: "{{ playbook_dir }}/openshift-templates/role-bindings/rolebinding-template-group.yml"
     params: "{{ playbook_dir }}/params/rolebinding-group/all"
     tags:
     - rolebinding-group
