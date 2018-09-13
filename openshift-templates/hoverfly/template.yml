@@ -69,11 +69,36 @@ objects:
         containers:
         - name: ${HOVERFLY_SERVICE_NAME}
           image: ' '
+          command:
+            - 'hoverfly'
+          args:
+            - '-listen-on-host'
+            - '0.0.0.0'
           ports:
             - containerPort: 8500
               protocol: TCP
             - containerPort: 8888
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8888
+              scheme: HTTP
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8888
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
           resources:
             limits:
               memory: ${MEMORY_LIMIT}
