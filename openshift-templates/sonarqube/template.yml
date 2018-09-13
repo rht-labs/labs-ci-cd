@@ -24,63 +24,6 @@ objects:
     name: sonar-ldap-bind-dn
   type: kubernetes.io/basic-auth
 - apiVersion: v1
-  kind: ImageStream
-  metadata:
-    generation: 1
-    labels:
-      app: sonarqube
-    name: sonarqube
-  spec:
-    lookupPolicy:
-      local: false
-    tags:
-    - annotations: null
-      from:
-        kind: DockerImage
-        name: sonarqube:latest
-      generation: null
-      importPolicy: {}
-      name: latest
-      referencePolicy:
-        type: ""
-  status:
-    dockerImageRepository: ""
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    labels:
-      app: sonarqube
-      appName: sonarqube
-      name: sonarqube
-      type: image
-    name: sonarqube
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: sonarqube:latest
-    postCommit: {}
-    resources: {}
-    runPolicy: Serial
-    source:
-      contextDir: "${SOURCE_REPOSITORY_CONTEXT_DIR}"
-      git:
-        ref: ${SOURCE_REPOSITORY_REF}
-        uri: ${SOURCE_REPOSITORY_URL}
-      type: Git
-    strategy:
-      dockerStrategy:
-        from:
-          kind: DockerImage
-          name: 'sonarqube:latest'
-        noCache: true
-      type: Docker
-    triggers:
-    - type: ConfigChange
-  status:
-    lastVersion: 0
-- apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
     name: sonarqube-data
@@ -506,15 +449,3 @@ parameters:
     description: The ContextFactory implementation to be used when communicating with the LDAP server
     displayName: LDAP Context Factory
     value: com.sun.jndi.ldap.LdapCtxFactory
-  - name: SOURCE_REPOSITORY_URL
-    description: The Git repository where the Docker build resources can be found
-    displayName: Repository URL
-    value: https://github.com/rht-labs/labs-ci-cd
-  - name: SOURCE_REPOSITORY_REF
-    value: master
-    description: Branch from which to get docker build resources
-    displayName: Repository branch
-  - name: SOURCE_REPOSITORY_CONTEXT_DIR
-    value: docker/sonarqube
-    description: Directory path within the repository where the docker build resources can be found
-    displayName: Context directory
