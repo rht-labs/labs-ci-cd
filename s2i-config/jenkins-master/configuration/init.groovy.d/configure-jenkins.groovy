@@ -6,7 +6,6 @@ import hudson.tools.InstallSourceProperty
 
 import java.util.logging.Level
 import java.util.logging.Logger
-import static hudson.plugins.sonar.utils.SQServerVersions.SQ_5_3_OR_HIGHER
 import org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud
 import jenkins.model.JenkinsLocationConfiguration
 
