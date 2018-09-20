@@ -1,5 +1,8 @@
 ---
+
+ansible_host: localhost
 ansible_connection: local
+
 openshift_cluster_content:
 - galaxy_requirements: "{{ playbook_dir }}/galaxy_requirements.yml"
 - object: ci-for-labs-ci-cd
