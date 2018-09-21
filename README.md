@@ -81,6 +81,9 @@ It's possible that you cannot run docker on your machine or don't want to run th
 * libselinux-python (only needed on Fedora, RHEL, and CentOS)
   - Install by running `yum install libselinux-python`.
 
+### Inventory Usage
+It should be noted that non-docker executions will utilize the inventory directory included in this repo by default. If you would like to specify a custom inventory for any of the below tasks, you can do so by adding `-i /path/to/my/inventory` to the command
+
 ### Basic Usage
 
 1. Log on to an OpenShift server `oc login -u <user> https://<server>:<port>/`
@@ -91,15 +94,15 @@ ansible-galaxy install -r requirements.yml --roles-path=roles
 ```
 4. If `labs-*` projects do not yet exist on your OpenShift cluster, run the `bootstrap` inventory. This will apply all the `project-and-policies` content from `host_vars`:
 ```bash
-ansible-playbook apply.yml -i inventory/ -e target=bootstrap
+ansible-playbook apply.yml -e target=bootstrap
 ```
 5. If `labs-ci-cd` tooling such as Jenkins or SonarQube do not yet exist on your OpenShift cluster, run the `tools` inventory. This will apply all the `ci-cd-tooling` content from `host_vars`:
 ```bash
-ansible-playbook apply.yml -i inventory/ -e target=tools
+ansible-playbook apply.yml -e target=tools
 ```
 6. To deploy the reference Java App, run the `apps` inventory. This will apply all the `app-build-deploy` content from `host_vars`:
 ```bash
-ansible-playbook apply.yml -i inventory/ -e target=apps
+ansible-playbook apply.yml -e target=apps
 ```
 
 ## Customised Install
@@ -107,7 +110,7 @@ ansible-playbook apply.yml -i inventory/ -e target=apps
 If `labs-ci-cd` already exists on your OpenShift cluster and you want to create a new instance of `labs-ci-cd` with its own name eg `john-ci-cd`, run the "unique projects" playbook. This playbook is useful if you're developing labs-ci-cd and want to test your changes. With a unique project name, you can safely try out your changes in a test cluster that others are using.
 
 ```bash
-ansible-playbook unique-projects-playbook.yml -i inventory/ \
+ansible-playbook unique-projects-playbook.yml \
     -e "project_name_postfix=<insert unique postfix here>" \
     -e "target=<thing you're targeting eg tools>"
 ```
@@ -147,7 +150,7 @@ In some cases you might not want to deploy all of the components in this repo; b
 
 If not using docker or `./run.sh`, here is the same example:
 ```bash
-ansible-playbook  apply.yml -i inventory/ \
+ansible-playbook  apply.yml \
     -e target=tools \
     -e="filter_tags=jenkins,ci,projects"
 ```

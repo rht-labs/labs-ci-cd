@@ -24,10 +24,20 @@ To Integrate with slack follow the steps at https://github.com/jenkinsci/slack-p
 
 ## SonarQube Integration
  
- By default the deployment will attempt to connect to SonarQube and configure its setup including an authentication token. The default url is http://sonarqube:9000. This can be overriden adding an environment variable named `SONARQUBE_URL`. To disable SonarQube entirely set an environment variable named `DISABLE_SONAR` with any value.
+By default the deployment will attempt to connect to SonarQube and configure its setup including an authentication token. The default url is http://sonarqube:9000. This can be overriden adding an environment variable named `SONARQUBE_URL`. To disable SonarQube entirely set an environment variable named `DISABLE_SONAR` with any value.
 
 ## Git Creds
 Inject the `git` credentials to Jenkins-s2i when it is being built by editing `configuration/init.groovy.d/configure-credentials.groovy` or by exposing a new environment Variable to the Jenkins deployment tempate.
+
+## Shared Library
+
+An optional shared global library can be used to add method calls to pipelines which can help to simplify and organize a pipeline. The global library will be implicitly available to all pipelines.
+
+To configure a library environment variables need to be made available to your image. In OCP, add environment variables to your deployment config. The following variables can be set
+1. SHARED_LIB_REPO - If this variable is set then the deployment will attempt to configure a shared global library. This value should reference a git repository. If this value is not set, no shared global library will be set.
+2. SHARED_LIB_REF - A value that that points to a git reference such as a branch or tag of a repository. The default value is `master`
+3. SHARED_LIB_NAME - A name for the library. It can be anything.
+4. SHARED_LIB_SECRET - If the git repo is private, this value should be a reference to a secret available to the project. If this value is not set, it is assumed that the git repo is publicly available. This value assumes a deployment on openshift so it prepends that value of the namespace to the secret. 
 
 ## Contributing
 

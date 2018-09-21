@@ -1,11 +1,11 @@
-
 ---
 ansible_connection: local
+
 openshift_cluster_content:
 - object: app-builds
   content:
   - name: java-app-build
-    template: "{{ playbook_dir }}/openshift-templates/s2i-app-build/template-no-secrets.yml"
+    template: "{{ playbook_dir }}/openshift-templates/s2i-app-build/binary-template-no-secrets.yml"
     params: "{{ playbook_dir }}/params/java-app/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:

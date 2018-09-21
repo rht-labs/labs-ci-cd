@@ -9,7 +9,6 @@ import hudson.tools.InstallSourceProperty
 
 import java.util.logging.Level
 import java.util.logging.Logger
-import static hudson.plugins.sonar.utils.SQServerVersions.SQ_5_3_OR_HIGHER
 
 final def LOG = Logger.getLogger("LABS")
 
@@ -64,8 +63,7 @@ if (rc == 200) {
 
     // Add the SonarQube server config to Jenkins
     SonarInstallation sonarInst = new SonarInstallation(
-        "sonar", sonarHost, SQ_5_3_OR_HIGHER, token, "", "", "", "", "", new TriggersConfig(), "", "", ""
-    )
+        "sonar", sonarHost, token, "", "", new TriggersConfig(), "")
     sonarConfig.setInstallations(sonarInst)
     sonarConfig.setBuildWrapperEnabled(true)
     sonarConfig.save()
