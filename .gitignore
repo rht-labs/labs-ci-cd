@@ -1,6 +1,7 @@
 openshift-applier
 roles/*
 !roles/configure-nexus
+!roles/configure-bitbucket
 *.pyc
 .idea
 *.iml
