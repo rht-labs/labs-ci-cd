@@ -1,0 +1,38 @@
+---
+- name: Get Webhook URL
+  command: "oc get bc {{ pipeline.build_config }} -n {{ pipeline.namespace }} -o json"
+  register: command_result
+  failed_when:
+  - command_result.rc != 0
+
+- name: set output to var
+  set_fact:
+    variable_output: "{{ command_result.stdout }}"
+
+- name: set generic webhook secret
+  set_fact:
+    generic_webhook_url: "{{ openshift_url }}/apis/build.openshift.io/v1/namespaces/{{ pipeline.namespace }}/buildconfigs/{{ pipeline.build_config }}/webhooks/{{ item.generic.secret }}/generic"
+  with_items: "{{ variable_output.spec.triggers }}"
+  when:
+    - item.type == 'Generic'
+
+- name: output
+  debug:
+    msg: "{{ generic_webhook_url }}"
+
+- name: Add Jenkins Webhook to BitBucket repo
+  uri:
+    url: "{{ bitbucket_api_url }}/2.0/repositories/{{ team_name }}/{{ repo_name }}/hooks"
+    method: POST
+    user: "{{ bitbucket_username | b64decode | replace('\n', '') }}"
+    password: "{{ bitbucket_admin_password | b64decode | replace('\n', '') }}"
+    force_basic_auth: yes
+    headers:
+      Content-Type: "application/json"
+    body_format: json
+    body: "{{ item }}"
+    status_code: 201
+  with_items:
+    - { description: "{{ pipeline.description | default('Jenkins Webhook') }}", url: "{{ generic_webhook_url }}", skip_cert_verification: "{{ pipeline.skip_cert_verification | default(true) }}", active: "{{ pipeline.active | default(true) }}", events: "{{ pipeline.events | default('[ \"pullrequest:fulfilled\" ]') }}"  }
+  tags:
+    - jenkins-webhook

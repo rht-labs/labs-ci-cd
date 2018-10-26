@@ -1,6 +1,7 @@
 openshift-applier
 roles/*
 !roles/configure-nexus
+!roles/bitbucket-jenkins-webhook
 *.pyc
 .idea
 *.iml
