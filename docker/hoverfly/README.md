@@ -10,7 +10,7 @@ TODO create a template
 
 Build the container and deploy it in openshift:
 
-`$ oc new-app https://github.com/labs-ci-cd/labs-ci-cd --name=hoverfly --context-dir=docker/hoverfly`
+`$ oc new-app https://github.com/rht-labs/labs-ci-cd --name=hoverfly --context-dir=docker/hoverfly`
 
 Expose the proxy/webserver port
 
