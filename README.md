@@ -152,7 +152,7 @@ If not using docker or `./run.sh`, here is the same example:
 ```bash
 ansible-playbook  apply.yml \
     -e target=tools \
-    -e="filter_tags=jenkins,ci,projects"
+    -e "filter_tags=jenkins,ci,projects"
 ```
 
 ## Scope and Direction
