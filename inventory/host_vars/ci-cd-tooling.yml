@@ -8,13 +8,13 @@ build:
   IMAGE_STREAM_NAMESPACE: "{{ ci_cd.NAMESPACE }}"
 jenkins:
   NAMESPACE: "{{ ci_cd.NAMESPACE }}"
-  SLACK_BASE_URL: https://rht-labs.slack.com/services/hooks/jenkins-ci/
+  SLACK_BASE_URL: https://fake-at-fake-dot-com.slack.com/services/hooks/jenkins-ci/ #TODO: put real test slack in here
   SLACK_ROOM: builds
-  SLACK_TOKEN: notrealtokenMAKEMEASECRET
-  JENKINS_URL: https://jenkins-{{ ci_cd.NAMESPACE }}.apps.{{ base_openshift_url }}/
+  SLACK_TOKEN: notrealtokenMAKEMEASECRET #TODO: make this a real secret
+  JENKINS_URL: https://jenkins-{{ ci_cd.NAMESPACE }}.apps.{{ base_openshift_url }}/ #TODO: variablize jenkins name?
   SHARED_LIB_REPO: "git@github.com:redhat-cop/pipeline-library.git"
   SHARED_LIB_NAME: "pipeline-library"
-  SHARED_LIB_REF: "master" #todo need a tag here
+  SHARED_LIB_REF: "master" #todo need a tag here in that repo ^
   SHARED_LIB_SECRET: "{{ ci_cd.SECRET_NAME }}"
 
 openshift_cluster_content:
