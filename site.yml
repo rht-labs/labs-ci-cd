@@ -1,0 +1,4 @@
+---
+- import_playbook: bootstrap.yml
+- import_playbook: secrets.yml
+- import_playbook: tools.yml

@@ -3,19 +3,31 @@
 ansible_host: localhost
 ansible_connection: local
 
+build:
+  NAME: ci-for-labs-ci-cd
+  PIPELINE_SOURCE_REPOSITORY_REF: master
+  PIPELINE_SOURCE_REPOSITORY_URL: https://github.com/rht-labs/labs-ci-cd.git
+  RUN_POLICY: Parallel
+
+test:
+  NAME: test-slaves
+  PIPELINE_SOURCE_REPOSITORY_REF: master
+  PIPELINE_SOURCE_REPOSITORY_URL: https://github.com/labs-robot/labs-ci-cd.git
+  RUN_POLICY: Parallel
+  PIPELINE_FILENAME: tests/slaves/Jenkinsfile
+
 openshift_cluster_content:
-- galaxy_requirements: "{{ playbook_dir }}/galaxy_requirements.yml"
 - object: ci-for-labs-ci-cd
   content:
   - name: pipeline
-    template: "{{ playbook_dir }}/openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yml"
-    params: "{{ playbook_dir }}/params/ci-for-labs-ci-cd/build"
-    namespace: "{{ ci_cd_namespace }}"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins-pipeline-no-ocp-triggers/template.yml"
+    params_from_vars: "{{ build }}"
+    namespace: "{{ ci_cd.NAMESPACE }}"
     tags:
     - ci
   - name: pipeline-slaves
-    template: "{{ playbook_dir }}/openshift-templates/jenkins-pipeline-no-ocp-triggers/template.yml"
-    params: "{{ playbook_dir }}/params/ci-for-labs-ci-cd/test-slaves"
-    namespace: "{{ ci_cd_namespace }}"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins-pipeline-no-ocp-triggers/template.yml"
+    params_from_vars: "{{ test }}"
+    namespace: "{{ ci_cd.NAMESPACE }}"
     tags:
     - ci

@@ -1,0 +1,26 @@
+group_name: "labs" #TODO: update
+team_name: "{{ group_name }}labs"
+
+base_openshift_url: ".com" #TODO: Update
+
+ci_cd_namespace: labs-ci-cd
+dev_namespace: labs-dev
+test_namespace: labs-test
+
+ci_cd:
+  NAMESPACE: "{{ ci_cd_namespace }}"
+  NAMESPACE_DISPLAY_NAME: "Labs CI/CD"
+  SECRET_NAME: "ci-cd-secret"
+  repository: "git@github.com:rht-labs/labs-ci-cd.git"
+
+dev:
+  NAMESPACE: "{{ dev_namespace }}"
+  NAMESPACE_DISPLAY_NAME: "Labs-Development"
+
+test:
+  NAMESPACE: "{{ test_namespace }}"
+  NAMESPACE_DISPLAY_NAME: "Labs-Test"
+
+role_binding_group:
+  GROUP: "labs-ci-cd-contributors"
+  ROLE: edit

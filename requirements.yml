@@ -4,5 +4,9 @@
 # From 'openshift-applier'
 - src: https://github.com/redhat-cop/openshift-applier
   scm: git
-  version: v2.0.2
+  version: v2.0.6
   name: openshift-applier
+- src: https://github.com/redhat-cop/configure-nexus #TODO FIX TO GO WHEREVER IT NEEDS TO
+  scm: git
+  version: v1.0
+  name: configure-nexus
