@@ -7,25 +7,25 @@ openshift_cluster_content:
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
-    template: "{{ playbook_dir }}/openshift-templates/jenkins-s2i-build/template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins-s2i-build/template.yml"
     params: "{{ playbook_dir }}/params/jenkins/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins
   - name: tool-box
-    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/template.yml"
     params: "{{ playbook_dir }}/params/tool-box/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - tool-box
   - name: hoverfly
-    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/template.yml"
     params: "{{ playbook_dir }}/params/hoverfly/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - hoverfly
   - name: sonarqube
-    template: "{{ playbook_dir }}/openshift-templates/docker-build/template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/template.yml"
     params: "{{ playbook_dir }}/params/sonarqube/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -98,7 +98,7 @@ openshift_cluster_content:
 - object: ci-cd-deployments
   content:
   - name: sonarqube
-    template: "{{ playbook_dir }}/openshift-templates/sonarqube/template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/sonarqube/template.yml"
     params: "{{ playbook_dir }}/params/sonarqube/deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -110,7 +110,7 @@ openshift_cluster_content:
     tags:
     - sonarqube
   - name: nexus
-    template: "{{ playbook_dir }}/openshift-templates/nexus/template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/nexus/template.yml"
     params: "{{ playbook_dir }}/params/nexus/deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -118,13 +118,13 @@ openshift_cluster_content:
     post_steps:
     - role: "labs-ci-cd/roles/configure-nexus"
   - name: jenkins-persistent
-    template: "{{ playbook_dir }}/openshift-templates/jenkins/jenkins-persistent-template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-persistent-template.yml"
     params: "{{ playbook_dir }}/params/jenkins/deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins
   - name: hoverfly
-    template: "{{ playbook_dir }}/openshift-templates/hoverfly/template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/hoverfly/template.yml"
     params: "{{ playbook_dir }}/params/hoverfly/deploy"
     namespace: "{{ ci_cd_namespace }}"
     tags:

@@ -1,5 +1,0 @@
-import org.sonatype.nexus.blobstore.api.BlobStoreManager;
-
-if ( !repository.repositoryManager.exists( 'nist-proxy-repos' ) ) {
-    repository.createRawProxy( 'nist-proxy-repos', 'https://nvd.nist.gov/feeds/', BlobStoreManager.DEFAULT_BLOBSTORE_NAME);
-}
