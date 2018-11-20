@@ -17,7 +17,6 @@ def clearProjects(){
     """
 }
 
-
 pipeline {
 
     agent {
@@ -31,6 +30,12 @@ pipeline {
         URL_TO_TEST = "https://google.com"
         PR_GITHUB_USERNAME = "labs-robot"
 
+        def groupVars = readYaml file: 'inventory/group_vars/all.yml'
+
+        def CI_CD_NAMESPACE = """${groupVars.ci_cd_namespace}"""
+        def DEV_NAMESPACE = """${groupVars.dev_namespace}"""
+        def TEST_NAMESPACE = """${groupVars.dev_namespace}"""
+
     }
 
     // The options directive is for configuration that applies to the whole job.
@@ -41,7 +46,8 @@ pipeline {
         // timestamps()
     }
 
-    stages { 
+    //  global post hook
+    stages {
         // prepare environment and ask user for the PR-ID
         stage("prepare environment") {
             agent {
@@ -54,7 +60,7 @@ pipeline {
                 script {
                     env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
                     env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
-                    // taken from original j-file
+
                     timeout(time: 1, unit: 'HOURS') {
                         env.PR_ID = input(
                                 id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
@@ -65,14 +71,16 @@ pipeline {
                         }
                     }
 
-                    // env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret labs-robot-github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
+                    // TODO: store this as and encrypted string in the repo
                     env.PR_GITHUB_TOKEN = new String("oc get secret labs-robot-github-oauth-token --template='{{.data.password}}'".execute().text.minus("'").minus("'").decodeBase64())
-                    env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
-                    env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
-                    env.PR_TEST_PROJECT_NAME = "labs-test-pr-${env.PR_ID}"
+
                     if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                         error('PR_GITHUB_TOKEN cannot be null or empty')
                     }
+
+                    env.PR_CI_CD_PROJECT_NAME = "${env.CI_CD_NAMESPACE}-pr-${env.PR_ID}"
+                    env.PR_DEV_PROJECT_NAME = "${env.DEV_NAMESPACE}-pr-${env.PR_ID}"
+                    env.PR_TEST_PROJECT_NAME = "${env.TEST_NAMESPACE}-pr-${env.PR_ID}"
                     env.USER_PASS = "${env.PR_GITHUB_USERNAME}:${env.PR_GITHUB_TOKEN}"
                 }
             }
@@ -95,7 +103,7 @@ pipeline {
                     label "jenkins-slave-ansible"
                 }
             }
-            when { 
+            when {
                 expression { return env.PR_ID }
             }
             stages {
@@ -103,28 +111,23 @@ pipeline {
 
                     steps {
                         echo "Configuring Git, cloning labs-ci-cd & pushing revision to labs-robot/labs-ci-cd.git"
-                        sh """
-                            git config --global user.email "labs.robot@gmail.com"
-                            git config --global user.name "Labs Robot"
-                            mkdir $HOME/.ssh
-                            oc get secret labs-robot-ssh-privatekey --template=\'{{index .data \"ssh-privatekey\"}}\' | base64 -d >> $HOME/.ssh/id_rsa
-                            chmod 0600 $HOME/.ssh/id_rsa
-                            echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> $HOME/.ssh/config
 
-                            git clone https://github.com/rht-labs/labs-ci-cd.git 
-                            cd labs-ci-cd
-                            git remote add ci git@github.com:labs-robot/labs-ci-cd.git
-                            git fetch origin pull/${env.PR_ID}/head:pr
-                            git checkout pr
-                            git rev-parse HEAD
-                        """
+                        sshagent (credentials: ["${env.PR_CI_CD_PROJECT_NAME}-labs-robot-ssh-privatekey"]) {
+                            status = sh script: """
+                                git clone https://github.com/rht-labs/labs-ci-cd.git 
+                                cd labs-ci-cd
+                                git remote add ci git@github.com:labs-robot/labs-ci-cd.git
+                                git fetch origin pull/${env.PR_ID}/head:pr
+                                git checkout pr
+                                git rev-parse HEAD
+                            """, returnStatus: true
+                        }
 
                         echo "Pushing build state to the PR"
                         dir('labs-ci-cd') {
                             script {
-                                // set the vars
                                 env.COMMIT_SHA = sh(returnStdout: true, script: "git rev-parse HEAD")
-                                // env.COMMIT_SHA = "git rev-parse HEAD".execute().text.minus("'").minus("'")
+
                                 if (env.COMMIT_SHA == null || env.COMMIT_SHA == ""){
                                     error('could not get COMMIT_SHA')
                                 }
@@ -138,32 +141,36 @@ pipeline {
                                     "context": "Jenkins"
                                 }''')
 
-                        sh """ 
-                            cd labs-ci-cd
-                            git checkout master
-                            git fetch origin pull/${env.PR_ID}/head:pr
-                            git merge pr --ff
-                            git push ci master:pr-${env.PR_ID} -f
-                        """
+                        sshagent (credentials: ["${env.PR_CI_CD_PROJECT_NAME}-labs-robot-ssh-privatekey"]) {
+                            sh """ 
+                                cd labs-ci-cd
+                                git checkout master
+                                git fetch origin pull/${env.PR_ID}/head:pr
+                                git merge pr --ff
+                                git push ci master:pr-${env.PR_ID} -f
+                            """
+                        }
                     }
                 }
 
-                // Apply ansible inventory of ci-cd and it's ci-fo-ci-cd
-                stage("apply inventory") {
+                stage("Apply ansible inventory of ci-cd and it's ci-for-ci-cd") {
                     steps {
 
                         echo "Applying inventory"
                         dir('labs-ci-cd') {
-                            // each its own line to that in blue ocean UI they show seperately
+                            // each its own line to that in blue ocean UI they show separately
                             sh "ansible-galaxy install -r requirements.yml --roles-path=roles"
+
+                            //TODO: this would be the command to NOT use regex replace stuff:
+                            // sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=bootstrap ci_cd_namespace=${env.PR_CI_CD_PROJECT_NAME} dev_namespace=${env.PR_DEV_PROJECT_NAME} test_namespace=${env.PR_TEST_PROJECT_NAME} scm_ref=pr-${env.PR_ID}\""
+
                             sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=bootstrap project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                             sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=tools project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                             sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=ci-for-labs project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-                            sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=apps project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                         }
-   
+
                     }
-                    // Post can be used both on individual stages and for the entire build.
+
                     post {
                         success {
                             notifyGitHub('''{
@@ -183,13 +190,10 @@ pipeline {
                 }
             }
         }
-        
-         
 
-        
 
         // Run a start-build of the tests/slave/Jenkinsfile in the newly created Jenkins namespace
-        // it contains a simple Jenkinsfile that starts each slave in paralle
+        // it contains a simple Jenkinsfile that starts each slave in parallel
         // and verifies the type of on it is eg that the npm slave has npm on the path 
         stage("test slaves") {
             steps {
@@ -200,13 +204,11 @@ pipeline {
                     }''')
 
                 echo "Trigger builds of all the slaves"
-                sh """
-                    oc get bc -n ${env.PR_CI_CD_PROJECT_NAME} -o name | grep jenkins-slave | cut -d'/'  -f 2 |awk -v namespace=\$PR_CI_CD_PROJECT_NAME {'print "oc start-build "\$0" -n "namespace '}  | sh
-                """
+                sh """oc get bc -n ${env.PR_CI_CD_PROJECT_NAME} -o name | grep jenkins-slave | cut -d'/'  -f 2 |awk -v namespace=\$PR_CI_CD_PROJECT_NAME {'print "oc start-build "\$0" -n "namespace '}  | sh"""
+
                 echo "Running test-slaves-pipeline and verifying it's been successful"
-                sh """
-                    oc start-build test-slaves-pipeline -w -n ${env.PR_CI_CD_PROJECT_NAME}
-                """
+                sh """oc start-build test-slaves-pipeline -w -n ${env.PR_CI_CD_PROJECT_NAME}"""
+
                 openshiftVerifyBuild(
                         apiURL: "${env.OCP_API_SERVER}",
                         authToken: "${env.OCP_TOKEN}",
@@ -214,9 +216,9 @@ pipeline {
                         namespace: "${env.PR_CI_CD_PROJECT_NAME}",
                         waitTime: '10',
                         waitUnit: 'min'
-                )       
+                )
             }
-            // Post can be used both on individual stages and for the entire build.
+
             post {
                 success {
                     notifyGitHub('''{
@@ -234,8 +236,8 @@ pipeline {
                 }
             }
         }
-        
-        // parallel executiont to validate the JAVA App has deployed correctly and the 
+
+        // parallel execution to validate the JAVA App has deployed correctly and the
         // sonar, nexus and jenkins instances have come alive as expected.
         stage("Verifying Inventory") {
             parallel {
@@ -275,7 +277,7 @@ pipeline {
                                     )
                                 }
                             }
-                        }     
+                        }
                     }
                     // Post can be used both on individual stages and for the entire build.
                     post {
@@ -320,7 +322,7 @@ pipeline {
                                         waitUnit: 'min'
                                 )
                             }
-                        }    
+                        }
                     }
                     // Post can be used both on individual stages and for the entire build.
                     post {
@@ -340,6 +342,7 @@ pipeline {
                         }
                     }
                 }
+                // TODO: potentially delete this because of removing "apps" from this project or get these from another repo and apply them
                 stage("App Deploys") {
                     steps {
                         notifyGitHub('''{
@@ -365,7 +368,7 @@ pipeline {
                                         waitUnit: 'min'
                                 )
                             }
-                        }    
+                        }
                     }
                     // Post can be used both on individual stages and for the entire build.
                     post {
@@ -384,7 +387,7 @@ pipeline {
                                     }''')
                         }
                     }
-                }    
+                }
             }
         }
 
@@ -396,7 +399,6 @@ pipeline {
             }
         }
     }
-    //  global post hook
     post {
         success {
             notifyGitHub('''{
