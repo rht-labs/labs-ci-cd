@@ -1,4 +1,4 @@
 NAME=hoverfly
-SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd.git
+SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd.git #TODO: wrong, deleted from here now
 SOURCE_REPOSITORY_REF=master
 SOURCE_CONTEXT_DIR=docker/hoverfly

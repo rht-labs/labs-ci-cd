@@ -1,1 +1,1 @@
-POSTGRES_DATABASE_NAME=sonar
+POSTGRES_DATABASE_NAME=sonar #todo: variable?
