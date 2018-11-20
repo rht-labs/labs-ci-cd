@@ -48,7 +48,7 @@ DOCKER_RUN_COMMAND="ansible-galaxy install -r /tmp/src/requirements.yml --roles-
 docker run --rm -i \
     -v $(pwd):/tmp/src:z \
     -v $HOME/.kube:/root/.kube:z \
-    -t quay.io/redhat-cop/openshift-applier:v2.0.5 \
+    -t quay.io/redhat-cop/openshift-applier:v2.0.6 \
     /bin/sh -c "$DOCKER_RUN_COMMAND"
 
 
