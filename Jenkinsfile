@@ -41,7 +41,7 @@ pipeline {
         // timestamps()
     }
 
-    stages { 
+    stages {
         // prepare environment and ask user for the PR-ID
         stage("prepare environment") {
             agent {
@@ -95,7 +95,7 @@ pipeline {
                     label "jenkins-slave-ansible"
                 }
             }
-            when { 
+            when {
                 expression { return env.PR_ID }
             }
             stages {
@@ -111,7 +111,7 @@ pipeline {
                             chmod 0600 $HOME/.ssh/id_rsa
                             echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> $HOME/.ssh/config
 
-                            git clone https://github.com/rht-labs/labs-ci-cd.git 
+                            git clone https://github.com/rht-labs/labs-ci-cd.git
                             cd labs-ci-cd
                             git remote add ci git@github.com:labs-robot/labs-ci-cd.git
                             git fetch origin pull/${env.PR_ID}/head:pr
@@ -138,7 +138,7 @@ pipeline {
                                     "context": "Jenkins"
                                 }''')
 
-                        sh """ 
+                        sh """
                             cd labs-ci-cd
                             git checkout master
                             git fetch origin pull/${env.PR_ID}/head:pr
@@ -161,7 +161,7 @@ pipeline {
                             sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=ci-for-labs project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                             sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=apps project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
                         }
-   
+
                     }
                     // Post can be used both on individual stages and for the entire build.
                     post {
@@ -183,14 +183,10 @@ pipeline {
                 }
             }
         }
-        
-         
-
-        
 
         // Run a start-build of the tests/slave/Jenkinsfile in the newly created Jenkins namespace
-        // it contains a simple Jenkinsfile that starts each slave in paralle
-        // and verifies the type of on it is eg that the npm slave has npm on the path 
+        // it contains a simple Jenkinsfile that starts each slave in parallel
+        // and verifies the type of on it is eg that the npm slave has npm on the path
         stage("test slaves") {
             steps {
                 notifyGitHub('''{
@@ -199,22 +195,36 @@ pipeline {
                         "context": "Jenkins Slave Tests"
                     }''')
 
-                echo "Trigger builds of all the slaves"
-                sh """
-                    oc get bc -n ${env.PR_CI_CD_PROJECT_NAME} -o name | grep jenkins-slave | cut -d'/'  -f 2 |awk -v namespace=\$PR_CI_CD_PROJECT_NAME {'print "oc start-build "\$0" -n "namespace '}  | sh
-                """
-                echo "Running test-slaves-pipeline and verifying it's been successful"
-                sh """
-                    oc start-build test-slaves-pipeline -w -n ${env.PR_CI_CD_PROJECT_NAME}
-                """
-                openshiftVerifyBuild(
-                        apiURL: "${env.OCP_API_SERVER}",
-                        authToken: "${env.OCP_TOKEN}",
-                        bldCfg: "test-slaves-pipeline",
-                        namespace: "${env.PR_CI_CD_PROJECT_NAME}",
-                        waitTime: '10',
-                        waitUnit: 'min'
-                )       
+                node('master') {
+                    script {
+                        openshift.withCluster() {
+                            openshift.withProject("${env.PR_CI_CD_PROJECT_NAME}") {
+                                // Let's timeout after 10 minutes
+                                timeout(10) {
+                                    echo "Trigger builds of all the jenkins-slaves"
+                                    def buildConfigs = openshift.selector('bc')
+                                    buildConfigs.withEach {
+                                        if (it.name().contains('jenkins-slave')) {
+                                            it.startBuild()
+                                        }
+                                    }
+
+                                    echo "Running test-slaves-pipeline and verifying it's been successful"
+                                    def testSlavesPipeline = openshift.selector('bc/test-slaves-pipeline')
+
+                                    // First, clean-out any old 'test-slaves-pipeline' jobs, then start a new one
+                                    testSlavesPipeline.related('builds').delete()
+                                    testSlavesPipeline.startBuild()
+
+                                    def pipelineBuild = testSlavesPipeline.related('builds')
+                                    pipelineBuild.untilEach(1) {
+                                        return it.object().status.phase == "Complete"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             // Post can be used both on individual stages and for the entire build.
             post {
@@ -234,162 +244,163 @@ pipeline {
                 }
             }
         }
-        
-        // parallel executiont to validate the JAVA App has deployed correctly and the 
-        // sonar, nexus and jenkins instances have come alive as expected.
-        stage("Verifying Inventory") {
-            parallel {
-                stage("CI Builds") {
-                    steps {
-                        notifyGitHub('''{
-                                "state": "pending",
-                                "description": " job is running...",
-                                "context": "CI Builds"
-                            }''')
 
-                        echo "Verifying the CI Builds have completed successfully"
-                        script {
-                            def ciPipelineResponse = sh(returnStdout: true, script:"oc get bc -l type=pipeline -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
-                            def ciPipelineList = []
-                            for (entry in ciPipelineResponse.split()){
-                                ciPipelineList += entry.replace('buildconfigs/','').replace('-pipeline','')
-                            }
+        // Validate the CI Builds & Deployments and App Deployments have deployed
+        // correctly and come alive as expected.
+        stage("Verifying CI Builds") {
+            steps {
+                notifyGitHub('''{
+                        "state": "pending",
+                        "description": " job is running...",
+                        "context": "CI Builds"
+                    }''')
 
-                            def ciBuildsResponse = sh(returnStdout: true, script:"oc get bc -l type=image -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
-                            def ciBuildsList = ciBuildsResponse.split()
+                node('master') {
+                    echo "Verifying the CI Builds have completed successfully"
+                    script {
+                        openshift.withCluster() {
+                            openshift.withProject("${env.PR_CI_CD_PROJECT_NAME}") {
+                                // Let's timeout after 5 minutes
+                                timeout(5) {
+                                    def pipelineBuildConfigs = openshift.selector('bc', [ type:'pipeline'])
+                                    def imageBuildConfigs = openshift.selector('bc', [ type:'image'])
+                                    def allDone = true
+                                    imageBuildConfigs.withEach {
+                                        echo "CI Builds: Checking ${it.name()}"
+                                        def imageBuildName = it.name()
+                                        def isPipelineBuild = false
+                                        pipelineBuildConfigs.withEach {
+                                            if (it.name() == imageBuildName) {
+                                                isPipelineBuild = true
+                                            }
+                                        }
 
-                            for (String build : ciBuildsList) {
-                                String buildName = build.replace('buildconfigs/','')
-                                if( ciPipelineList.contains(buildName) ){
-                                    // we have an image build with a corresponding pipeline build
-                                    // for now, these builds aren't compatible with the openshiftVerifyBuild test we are going to do
-                                    // so skip them here, but we'll test them indirectly via the deploy tests
-                                } else {
-                                    openshiftVerifyBuild(
-                                            apiURL: "${env.OCP_API_SERVER}",
-                                            authToken: "${env.OCP_TOKEN}",
-                                            buildConfig: buildName,
-                                            namespace: "${env.PR_CI_CD_PROJECT_NAME}",
-                                            waitTime: '10',
-                                            waitUnit: 'min'
-                                    )
+                                        if (isPipelineBuild == false) {
+                                            if (it.object().status.phase != "Complete") {
+                                                allDone = false
+                                            }
+                                        }
+                                    }
+                                    return allDone;
                                 }
                             }
-                        }     
-                    }
-                    // Post can be used both on individual stages and for the entire build.
-                    post {
-                        success {
-                            notifyGitHub('''{
-                                        "state": "success",
-                                        "description": "job completed :)",
-                                        "context": "CI Builds"
-                                    }''')
-                        }
-                        failure {
-                            notifyGitHub('''{
-                                        "state": "failure",
-                                        "description": "job failed :(",
-                                        "context": "CI Builds"
-                                    }''')
                         }
                     }
                 }
-                stage("CI Deploys") {
-                    steps {
-                        notifyGitHub('''{
-                                "state": "pending",
-                                "description": " job is running...",
+            }
+            // Post can be used both on individual stages and for the entire build.
+            post {
+                success {
+                    notifyGitHub('''{
+                                "state": "success",
+                                "description": "job completed :)",
+                                "context": "CI Builds"
+                            }''')
+                }
+                failure {
+                    notifyGitHub('''{
+                                "state": "failure",
+                                "description": "job failed :(",
+                                "context": "CI Builds"
+                            }''')
+                }
+            }
+        }
+        stage("Verifying CI Deploys") {
+            steps {
+                notifyGitHub('''{
+                        "state": "pending",
+                        "description": " job is running...",
+                        "context": "CI Deploys"
+                    }''')
+
+                node('master') {
+                    echo "Verifying the CI Deploys have completed successfully"
+                    script {
+                        openshift.withCluster() {
+                            openshift.withProject("${env.PR_CI_CD_PROJECT_NAME}") {
+                                // Let's timeout after 5 minutes
+                                timeout(5) {
+                                    def deploymentConfigs = openshift.selector('dc')
+                                    deploymentConfigs.withEach {
+                                        echo "Checking ${env.PR_CI_CD_PROJECT_NAME}:${it.name()}"
+                                        // this will wait until the desired replicas are available
+                                        // - or be terminated at timeout
+                                        it.rollout().status()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // Post can be used both on individual stages and for the entire build.
+            post {
+                success {
+                    notifyGitHub('''{
+                                "state": "success",
+                                "description": "job completed :)",
                                 "context": "CI Deploys"
                             }''')
+                }
+                failure {
+                    notifyGitHub('''{
+                                "state": "failure",
+                                "description": "job failed :(",
+                                "context": "CI Deploys"
+                            }''')
+                }
+            }
+        }
+        stage("Verifying App Deploys") {
+            steps {
+                notifyGitHub('''{
+                        "state": "pending",
+                        "description": " job is running...",
+                        "context": "App Deploys"
+                    }''')
 
-                        echo "Verifying the CI Deploys have completed successfully"
-                        script {
-                            def ciDeploysResponse = sh(returnStdout: true, script:"oc get dc -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
-                            def ciDeploysList = ciDeploysResponse.split()
-
-                            for (String deploy : ciDeploysList) {
-                                def deployName = deploy.replace('deploymentconfigs/','')
-                                openshiftVerifyDeployment(
-                                        apiURL: "${env.OCP_API_SERVER}",
-                                        authToken: "${env.OCP_TOKEN}",
-                                        depCfg: deployName,
-                                        namespace: "${env.PR_CI_CD_PROJECT_NAME}",
-                                        verifyReplicaCount: true,
-                                        waitTime: '10',
-                                        waitUnit: 'min'
-                                )
+                node('master') {
+                    echo "Verifying the App Deploys (JAVA) have completed successfully"
+                    script {
+                        openshift.withCluster() {
+                            openshift.withProject("${env.PR_DEV_PROJECT_NAME}") {
+                                // Let's timeout after 10 minutes
+                                timeout(10) {
+                                    def deploymentConfigs = openshift.selector('dc')
+                                    deploymentConfigs.withEach {
+                                        echo "Checking ${env.PR_DEV_PROJECT_NAME}:${it.name()}"
+                                        // this will wait until the desired replicas are available
+                                        // - or be terminated at timeout
+                                        it.rollout().status()
+                                    }
+                                }
                             }
-                        }    
-                    }
-                    // Post can be used both on individual stages and for the entire build.
-                    post {
-                        success {
-                            notifyGitHub('''{
-                                        "state": "success",
-                                        "description": "job completed :)",
-                                        "context": "CI Deploys"
-                                    }''')
-                        }
-                        failure {
-                            notifyGitHub('''{
-                                        "state": "failure",
-                                        "description": "job failed :(",
-                                        "context": "CI Deploys"
-                                    }''')
                         }
                     }
                 }
-                stage("App Deploys") {
-                    steps {
-                        notifyGitHub('''{
-                                "state": "pending",
-                                "description": " job is running...",
+            }
+            // Post can be used both on individual stages and for the entire build.
+            post {
+                success {
+                    notifyGitHub('''{
+                                "state": "success",
+                                "description": "job completed :)",
                                 "context": "App Deploys"
                             }''')
-
-                        echo "Verifying the App Deploys (JAVA) have completed successfully"
-                        script {
-                            def appDeploysResponse = sh(returnStdout: true, script:"oc get dc -n ${env.PR_DEV_PROJECT_NAME} -o name")
-                            def appDeploysList = appDeploysResponse.split()
-
-                            for (String app : appDeploysList) {
-                                def appName = app.replace('deploymentconfigs/','')
-                                openshiftVerifyDeployment(
-                                        apiURL: "${env.OCP_API_SERVER}",
-                                        authToken: "${env.OCP_TOKEN}",
-                                        depCfg: appName,
-                                        namespace: "${env.PR_DEV_PROJECT_NAME}",
-                                        verifyReplicaCount: true,
-                                        waitTime: '15',
-                                        waitUnit: 'min'
-                                )
-                            }
-                        }    
-                    }
-                    // Post can be used both on individual stages and for the entire build.
-                    post {
-                        success {
-                            notifyGitHub('''{
-                                        "state": "success",
-                                        "description": "job completed :)",
-                                        "context": "App Deploys"
-                                    }''')
-                        }
-                        failure {
-                            notifyGitHub('''{
-                                        "state": "failure",
-                                        "description": "job failed :(",
-                                        "context": "App Deploys"
-                                    }''')
-                        }
-                    }
-                }    
+                }
+                failure {
+                    notifyGitHub('''{
+                                "state": "failure",
+                                "description": "job failed :(",
+                                "context": "App Deploys"
+                            }''')
+                }
             }
         }
 
         // Clear any old or existing projects from the cluster to ensure a clean slate to test against
-        stage('clean up CI projects created') {
+        stage('Cleaning up CI projects created') {
             steps {
                 echo "Removing created PR projects"
                 clearProjects()
