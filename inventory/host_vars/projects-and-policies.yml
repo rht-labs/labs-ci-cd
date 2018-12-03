@@ -2,18 +2,18 @@
 ansible_connection: local
 
 jenkins:
-  JENKINS_NAMESPACE: "{{ ci_cd.NAMESPACE }}"
+  JENKINS_NAMESPACE: "{{ ci_cd_namespace }}"
 
 openshift_cluster_content:
 - object: projectrequest
   content:
-  - name: "{{ ci_cd.NAMESPACE }}"
+  - name: "{{ ci_cd_namespace }}"
     template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/v3.9.0/files/projectrequest/template.yml"
     params_from_vars: "{{ ci_cd }}"
     tags:
-    - "{{ ci_cd.NAMESPACE }}"
+    - "{{ ci_cd_namespace }}"
     - projects
-    - "projects-{{ ci_cd.NAMESPACE }}"
+    - "projects-{{ ci_cd_namespace }}"
   - name: "{{ dev.NAMESPACE }}"
     template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/v3.9.0/files/projectrequest/template.yml"
     params_from_vars: "{{ dev }}"
@@ -30,32 +30,32 @@ openshift_cluster_content:
     - "projects-{{ test.NAMESPACE }}"
 - object: group-role-binding
   content:
-  - name: "{{ ci_cd.NAMESPACE }}-acl"
-    namespace: "{{ ci_cd.NAMESPACE }}"
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/rolebinding-template-group.yml"
+  - name: "{{ ci_cd_namespace }}-acl"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/group-rolebinding-template.yml"
     params_from_vars: "{{ role_binding_group }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
-    - "{{ ci_cd.NAMESPACE }}"
+    - "{{ ci_cd_namespace }}"
     - rolebinding-group
-    - "rolebinding-group-{{ ci_cd.NAMESPACE }}"
+    - "rolebinding-group-{{ ci_cd_namespace }}"
   - name: "{{ dev.NAMESPACE }}-acl"
-    namespace: "{{ dev.NAMESPACE }}"
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/rolebinding-template-group.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/group-rolebinding-template.yml"
     params_from_vars: "{{ role_binding_group }}"
+    namespace: "{{ dev.NAMESPACE }}"
     tags:
     - "{{ dev.NAMESPACE }}"
     - rolebinding-group
     - "rolebinding-group-{{ dev.NAMESPACE }}"
   - name: "{{ test.NAMESPACE }}-acl"
-    namespace: "{{ test.NAMESPACE }}"
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/rolebinding-template-group.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/group-rolebinding-template.yml"
     params_from_vars: "{{ role_binding_group }}"
+    namespace: "{{ test.NAMESPACE }}"
     tags:
     - "{{ test.NAMESPACE }}"
     - rolebinding-group
     - "rolebinding-group-{{ test.NAMESPACE }}"
   - name: "jenkins-{{ dev.NAMESPACE }}-role-binding"
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/rolebinding-template-jenkins.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/jenkins-rolebinding-template.yml"
     params_from_vars: "{{ jenkins }}"
     namespace: "{{ dev.NAMESPACE }}"
     tags:
@@ -63,7 +63,7 @@ openshift_cluster_content:
     - rolebinding-jenkins
     - "rolebinding-jenkins-{{ dev.NAMESPACE }}"
   - name: "jenkins-{{ test.NAMESPACE }}-role-binding"
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/rolebinding-template-jenkins.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/role-bindings/jenkins-rolebinding-template.yml"
     params_from_vars: "{{ jenkins }}"
     namespace: "{{ test.NAMESPACE }}"
     tags:

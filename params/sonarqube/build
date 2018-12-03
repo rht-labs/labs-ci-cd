@@ -1,4 +1,0 @@
-NAME=sonarqube
-SOURCE_REPOSITORY_URL=https://github.com/rht-labs/labs-ci-cd.git #TODO: wrong point to somewhere else
-SOURCE_REPOSITORY_REF=master
-SOURCE_CONTEXT_DIR=docker/sonarqube

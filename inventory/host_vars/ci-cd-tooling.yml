@@ -1,48 +1,85 @@
 ---
 ansible_connection: local
 
-build:
-  SOURCE_REPOSITORY_URL: "{{ ci_cd.repository }}" #todo need a different repo since this is removed
-  SOURCE_REPOSITORY_SECRET: "{{ ci_cd.SECRET_NAME }}"
-  SOURCE_REPOSITORY_REF: "master"
-  IMAGE_STREAM_NAMESPACE: "{{ ci_cd.NAMESPACE }}"
-jenkins:
-  NAMESPACE: "{{ ci_cd.NAMESPACE }}"
-  SLACK_BASE_URL: https://fake-at-fake-dot-com.slack.com/services/hooks/jenkins-ci/ #TODO: put real test slack in here
-  SLACK_ROOM: builds
-  SLACK_TOKEN: notrealtokenMAKEMEASECRET #TODO: make this a real secret
-  JENKINS_URL: https://jenkins-{{ ci_cd.NAMESPACE }}.apps.{{ base_openshift_url }}/ #TODO: variablize jenkins name?
-  SHARED_LIB_REPO: "git@github.com:redhat-cop/pipeline-library.git"
-  SHARED_LIB_NAME: "pipeline-library"
-  SHARED_LIB_REF: "master" #todo need a tag here in that repo ^
-  SHARED_LIB_SECRET: "{{ ci_cd.SECRET_NAME }}"
+jenkins_name: jenkins
+sonarqube_name: sonarqube
+hoverfly_name: hoverfly
 
+jenkins:
+  build:
+    NAME: "{{ jenkins_name }}"
+    SOURCE_REPOSITORY_URL: https://github.com/rht-labs/s2i-config-jenkins.git
+    SOURCE_REPOSITORY_REF: master
+    BUILDER_IMAGE_STREAM_NAME: jenkins-2-rhel7
+    BUILDER_IMAGE_STREAM_TAG_NAME: v3.9
+    IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
+  deploy:
+    NAMESPACE: "{{ ci_cd_namespace }}"
+    SLACK_BASE_URL: https://fake-at-fake-dot-com.slack.com/services/hooks/jenkins-ci/ #TODO: put real test slack in here
+    SLACK_ROOM: builds
+    SLACK_TOKEN: notrealtokenMAKEMEASECRET #TODO: make this a real secret
+    JENKINS_URL: https://{{ jenkins_name }}-{{ ci_cd_namespace }}.apps.{{ base_openshift_url }}/
+    SHARED_LIB_REPO: "git@github.com:redhat-cop/pipeline-library.git"
+    SHARED_LIB_NAME: "pipeline-library"
+    SHARED_LIB_REF: "master" #todo need a tag here in that repo ^
+    SHARED_LIB_SECRET: "{{ ci_cd.SECRET_NAME }}"
+    JENKINS_IMAGE_STREAM_TAG: "{{ jenkins_name }}:latest"
+    MEMORY_LIMIT: 2Gi
+    JENKINS_OPTS: "--sessionTimeout: 720"
+    VOLUME_CAPACITY: 2Gi
+
+sonarqube:
+  build:
+    NAME: "{{ sonarqube_name }}"
+    SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
+    SOURCE_REPOSITORY_REF: master
+    SOURCE_CONTEXT_DIR: sonarqube
+  postgresql:
+    POSTGRESQL_DATABASE: sonar
+    VOLUME_CAPACITY: 5
+    POSTGRESQL_PASSWORD: sonar #TODO NEED TO CREATE THESE? "{{ sonarqube_db_password }}"
+    POSTGRESQL_USER: sonar #TODO NEED TO CREATE THESE? "{{ sonarqube_db_username }}"
+  deploy:
+    POSTGRES_DATABASE_NAME: "{{ postgresql.POSTGRESQL_DATABASE }}"
+
+hoverfly:
+  build:
+    NAME: "{{ hoverfly_name }}"
+    SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git 
+    SOURCE_REPOSITORY_REF: master
+    SOURCE_CONTEXT_DIR: hoverfly
+  deploy:
+    NAMESPACE: "{{ ci_cd_namespace }}"
+    MEMORY_LIMIT: 2Gi
+    HOVERFLY_IMAGE_STREAM_TAG: "{{ hoverfly_name }}:latest"
+
+  
 openshift_cluster_content:
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins-s2i-build/template.yml"
-    params: "{{ playbook_dir }}/params/jenkins/build"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins-s2i-build/jenkins-s2i-build-template.yml"
+    params_from_vars: "{{ jenkins.build }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins
     - jenkins-build
   - name: tool-box
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/docker-build-template.yml"
     params: "{{ playbook_dir }}/params/tool-box/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - tool-box
   - name: hoverfly
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/template.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/docker-build-template.yml"
     params: "{{ playbook_dir }}/params/hoverfly/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - hoverfly
   - name: sonarqube
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/template.yml"
-    params: "{{ playbook_dir }}/params/sonarqube/build"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/docker-build-template.yml"
+    params_from_vars: "{{ sonarqube.build }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
       - sonarqube
       - sonarqube-build
@@ -51,95 +88,96 @@ openshift_cluster_content:
   - name: jenkins-slave-mvn
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/mvn"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - mvn-slave
   - name: jenkins-slave-npm
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/npm"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - npm-slave
   - name: jenkins-slave-zap
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/zap"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - zap-slave
   - name: jenkins-slave-ansible
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/ansible"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - ansible-slave
   - name: jenkins-slave-arachni
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/arachni"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - arachni-slave
   - name: jenkins-slave-gradle
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/gradle"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - gradle-slave
   - name: jenkins-slave-golang
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/golang"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - golang-slave
   - name: jenkins-slave-mongodb
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/mongodb"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - mongodb-slave
   - name: jenkins-slave-python
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
     params: "{{ playbook_dir }}/params/jenkins-slaves/python"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - python-slave
 - object: ci-cd-deployments
   content:
   - name: sonarqube
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/sonarqube/template.yml"
-    params: "{{ playbook_dir }}/params/sonarqube/deploy"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/sonarqube/sonarqube-deployment-template.yml"
+    params_from_vars: "{{ sonarqube.deploy }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
     - sonarqube
     - sonarqube-deploy
   - name: sonarqube-postgresql
     template: "openshift//postgresql-persistent"
-    params: "{{ playbook_dir }}/params/sonarqube/postgresql"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    params_from_vars: "{{ sonarqube.postgresql }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
     - sonarqube
     - sonarqube-postgresql
     - sonarqube-postgresql-deploy
   - name: nexus
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/nexus/template.yml"
-    params: "{{ playbook_dir }}/params/nexus/deploy"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/nexus/nexus-deployment-template.yml"
+    params_from_vars:
+      VOLUME_CAPACITY: 10Gi
+      MEMORY_LIMIT: 2Gi
+    namespace: "{{ ci_cd_namespace }}"
     tags:
     - nexus
     - nexus-deploy
   - name: jenkins-ephemeral
     template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-ephemeral-template.yml"
-    params_from_vars: "{{ jenkins }}"
-    params: "{{ playbook_dir }}/params/jenkins/deploy"
-    namespace: "{{ ci_cd.NAMESPACE }}"
+    params_from_vars: "{{ jenkins.deploy }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins
     - jenkins-deploy

@@ -34,7 +34,7 @@
   tasks:
     - name: set namespace
       set_fact:
-        nexus_namespace: "{{ ci_cd.NAMESPACE }}"
+        nexus_namespace: "{{ ci_cd_namespace }}"
     - include_role:
         name: roles/configure-nexus
       tags:
