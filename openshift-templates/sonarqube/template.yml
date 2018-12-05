@@ -17,8 +17,8 @@ objects:
   type: Opaque
 - apiVersion: v1
   stringData:
-    password: ${SONAR_LDAP_BIND_PASSWORD}
-    username: ${SONAR_LDAP_BIND_DN}
+    password: "${SONAR_LDAP_BIND_PASSWORD}"
+    username: "${SONAR_LDAP_BIND_DN}"
   kind: Secret
   metadata:
     name: sonar-ldap-bind-dn
@@ -180,6 +180,8 @@ objects:
               secretKeyRef:
                 key: database-password
                 name: sonardb
+          - name: SONAR_LOG_LEVEL
+            value: ${SONAR_LOG_LEVEL}
           - name: FORCE_AUTHENTICATION
             value: "true"
           - name: PROXY_HOST
@@ -190,14 +192,14 @@ objects:
             value: ${PROXY_USER}
           - name: PROXY_PASSWORD
             value: ${PROXY_PASSWORD}
-          - name: LDAP_URL
-            value: ${SONAR_LDAP_URL}
           - name: LDAP_REALM
             value: ${SONAR_AUTH_REALM}
+          - name: LDAP_URL
+            value: ${SONAR_LDAP_URL}
           - name: LDAP_AUTHENTICATION
-            value: ${SONAR_LDAP_BIND_METHOD}
+            value: ${SONAR_LDAP_AUTHENTICATION}
           - name: LDAP_USER_BASEDN
-            value: ${SONAR_BASE_DN}
+            value: ${SONAR_LDAP_USER_BASEDN}
           - name: LDAP_USER_REAL_NAME_ATTR
             value: ${SONAR_LDAP_USER_REAL_NAME_ATTR}
           - name: LDAP_USER_EMAIL_ATTR
@@ -213,7 +215,9 @@ objects:
           - name: LDAP_CONTEXTFACTORY
             value: ${SONAR_LDAP_CONTEXTFACTORY}
           - name: SONAR_AUTOCREATE_USERS
-            value: ${SONAR_AUTOCREATE_USERS}
+            value: "${SONAR_AUTOCREATE_USERS}"
+          - name: LDAP_STARTTLS
+            value: "${SONAR_LDAP_STARTTLS}"
           - name: LDAP_BINDDN
             valueFrom:
               secretKeyRef:
@@ -345,6 +349,11 @@ objects:
         storage: ${POSTGRES_PERSISTENT_VOLUME_CLAIM_SIZE}
   status: {}
 parameters:
+  - description: Set the SonarQube Log Level (INFO, DEBUG, TRACE)
+    displayName: Log Level
+    name: SONAR_LOG_LEVEL
+    required: true
+    value: INFO
   - description: Password for the Posgres Database to be used by Sonarqube
     displayName: Postgres password
     name: POSTGRES_PASSWORD
@@ -393,7 +402,7 @@ parameters:
     description: The type of authentication that SonarQube should be using (None or LDAP) (Ref - https://docs.sonarqube.org/display/PLUG/LDAP+Plugin)
     displayName: SonarQube Authentication Realm
   - name: SONAR_AUTOCREATE_USERS
-    value: 'false'
+    value: "false"
     description: When using an external authentication system, should SonarQube automatically create accounts for users?
     displayName: Enable auto-creation of users from external authentication systems?
     required: true
@@ -439,6 +448,11 @@ parameters:
   - name: SONAR_LDAP_GROUP_BASEDN
     description: The Base DN under which SonarQube should search for groups in the LDAP directory
     displayName: LDAP Group Base DN
+  - name: SONAR_LDAP_STARTTLS
+    description: Determines if the application will try to use TLS encryption to communicate with the LDAP server
+    displayName: LDAP Use STARTTLS
+    required: true
+    value: "false"
   - name: SONAR_LDAP_GROUP_REQUEST
     description: An LDAP filter to be used to search for group objects in the LDAP directory
     displayName: LDAP Group Request Filter

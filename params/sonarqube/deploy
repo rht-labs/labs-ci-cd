@@ -1,1 +1,17 @@
 POSTGRES_DATABASE_NAME=sonar
+# POSTGRES_PASSWORD=sonar
+# POSTGRES_USERNAME=sonar
+# SONAR_LOG_LEVEL=INFO # Options are INFO, DEBUG, TRACE
+# SONAR_LDAP_BIND_DN=uid=admin,CN=users,CN=compat,DC=mycompany,DC=com
+# SONAR_LDAP_BIND_PASSWORD='<PASSWORD>'
+# SONAR_LDAP_URL=ldap://idm.mycompany.com:389
+# SONAR_LDAP_AUTHENTICATION=simple  # Options are GSSAPI, CRAM-MD5, DIGEST-MD5, simple
+# SONAR_LDAP_USER_BASEDN=DC=mycompany,DC=com
+# SONAR_LDAP_USER_REAL_NAME_ATTR=cn
+# SONAR_LDAP_USER_EMAIL_ATTR=mail
+# SONAR_LDAP_USER_REQUEST=(&(objectClass=inetOrgPerson)(uid={login}))
+# SONAR_LDAP_GROUP_REQUEST=(&(objectClass=posixgroup)(memberUid={uid}))
+# SONAR_LDAP_GROUP_BASEDN=DC=mycompany,DC=com
+# SONAR_LDAP_GROUP_ID_ATTR=cn
+# SONAR_AUTOCREATE_USERS=true
+# SONAR_AUTH_REALM=LDAP
