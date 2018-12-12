@@ -64,20 +64,20 @@ openshift_cluster_content:
     tags:
     - jenkins
     - jenkins-build
-  - name: tool-box
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/docker-build-template.yml"
+  - name: tool-box #TODO NEED TO TAG THIS TEMPLATE
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params: "{{ playbook_dir }}/params/tool-box/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - tool-box
-  - name: hoverfly
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/docker-build-template.yml"
+  - name: hoverfly #TODO NEED TO TAG THIS TEMPLATE
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params: "{{ playbook_dir }}/params/hoverfly/build"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - hoverfly
-  - name: sonarqube
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/docker-build-template.yml"
+  - name: sonarqube #TODO NEED TO TAG THIS TEMPLATE
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars: "{{ sonarqube.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:

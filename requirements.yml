@@ -6,7 +6,7 @@
   scm: git
   version: v2.0.6
   name: openshift-applier
-- src: https://github.com/redhat-cop/configure-nexus #TODO FIX TO GO WHEREVER IT NEEDS TO
+- src: https://github.com/redhat-cop/infra-ansible
   scm: git
-  version: v1.0
-  name: configure-nexus
+  version: master #TODO NEEDS A TAG
+  name: infra-ansible

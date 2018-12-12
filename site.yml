@@ -36,6 +36,6 @@
       set_fact:
         nexus_namespace: "{{ ci_cd_namespace }}"
     - include_role:
-        name: roles/configure-nexus
+        name: infra-ansible/roles/config-nexus
       tags:
         - configure-nexus
