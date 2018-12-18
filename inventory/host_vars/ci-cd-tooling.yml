@@ -46,8 +46,8 @@ sonarqube:
 hoverfly:
   build:
     NAME: "{{ hoverfly_name }}"
-    SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git 
-    SOURCE_REPOSITORY_REF: add-hoverfly
+    SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
+    SOURCE_REPOSITORY_REF: master
     SOURCE_CONTEXT_DIR: hoverfly
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
