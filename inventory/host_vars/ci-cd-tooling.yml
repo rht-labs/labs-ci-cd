@@ -67,7 +67,11 @@ openshift_cluster_content:
     - jenkins-build
   - name: tool-box #TODO NEED TO TAG THIS TEMPLATE
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template.yml"
-    params: "{{ playbook_dir }}/params/tool-box/build"
+    params_from_vars:
+      NAME: tool-box
+      SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
+      SOURCE_REPOSITORY_REF: v1.1
+      SOURCE_CONTEXT_DIR: tool-box
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - tool-box
