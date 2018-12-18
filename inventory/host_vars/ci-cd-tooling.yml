@@ -77,7 +77,7 @@ openshift_cluster_content:
       - tool-box
   - name: hoverfly #TODO NEED TO TAG THIS TEMPLATE
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template.yml"
-    params: "{{ playbook_dir }}/params/hoverfly/build"
+    params_from_vars: "{{ hoverfly.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - hoverfly
@@ -186,3 +186,9 @@ openshift_cluster_content:
     tags:
     - jenkins
     - jenkins-deploy
+  - name: hoverfly #TODO CHANGE THIS TEMPLATE TO USE THE REDHAT-COP REPO
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/hoverfly/hoverfly-deployment-template.yml"
+    params_from_vars: "{{ hoverfly.deploy }}"
+    namespace: "{{ namespace }}"
+    tags:
+    - deploy
