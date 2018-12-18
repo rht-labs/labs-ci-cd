@@ -40,7 +40,8 @@ sonarqube:
     POSTGRESQL_PASSWORD: sonar #TODO NEED TO CREATE THESE? "{{ sonarqube_db_password }}"
     POSTGRESQL_USER: sonar #TODO NEED TO CREATE THESE? "{{ sonarqube_db_username }}"
   deploy:
-    POSTGRES_DATABASE_NAME: "{{ postgresql.POSTGRESQL_DATABASE }}"
+    POSTGRES_DATABASE_NAME: "sonar"
+#    POSTGRES_DATABASE_NAME: "{{ sonarqube.postgresql.POSTGRESQL_DATABASE }}"
 
 hoverfly:
   build:
