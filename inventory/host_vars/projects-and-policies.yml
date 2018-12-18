@@ -10,6 +10,7 @@ openshift_cluster_content:
   - name: "{{ ci_cd_namespace }}"
     template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/v3.9.0/files/projectrequest/template.yml"
     params_from_vars: "{{ ci_cd }}"
+    action: create
     tags:
     - "{{ ci_cd_namespace }}"
     - projects
@@ -17,6 +18,7 @@ openshift_cluster_content:
   - name: "{{ dev_namespace }}"
     template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/v3.9.0/files/projectrequest/template.yml"
     params_from_vars: "{{ dev }}"
+    action: create
     tags:
     - "{{ dev_namespace }}"
     - projects
@@ -24,6 +26,7 @@ openshift_cluster_content:
   - name: "{{ test_namespace }}"
     template: "https://raw.githubusercontent.com/redhat-cop/cluster-lifecycle/v3.9.0/files/projectrequest/template.yml"
     params_from_vars: "{{ test }}"
+    action: create
     tags:
     - "{{ test_namespace }}"
     - projects
