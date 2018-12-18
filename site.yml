@@ -12,13 +12,13 @@
         name: openshift-applier/roles/openshift-applier
 
 ### secrets.yml
-- name: Create secrets
-  hosts: secrets
-  tasks:
-    - include_vars: "{{ playbook_dir }}/secrets/keys.yml"
-    - include_vars: "{{ playbook_dir }}/secrets/user-pass.yml"
-    - include_role:
-        name: openshift-applier/roles/openshift-applier
+#- name: Create secrets
+#  hosts: secrets
+#  tasks:
+#    - include_vars: "{{ playbook_dir }}/secrets/keys.yml"
+#    - include_vars: "{{ playbook_dir }}/secrets/user-pass.yml"
+#    - include_role:
+#        name: openshift-applier/roles/openshift-applier
 
 ### tools.yml
 - name: Create CI/CD tools

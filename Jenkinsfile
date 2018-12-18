@@ -55,16 +55,16 @@ pipeline {
                     env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
                     env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
                     // taken from original j-file
-                    timeout(time: 1, unit: 'HOURS') {
-                        env.PR_ID = input(
-                                id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
-                                [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
-                        ])
-                        if (env.PR_ID == null || env.PR_ID == ""){
-                            error('PR_ID cannot be null or empty')
-                        }
-                    }
-
+//                    timeout(time: 1, unit: 'HOURS') {
+//                        env.PR_ID = input(
+//                                id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
+//                                [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
+//                        ])
+//                        if (env.PR_ID == null || env.PR_ID == ""){
+//                            error('PR_ID cannot be null or empty')
+//                        }
+//                    }
+                    env.PR_ID = '242'
                     // env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret labs-robot-github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
                     env.PR_GITHUB_TOKEN = new String("oc get secret labs-robot-github-oauth-token --template='{{.data.password}}'".execute().text.minus("'").minus("'").decodeBase64())
                     env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
@@ -102,18 +102,10 @@ pipeline {
                 stage("merge PR") {
 
                     steps {
-                        echo "Configuring Git, cloning labs-ci-cd & pushing revision to labs-robot/labs-ci-cd.git"
                         sh """
-                            git config --global user.email "labs.robot@gmail.com"
-                            git config --global user.name "Labs Robot"
-                            mkdir $HOME/.ssh
-                            oc get secret labs-robot-ssh-privatekey --template=\'{{index .data \"ssh-privatekey\"}}\' | base64 -d >> $HOME/.ssh/id_rsa
-                            chmod 0600 $HOME/.ssh/id_rsa
-                            echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> $HOME/.ssh/config
-
-                            git clone https://github.com/rht-labs/labs-ci-cd.git
+                            ls -al
+                            pwd
                             cd labs-ci-cd
-                            git remote add ci git@github.com:labs-robot/labs-ci-cd.git
                             git fetch origin pull/${env.PR_ID}/head:pr
                             git checkout pr
                             git rev-parse HEAD
@@ -143,12 +135,12 @@ pipeline {
                             git checkout master
                             git fetch origin pull/${env.PR_ID}/head:pr
                             git merge pr --ff
-                            git push ci master:pr-${env.PR_ID} -f
                         """
+//                        git push ci master:pr-${env.PR_ID} -f
                     }
                 }
 
-                // Apply ansible inventory of ci-cd and it's ci-fo-ci-cd
+                // Apply ansible inventory of ci-cd and it's ci-for-ci-cd
                 stage("apply inventory") {
                     steps {
 
@@ -156,10 +148,8 @@ pipeline {
                         dir('labs-ci-cd') {
                             // each its own line to that in blue ocean UI they show seperately
                             sh "ansible-galaxy install -r requirements.yml --roles-path=roles"
-                            sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=bootstrap project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-                            sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=tools project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-                            sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=ci-for-labs project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-                            sh "ansible-playbook ci-playbook.yml -i inventory/ -e \"target=apps project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
+                            //TODO what about for secrets??? do i omit them? or run them separately? or put dummy/default values in there?
+                            sh "ansible-playbook site.yml -e ci_cd_namespace=${env.PR_CI_CD_PROJECT_NAME} -e dev_namespace=${env.PR_DEV_PROJECT_NAME} -e test_namespace=${env.PR_TEST_PROJECT_NAME} -e role=admin"
                         }
 
                     }
@@ -184,66 +174,8 @@ pipeline {
             }
         }
 
-        // Run a start-build of the tests/slave/Jenkinsfile in the newly created Jenkins namespace
-        // it contains a simple Jenkinsfile that starts each slave in parallel
-        // and verifies the type of on it is eg that the npm slave has npm on the path
-        stage("test slaves") {
-            steps {
-                notifyGitHub('''{
-                        "state": "pending",
-                        "description": "test are running...",
-                        "context": "Jenkins Slave Tests"
-                    }''')
 
-                node('master') {
-                    script {
-                        openshift.withCluster() {
-                            openshift.withProject("${env.PR_CI_CD_PROJECT_NAME}") {
-                                // Let's timeout after 10 minutes
-                                timeout(10) {
-                                    echo "Trigger builds of all the jenkins-slaves"
-                                    def buildConfigs = openshift.selector('bc')
-                                    buildConfigs.withEach {
-                                        if (it.name().contains('jenkins-slave')) {
-                                            it.startBuild()
-                                        }
-                                    }
-
-                                    echo "Running test-slaves-pipeline and verifying it's been successful"
-                                    def testSlavesPipeline = openshift.selector('bc/test-slaves-pipeline')
-
-                                    // First, clean-out any old 'test-slaves-pipeline' jobs, then start a new one
-                                    testSlavesPipeline.related('builds').delete()
-                                    testSlavesPipeline.startBuild()
-
-                                    def pipelineBuild = testSlavesPipeline.related('builds')
-                                    pipelineBuild.untilEach(1) {
-                                        return it.object().status.phase == "Complete"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            // Post can be used both on individual stages and for the entire build.
-            post {
-                success {
-                    notifyGitHub('''{
-                                "state": "success",
-                                "description": "job completed :)",
-                                "context": "Jenkins Slave Tests"
-                            }''')
-                }
-                failure {
-                    notifyGitHub('''{
-                                "state": "failure",
-                                "description": "job failed :(",
-                                "context": "Jenkins Slave Tests"
-                            }''')
-                }
-            }
-        }
+        // TODO jenkins-slave-test pipeline needs to be run in the containers-quickstarts repo.
 
         // Validate the CI Builds & Deployments and App Deployments have deployed
         // correctly and come alive as expected.
@@ -352,52 +284,8 @@ pipeline {
                 }
             }
         }
-        stage("Verifying App Deploys") {
-            steps {
-                notifyGitHub('''{
-                        "state": "pending",
-                        "description": " job is running...",
-                        "context": "App Deploys"
-                    }''')
 
-                node('master') {
-                    echo "Verifying the App Deploys (JAVA) have completed successfully"
-                    script {
-                        openshift.withCluster() {
-                            openshift.withProject("${env.PR_DEV_PROJECT_NAME}") {
-                                // Let's timeout after 10 minutes
-                                timeout(10) {
-                                    def deploymentConfigs = openshift.selector('dc')
-                                    deploymentConfigs.withEach {
-                                        echo "Checking ${env.PR_DEV_PROJECT_NAME}:${it.name()}"
-                                        // this will wait until the desired replicas are available
-                                        // - or be terminated at timeout
-                                        it.rollout().status()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            // Post can be used both on individual stages and for the entire build.
-            post {
-                success {
-                    notifyGitHub('''{
-                                "state": "success",
-                                "description": "job completed :)",
-                                "context": "App Deploys"
-                            }''')
-                }
-                failure {
-                    notifyGitHub('''{
-                                "state": "failure",
-                                "description": "job failed :(",
-                                "context": "App Deploys"
-                            }''')
-                }
-            }
-        }
+        // TODO pull an example repo (probably containers-quickstarts or an example repo in rht-labs) with applier and run that. Instead of using an example app in this repository
 
         // Clear any old or existing projects from the cluster to ensure a clean slate to test against
         stage('Cleaning up CI projects created') {

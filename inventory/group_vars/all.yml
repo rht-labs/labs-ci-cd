@@ -1,26 +1,25 @@
 group_name: "labs" #TODO: update
 team_name: "{{ group_name }}labs"
 
-base_openshift_url: ".com" #TODO: Update
+base_openshift_url: "https://console.d3.casl.rht-labs.com" #TODO: Update
 
-ci_cd_namespace: labs-ci-cd
-dev_namespace: labs-dev
-test_namespace: labs-test
+ci_cd_namespace: labs-ci-cd-patrick
+dev_namespace: labs-dev-patrick
+test_namespace: labs-test-patrick
 
 ci_cd:
   NAMESPACE: "{{ ci_cd_namespace }}"
-  NAMESPACE_DISPLAY_NAME: "Labs CI/CD"
+  NAMESPACE_DISPLAY_NAME: "{{ ci_cd_namespace }}"
   SECRET_NAME: "ci-cd-secret"
-  repository: "git@github.com:rht-labs/labs-ci-cd.git"
 
 dev:
   NAMESPACE: "{{ dev_namespace }}"
-  NAMESPACE_DISPLAY_NAME: "Labs-Development"
+  NAMESPACE_DISPLAY_NAME: "{{ dev_namespace }}"
 
 test:
   NAMESPACE: "{{ test_namespace }}"
-  NAMESPACE_DISPLAY_NAME: "Labs-Test"
+  NAMESPACE_DISPLAY_NAME: "{{ test_namespace }}"
 
 role_binding_group:
   GROUP: "labs-ci-cd-contributors"
-  ROLE: edit
+  ROLE: "{{ role | default('edit') }}"

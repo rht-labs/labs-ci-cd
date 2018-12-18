@@ -1,25 +1,5 @@
 ---
-- name: Running CI for Labs CI/CD 
-  hosts: "{{ target }}"
-  vars:
-    scm_url: https://github.com/labs-robot/labs-ci-cd.git
-    ci_cd_namespace: labs-ci-cd
-    dev_namespace: labs-dev
-    test_namespace: labs-test
-    params_regexp_replace_pairs:
-      - regexp: '^((?!.*DISPLAY_NAME))(.*NAMESPACE.*)=((?!.*{{ project_name_postfix }}))(.*)$'
-        replace: '\2=\4{{ project_name_postfix }}'
-      - regexp: '^(NAMESPACE_DISPLAY_NAME)=((?!.*\({{ project_name_postfix }}\)))(.*)$'
-        replace: '\1=\3 ({{ project_name_postfix }})'
-      - regexp: '(SOURCE_REPOSITORY_URL)=(https:\/\/github\.com\/rht-labs\/labs-ci-cd.*)((\n.*)+)(SOURCE_REPOSITORY_REF)=(.*)'
-        replace: '\1={{ scm_url }}\3\5={{ scm_ref }}'
-      - regexp: '^(PIPELINE_SOURCE_REPOSITORY_REF)=(.*master.*)'
-        replace: '\1={{ scm_ref }}'
-      - regexp: '^(ROLE)=(.*)'
-        replace: '\1=admin'
-    galaxy_regexp_replace_pairs:
-      - regexp: '(- src: )(https:\/\/github\.com\/rht-labs\/labs-ci-cd.*)((\n.*)+)(version: )(.*)'
-        replace: '\1{{ scm_url }}\3\5{{ scm_ref }}'
+- name: Setting up CI for Labs CI/CD
+  hosts: "ci-for-labs"
   roles:
-    - openshift-applier/roles/make-applier-projects-unique
     - openshift-applier/roles/openshift-applier
