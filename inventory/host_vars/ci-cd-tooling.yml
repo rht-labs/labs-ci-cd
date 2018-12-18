@@ -47,7 +47,7 @@ hoverfly:
   build:
     NAME: "{{ hoverfly_name }}"
     SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git 
-    SOURCE_REPOSITORY_REF: master
+    SOURCE_REPOSITORY_REF: add-hoverfly
     SOURCE_CONTEXT_DIR: hoverfly
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
@@ -160,16 +160,16 @@ openshift_cluster_content:
     params_from_vars: "{{ sonarqube.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - sonarqube
-    - sonarqube-deploy
+      - sonarqube
+      - sonarqube-deploy
   - name: sonarqube-postgresql
     template: "openshift//postgresql-persistent"
     params_from_vars: "{{ sonarqube.postgresql }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - sonarqube
-    - sonarqube-postgresql
-    - sonarqube-postgresql-deploy
+      - sonarqube
+      - sonarqube-postgresql
+      - sonarqube-postgresql-deploy
   - name: nexus
     template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/nexus/nexus-deployment-template.yml"
     params_from_vars:
@@ -177,18 +177,19 @@ openshift_cluster_content:
       MEMORY_LIMIT: 2Gi
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - nexus
-    - nexus-deploy
+      - nexus
+      - nexus-deploy
   - name: jenkins-ephemeral
     template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-ephemeral-template.yml"
     params_from_vars: "{{ jenkins.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - jenkins
-    - jenkins-deploy
+      - jenkins
+      - jenkins-deploy
   - name: hoverfly #TODO CHANGE THIS TEMPLATE TO USE THE REDHAT-COP REPO
     template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/hoverfly/hoverfly-deployment-template.yml"
     params_from_vars: "{{ hoverfly.deploy }}"
-    namespace: "{{ namespace }}"
+    namespace: "{{ ci_cd_namespace }}"
     tags:
-    - deploy
+      - hoverfly
+      - hoverfly-deploy
