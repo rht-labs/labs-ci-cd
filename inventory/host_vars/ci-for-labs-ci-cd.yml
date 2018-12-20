@@ -6,7 +6,7 @@ ansible_connection: local
 build:
   NAME: ci-for-labs-ci-cd
   PIPELINE_SOURCE_REPOSITORY_REF: cleanup
-  PIPELINE_SOURCE_REPOSITORY_URL: https://github.com/rht-labs/labs-ci-cd.git
+  PIPELINE_SOURCE_REPOSITORY_URL: https://github.com/pcarney8/labs-ci-cd.git
   RUN_POLICY: Parallel
 
 openshift_cluster_content:
