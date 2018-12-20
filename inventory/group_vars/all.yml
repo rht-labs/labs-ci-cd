@@ -3,9 +3,9 @@ team_name: "{{ group_name }}labs"
 
 base_openshift_url: "https://console.d3.casl.rht-labs.com" #TODO: Update
 
-ci_cd_namespace: labs-ci-cd-patrick
-dev_namespace: labs-dev-patrick
-test_namespace: labs-test-patrick
+ci_cd_namespace: labs-ci-cd
+dev_namespace: labs-dev
+test_namespace: labs-test
 
 ci_cd:
   NAMESPACE: "{{ ci_cd_namespace }}"
