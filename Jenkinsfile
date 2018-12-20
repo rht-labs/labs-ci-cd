@@ -106,6 +106,7 @@ pipeline {
                         sh """
                             ls -al
                             pwd
+                            git remote -v
                             git fetch origin pull/${env.PR_ID}/head:pr
                             git checkout pr
                             git rev-parse HEAD
