@@ -150,12 +150,12 @@ pipeline {
                     steps {
 
                         echo "Applying inventory"
-                        dir('labs-ci-cd') {
-                            // each its own line to that in blue ocean UI they show seperately
-                            sh "ansible-galaxy install -r requirements.yml --roles-path=roles"
-                            //TODO what about for secrets??? do i omit them? or run them separately? or put dummy/default values in there?
-                            sh "ansible-playbook site.yml -e ci_cd_namespace=${env.PR_CI_CD_PROJECT_NAME} -e dev_namespace=${env.PR_DEV_PROJECT_NAME} -e test_namespace=${env.PR_TEST_PROJECT_NAME} -e role=admin"
-                        }
+                        // each its own line to that in blue ocean UI they show seperately
+                        sh "pwd"
+                        sh "ls -al"
+                        sh "ansible-galaxy install -r requirements.yml --roles-path=roles"
+                        //TODO what about for secrets??? do i omit them? or run them separately? or put dummy/default values in there?
+                        sh "ansible-playbook site.yml -e ci_cd_namespace=${env.PR_CI_CD_PROJECT_NAME} -e dev_namespace=${env.PR_DEV_PROJECT_NAME} -e test_namespace=${env.PR_TEST_PROJECT_NAME} -e role=admin"
 
                     }
                     // Post can be used both on individual stages and for the entire build.
