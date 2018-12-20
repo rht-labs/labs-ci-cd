@@ -105,11 +105,9 @@ pipeline {
                     steps {
                         // origin isn't correct here because the PR is on the main repo
                         // commenting out to pretend that is it, since we've set this to my PR branch anyways
-//                        git fetch origin pull/${env.PR_ID}/head:pr
-//                        git checkout pr
-                        sh """
-                            git rev-parse HEAD
-                        """
+//                        env.PR_BRANCH = "pull/${env.PR_ID}/head"
+                        //TODO get this from the webhook
+                        env.PR_BRANCH = "cleanup"
 
                         //TODO GET THIS FROM THE WEBHOOK
                         echo "Pushing build state to the PR"
@@ -129,12 +127,13 @@ pipeline {
                                     "context": "Jenkins"
                                 }''')
 
+                        // SAME AS ABOVE, THIS IS SET TO MY BRANCH
                         sh """
                             git checkout master
-                            git fetch origin pull/${env.PR_ID}/head:pr
+                            git fetch origin ${env.PR_BRANCH}:pr
                             git merge pr --ff
                         """
-//                        git push ci master:pr-${env.PR_ID} -f
+//                        git push ci master:pr-${env.PR_ID} -f //TODO DONT THINK THIS IS NEEDED ANYMORE
                     }
                 }
 
