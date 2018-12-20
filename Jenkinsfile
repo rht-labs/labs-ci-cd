@@ -80,6 +80,10 @@ pipeline {
                     //TODO get this from the webhook
                     env.PR_BRANCH = "cleanup"
 
+                    // when using the git plugin...
+//                    env.GIT_COMMITTER_NAME = "jenkins"
+//                    env.GIT_COMMITTER_EMAIL = "jenkins@example.com"
+
                 }
             }
         }
@@ -131,6 +135,8 @@ pipeline {
 
                         // SAME AS ABOVE, THIS IS SET TO MY BRANCH
                         sh """
+                            git config --global user.email "labs.robot@gmail.com"
+                            git config --global user.name "Labs Robot"
                             git checkout master
                             git fetch origin ${env.PR_BRANCH}:pr
                             git merge pr --ff
