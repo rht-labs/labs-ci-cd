@@ -28,14 +28,12 @@
         name: openshift-applier/roles/openshift-applier
       tags:
         - openshift-applier
-
-- name: configure nexus #TODO there was something with SSH tunneling there i think it can just be moved up above
-  hosts: localhost
-  tasks:
     - name: set namespace
       set_fact:
         nexus_namespace: "{{ ci_cd_namespace }}"
+        nexus_user: "admin" #TODO do i need these here?
+        nexus_password: "admin123" #TODO do i need these here?
     - include_role:
-        name: infra-ansible/roles/config-nexus
+        name: roles/infra-ansible/roles/config-nexus
       tags:
         - configure-nexus
