@@ -75,6 +75,11 @@ pipeline {
                         error('PR_GITHUB_TOKEN cannot be null or empty')
                     }
                     env.USER_PASS = "${env.PR_GITHUB_USERNAME}:${env.PR_GITHUB_TOKEN}"
+
+                    //                        env.PR_BRANCH = "pull/${env.PR_ID}/head"
+                    //TODO get this from the webhook
+                    env.PR_BRANCH = "cleanup"
+
                 }
             }
         }
@@ -103,12 +108,6 @@ pipeline {
                 stage("merge PR") {
 
                     steps {
-                        // origin isn't correct here because the PR is on the main repo
-                        // commenting out to pretend that is it, since we've set this to my PR branch anyways
-//                        env.PR_BRANCH = "pull/${env.PR_ID}/head"
-                        //TODO get this from the webhook
-                        env.PR_BRANCH = "cleanup"
-
                         //TODO GET THIS FROM THE WEBHOOK
                         echo "Pushing build state to the PR"
                         script {
@@ -126,6 +125,9 @@ pipeline {
                                     "description": "ALL CI jobs are running...",
                                     "context": "Jenkins"
                                 }''')
+
+                        // origin isn't correct here because the PR is on the main repo
+                        // commenting out to pretend that is it, since we've set this to my PR branch anyways
 
                         // SAME AS ABOVE, THIS IS SET TO MY BRANCH
                         sh """
