@@ -15,17 +15,16 @@ jenkins:
     IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
-    SLACK_BASE_URL: https://fake-at-fake-dot-com.slack.com/services/hooks/jenkins-ci/ #TODO: put real test slack in here
+    SLACK_BASE_URL: https://fake-at-fake-dot-com.slack.com/services/hooks/jenkins-ci/ #TODO: put real test slack in here, do i need it though?
     SLACK_ROOM: builds
     SLACK_TOKEN: notrealtokenMAKEMEASECRET #TODO: make this a real secret
-    JENKINS_URL: https://{{ jenkins_name }}-{{ ci_cd_namespace }}.apps.{{ base_openshift_url }}/
     SHARED_LIB_REPO: "git@github.com:redhat-cop/pipeline-library.git"
     SHARED_LIB_NAME: "pipeline-library"
     SHARED_LIB_REF: "master" #todo need a tag here in that repo ^
-    SHARED_LIB_SECRET: "{{ ci_cd.SECRET_NAME }}"
+    SHARED_LIB_SECRET: "{{ ci_cd.SECRET_NAME }}" #why do i need this? i don't think i do
     JENKINS_IMAGE_STREAM_TAG: "{{ jenkins_name }}:latest"
     MEMORY_LIMIT: 2Gi
-    JENKINS_OPTS: "--sessionTimeout: 720"
+    JENKINS_OPTS: "--sessionTimeout=720"
     VOLUME_CAPACITY: 2Gi
 
 sonarqube:
