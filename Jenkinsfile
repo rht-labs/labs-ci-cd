@@ -106,7 +106,6 @@ pipeline {
                         sh """
                             ls -al
                             pwd
-                            cd labs-ci-cd
                             git fetch origin pull/${env.PR_ID}/head:pr
                             git checkout pr
                             git rev-parse HEAD
@@ -114,16 +113,14 @@ pipeline {
 
                         //TODO GET THIS FROM THE WEBHOOK
                         echo "Pushing build state to the PR"
-                        dir('labs-ci-cd') {
-                            script {
-                                // set the vars
-                                env.COMMIT_SHA = sh(returnStdout: true, script: "git rev-parse HEAD")
-                                // env.COMMIT_SHA = "git rev-parse HEAD".execute().text.minus("'").minus("'")
-                                if (env.COMMIT_SHA == null || env.COMMIT_SHA == ""){
-                                    error('could not get COMMIT_SHA')
-                                }
-                                env.PR_STATUS_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/statuses/${env.COMMIT_SHA}"
+                        script {
+                            // set the vars
+                            env.COMMIT_SHA = sh(returnStdout: true, script: "git rev-parse HEAD")
+                            // env.COMMIT_SHA = "git rev-parse HEAD".execute().text.minus("'").minus("'")
+                            if (env.COMMIT_SHA == null || env.COMMIT_SHA == ""){
+                                error('could not get COMMIT_SHA')
                             }
+                            env.PR_STATUS_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/statuses/${env.COMMIT_SHA}"
                         }
 
                         notifyGitHub('''{
@@ -133,7 +130,6 @@ pipeline {
                                 }''')
 
                         sh """
-                            cd labs-ci-cd
                             git checkout master
                             git fetch origin pull/${env.PR_ID}/head:pr
                             git merge pr --ff
