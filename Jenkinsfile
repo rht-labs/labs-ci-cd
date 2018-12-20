@@ -103,12 +103,11 @@ pipeline {
                 stage("merge PR") {
 
                     steps {
+                        // origin isn't correct here because the PR is on the main repo
+                        // commenting out to pretend that is it, since we've set this to my PR branch anyways
+//                        git fetch origin pull/${env.PR_ID}/head:pr
+//                        git checkout pr
                         sh """
-                            ls -al
-                            pwd
-                            git remote -v
-                            git fetch origin pull/${env.PR_ID}/head:pr
-                            git checkout pr
                             git rev-parse HEAD
                         """
 
