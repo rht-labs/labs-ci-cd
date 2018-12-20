@@ -21,7 +21,6 @@ jenkins:
     SHARED_LIB_REPO: "git@github.com:redhat-cop/pipeline-library.git"
     SHARED_LIB_NAME: "pipeline-library"
     SHARED_LIB_REF: "master" #todo need a tag here in that repo ^
-    SHARED_LIB_SECRET: "{{ ci_cd.SECRET_NAME }}" #why do i need this? i don't think i do
     JENKINS_IMAGE_STREAM_TAG: "{{ jenkins_name }}:latest"
     MEMORY_LIMIT: 2Gi
     JENKINS_OPTS: "--sessionTimeout=720"
