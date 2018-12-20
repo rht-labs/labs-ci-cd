@@ -6,7 +6,7 @@
   scm: git
   version: v2.0.6
   name: openshift-applier
-- src: https://github.com/pcarney8/infra-ansible #TODO GET THIS MERGED IN
+- src: https://github.com/redhat-cop/infra-ansible
   scm: git
-  version: configure-nexus-role #TODO NEEDS A TAG
+  version: master #TODO NEEDS A TAG
   name: infra-ansible

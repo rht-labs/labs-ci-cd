@@ -55,6 +55,7 @@ pipeline {
                     env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
                     env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
                     // taken from original j-file
+                    //TODO GET THIS FROM A WEBHOOK NOT MANUALLY.
 //                    timeout(time: 1, unit: 'HOURS') {
 //                        env.PR_ID = input(
 //                                id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
@@ -65,7 +66,7 @@ pipeline {
 //                        }
 //                    }
                     env.PR_ID = '242'
-                    // env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret labs-robot-github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
+                    // TODO PULL THIS INTO CURRENT PROJECT, POTENTIALLY PUT IT INTO THE SECRETS EXAMPLE
                     env.PR_GITHUB_TOKEN = new String("oc get secret labs-robot-github-oauth-token --template='{{.data.password}}'".execute().text.minus("'").minus("'").decodeBase64())
                     env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
                     env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
@@ -111,6 +112,7 @@ pipeline {
                             git rev-parse HEAD
                         """
 
+                        //TODO GET THIS FROM THE WEBHOOK
                         echo "Pushing build state to the PR"
                         dir('labs-ci-cd') {
                             script {
