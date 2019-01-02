@@ -85,7 +85,8 @@ pipeline {
                     }
                     env.USER_PASS = "${env.PR_GITHUB_USERNAME}:${env.PR_GITHUB_TOKEN}"
 
-                    env.PR_BRANCH = "pull/${env.PR_ID}/head"
+                    env.PR_BRANCH = "cleanup"
+//                    env.PR_BRANCH = "pull/${env.PR_ID}/head"
                     env.PR_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/pulls/${env.PR_ID}"
                     env.PR_STATUS_URI = getGitHubPullRequest().statuses_url
 
@@ -105,9 +106,7 @@ pipeline {
             }
         }
 
-        // Merge PR to labs robot branch
-        // uses sequential stages so same slave / workspace is preserved i.e. no need for stash
-        // https://jenkins.io/blog/2018/07/02/whats-new-declarative-piepline-13x-sequential-stages/
+        // Uses sequential stages so same slave / workspace is preserved i.e. no need for stash link: https://jenkins.io/blog/2018/07/02/whats-new-declarative-piepline-13x-sequential-stages/
         stage ('spin up shared ansible slave') {
             agent {
                 node {
