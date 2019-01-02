@@ -33,7 +33,7 @@ pipeline {
     }
 
     environment {
-        // GLobal Vars
+        // Global Vars
         JOB_NAME = "${JOB_NAME}".replace("/", "-")
         GIT_SSL_NO_VERIFY = true
         URL_TO_TEST = "https://google.com"
@@ -50,8 +50,7 @@ pipeline {
     }
 
     stages {
-        // prepare environment and ask user for the PR-ID
-        stage("prepare environment") {
+        stage("Prepare Environment") {
             agent {
                 node {
                     label "master"
@@ -63,7 +62,7 @@ pipeline {
                     env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
                     env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
 
-                    //TODO GET THIS FROM A WEBHOOK NOT MANUALLY. looks like this involves a lot of things, including generic webhook triggers, get this later
+                    // Get the PR ID
                     timeout(time: 1, unit: 'HOURS') {
                         env.PR_ID = input(
                                 id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
@@ -78,7 +77,6 @@ pipeline {
                     env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
                     env.PR_TEST_PROJECT_NAME = "labs-test-pr-${env.PR_ID}"
 
-                    // TODO PULL THIS INTO CURRENT PROJECT???, POTENTIALLY PUT IT INTO THE SECRETS EXAMPLE, it's currently in the infrastructure project
                     env.PR_GITHUB_TOKEN = new String("oc get secret labs-robot-github-oauth-token --template='{{.data.password}}'".execute().text.minus("'").minus("'").decodeBase64())
                     if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                         error('PR_GITHUB_TOKEN cannot be null or empty')
@@ -91,23 +89,19 @@ pipeline {
                     env.PR_STATUS_URI = getGitHubPullRequest().statuses_url
 
                     echo env.PR_STATUS_URI
-
-                    input("continue?")
-
                 }
             }
         }
 
-        // Clear any old or existing projects from the cluster to ensure a clean slate to test against
-        stage('clear existing projects') {
+        stage("Clear Existing Projects") {
             steps {
-                echo "Removing old PR projects if they exist"
+                echo "Removing old PR projects if they exist to ensure a clean slate to test against"
                 clearProjects()
             }
         }
 
         // Uses sequential stages so same slave / workspace is preserved i.e. no need for stash link: https://jenkins.io/blog/2018/07/02/whats-new-declarative-piepline-13x-sequential-stages/
-        stage ('spin up shared ansible slave') {
+        stage ("Spin up shared ansible slave") {
             agent {
                 node {
                     label "jenkins-slave-ansible"
@@ -117,7 +111,7 @@ pipeline {
                 expression { return env.PR_ID }
             }
             stages {
-                stage("merge PR") {
+                stage("Merge PR") {
 
                     steps {
                         echo "Pushing build state to the PR"
@@ -128,11 +122,6 @@ pipeline {
                                     "context": "Jenkins"
                                 }''')
 
-                        // origin isn't correct here because the PR is on the main repo
-                        // commenting out to pretend that is it, since we've set this to my PR branch anyways
-
-                        // SAME AS ABOVE, THIS IS SET TO MY BRANCH
-
                         sh """
                             git config --global user.email "labs.robot@gmail.com"
                             git config --global user.name "Labs Robot"
@@ -140,21 +129,14 @@ pipeline {
                             git fetch origin ${env.PR_BRANCH}:pr
                             git merge pr --ff
                         """
-
-                        input("continue?")
                     }
                 }
 
-                // Apply ansible inventory of ci-cd and it's ci-for-ci-cd
-                stage("apply inventory") {
+                stage("Apply ci-for-ci Inventory") {
                     steps {
-
                         echo "Applying inventory"
                         // each its own line to that in blue ocean UI they show seperately
-                        sh "pwd"
-                        sh "ls -al"
                         sh "ansible-galaxy install -r requirements.yml --roles-path=roles"
-                        //TODO what about for secrets??? do i omit them? or run them separately? or put dummy/default values in there?
                         sh "ansible-playbook site.yml -e ci_cd_namespace=${env.PR_CI_CD_PROJECT_NAME} -e dev_namespace=${env.PR_DEV_PROJECT_NAME} -e test_namespace=${env.PR_TEST_PROJECT_NAME} -e role=admin"
 
                     }
@@ -179,11 +161,6 @@ pipeline {
             }
         }
 
-
-        // TODO jenkins-slave-test pipeline needs to be run in the containers-quickstarts repo.
-
-        // Validate the CI Builds & Deployments and App Deployments have deployed
-        // correctly and come alive as expected.
         stage("Verifying CI Builds") {
             steps {
                 notifyGitHub('''{
@@ -197,7 +174,6 @@ pipeline {
                     script {
                         openshift.withCluster() {
                             openshift.withProject("${env.PR_CI_CD_PROJECT_NAME}") {
-                                // Let's timeout after 5 minutes
                                 timeout(5) {
                                     def pipelineBuildConfigs = openshift.selector('bc', [ type:'pipeline'])
                                     def imageBuildConfigs = openshift.selector('bc', [ type:'image'])
@@ -243,6 +219,7 @@ pipeline {
                 }
             }
         }
+
         stage("Verifying CI Deploys") {
             steps {
                 notifyGitHub('''{
@@ -256,8 +233,7 @@ pipeline {
                     script {
                         openshift.withCluster() {
                             openshift.withProject("${env.PR_CI_CD_PROJECT_NAME}") {
-                                // Let's timeout after 5 minutes
-                                timeout(5) {
+                                timeout(10) {
                                     def deploymentConfigs = openshift.selector('dc')
                                     deploymentConfigs.withEach {
                                         echo "Checking ${env.PR_CI_CD_PROJECT_NAME}:${it.name()}"
@@ -290,17 +266,15 @@ pipeline {
             }
         }
 
-        // TODO pull an example repo (probably containers-quickstarts or an example repo in rht-labs) with applier and run that. Instead of using an example app in this repository
-
-        // Clear any old or existing projects from the cluster to ensure a clean slate to test against
-        stage('Cleaning up CI projects created') {
+        stage("Clear Existing Projects") {
             steps {
-                echo "Removing created PR projects"
+                echo "Removing old PR projects if they exist to ensure a clean slate to test against"
                 clearProjects()
             }
         }
+
     }
-    //  global post hook
+    // global post hook
     post {
         success {
             notifyGitHub('''{

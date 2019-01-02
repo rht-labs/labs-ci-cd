@@ -8,5 +8,5 @@
   name: openshift-applier
 - src: https://github.com/redhat-cop/infra-ansible
   scm: git
-  version: master #TODO NEEDS A TAG
+  version: v1.0.6
   name: infra-ansible

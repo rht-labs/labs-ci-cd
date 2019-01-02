@@ -9,20 +9,19 @@ jenkins:
   build:
     NAME: "{{ jenkins_name }}"
     SOURCE_REPOSITORY_URL: https://github.com/rht-labs/s2i-config-jenkins.git
-    SOURCE_REPOSITORY_REF: master #TODO NEEDS A TAG
+    SOURCE_REPOSITORY_REF: v1.0
     BUILDER_IMAGE_STREAM_NAME: jenkins-2-rhel7
     BUILDER_IMAGE_STREAM_TAG_NAME: v3.9
     IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
-    #TODO ADD THESE BACK IN WHEN FIGURING OUT SECRETS
-#    SLACK_BASE_URL: https://fake-at-fake-dot-com.slack.com/services/hooks/jenkins-ci/ #TODO: put real test slack in here, do i need it though?
+#    SLACK_BASE_URL: https://fake-at-fake-dot-com.slack.com/services/hooks/jenkins-ci/ #put real test slack in here
 #    SLACK_ROOM: builds
-#    SLACK_TOKEN: notrealtokenMAKEMEASECRET #TODO: make this a real secret
-#    SHARED_LIB_REPO: "git@github.com:redhat-cop/pipeline-library.git"
+#    SLACK_TOKEN: notrealtokenMAKEMEASECRET #put real slack token here
+#    SHARED_LIB_REPO: "git@github.com:redhat-cop/pipeline-library.git" #todo update with labs stuff before putting this back in.
 #    SHARED_LIB_NAME: "pipeline-library"
 #    SHARED_LIB_REF: "master" #todo need a tag here in that repo ^
-#    SHARED_LIB_SECRET: "{{ ci_cd.SECRET_NAME }}" #why do i need this? i don't think i do
+#    SHARED_LIB_SECRET: "{{ ci_cd.SECRET_NAME }}" #todo need this because the lib_repo is going over ssh, add ssh key or don't use this
     JENKINS_IMAGE_STREAM_TAG: "{{ jenkins_name }}:latest"
     MEMORY_LIMIT: 2Gi
     JENKINS_OPTS: "--sessionTimeout=720"
@@ -32,22 +31,21 @@ sonarqube:
   build:
     NAME: "{{ sonarqube_name }}"
     SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
-    SOURCE_REPOSITORY_REF: master
+    SOURCE_REPOSITORY_REF: v1.4
     SOURCE_CONTEXT_DIR: sonarqube
   postgresql:
     POSTGRESQL_DATABASE: sonar
     VOLUME_CAPACITY: 5
-    POSTGRESQL_PASSWORD: sonar #TODO NEED TO CREATE THESE? "{{ sonarqube_db_password }}"
+    POSTGRESQL_PASSWORD: sonar #TODO NEED TO CREATE THESE or should i be defaulting??? "{{ sonarqube_db_password }}"
     POSTGRESQL_USER: sonar #TODO NEED TO CREATE THESE? "{{ sonarqube_db_username }}"
   deploy:
     POSTGRES_DATABASE_NAME: "sonar"
-#    POSTGRES_DATABASE_NAME: "{{ sonarqube.postgresql.POSTGRESQL_DATABASE }}"
 
 hoverfly:
   build:
     NAME: "{{ hoverfly_name }}"
     SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
-    SOURCE_REPOSITORY_REF: master #TODO NEEDS A TAG
+    SOURCE_REPOSITORY_REF: v1.4
     SOURCE_CONTEXT_DIR: hoverfly
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
@@ -65,8 +63,8 @@ openshift_cluster_content:
     tags:
     - jenkins
     - jenkins-build
-  - name: tool-box #TODO NEED TO TAG THIS TEMPLATE
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template.yml"
+  - name: tool-box
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars:
       NAME: tool-box
       SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
@@ -75,14 +73,14 @@ openshift_cluster_content:
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - tool-box
-  - name: hoverfly #TODO NEED TO TAG THIS TEMPLATE
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template.yml"
+  - name: hoverfly
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars: "{{ hoverfly.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - hoverfly
-  - name: sonarqube #TODO NEED TO TAG THIS TEMPLATE
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template.yml"
+  - name: sonarqube
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars: "{{ sonarqube.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -186,8 +184,8 @@ openshift_cluster_content:
     tags:
       - jenkins
       - jenkins-deploy
-  - name: hoverfly #TODO CHANGE THIS TEMPLATE TO USE THE REDHAT-COP REPO
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/hoverfly/hoverfly-deployment-template.yml"
+  - name: hoverfly
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/hoverfly/.openshift/templates/hoverfly-deployment-template.yml"
     params_from_vars: "{{ hoverfly.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
