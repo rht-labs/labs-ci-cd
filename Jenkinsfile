@@ -266,7 +266,7 @@ pipeline {
             }
         }
 
-        stage("Clear Existing Projects") {
+        stage("Clear Existing Projects on Successful Job") {
             steps {
                 echo "Removing old PR projects if they exist to ensure a clean slate to test against"
                 clearProjects()
