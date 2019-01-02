@@ -6,11 +6,7 @@ def notifyGitHub(state) {
 def getGitHubPullRequest() {
     def output = sh(returnStdout: true, script: "curl -u ${env.USER_PASS} -H 'Content-Type: application/json' -X GET ${env.PR_URI}")
 
-    echo output
-
     def json = readJSON text: output
-
-    echo json.statuses_url
 
     return json
 }
@@ -91,11 +87,9 @@ pipeline {
 
                     env.PR_BRANCH = "pull/${env.PR_ID}/head"
                     env.PR_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/pulls/${env.PR_ID}"
-
-                    //test first
-                    getGitHubPullRequest()
-
                     env.PR_STATUS_URI = getGitHubPullRequest().statuses_url
+
+                    echo env.PR_STATUS_URI
 
                     input("continue?")
 
@@ -147,7 +141,8 @@ pipeline {
                             git fetch origin ${env.PR_BRANCH}:pr
                             git merge pr --ff
                         """
-//                        git push ci master:pr-${env.PR_ID} -f //TODO DONT THINK THIS IS NEEDED ANYMORE
+
+                        input("continue?")
                     }
                 }
 
