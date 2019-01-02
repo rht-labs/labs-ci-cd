@@ -10,7 +10,7 @@ def getGitHubPullRequest() {
 
     def json = readJSON text: output
 
-    echo json
+    echo json.statuses_url
 
     return json
 }
