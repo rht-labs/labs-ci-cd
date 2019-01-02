@@ -3,6 +3,18 @@ def notifyGitHub(state) {
     sh "curl -u ${env.USER_PASS} -d '${state}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
 }
 
+def getGitHubPullRequest() {
+    def output = sh "curl -u ${env.USER_PASS} -H 'Content-Type: application/json' -X GET ${env.PR_URI}"
+
+    echo output
+
+    def json = readJSON text: output
+
+    echo json
+
+    return json
+}
+
 def clearProjects(){
     sh """
         oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
@@ -54,35 +66,38 @@ pipeline {
                 script {
                     env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
                     env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
-                    // taken from original j-file
-                    //TODO GET THIS FROM A WEBHOOK NOT MANUALLY.
-//                    timeout(time: 1, unit: 'HOURS') {
-//                        env.PR_ID = input(
-//                                id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
-//                                [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
-//                        ])
-//                        if (env.PR_ID == null || env.PR_ID == ""){
-//                            error('PR_ID cannot be null or empty')
-//                        }
-//                    }
-                    env.PR_ID = '242'
-                    // TODO PULL THIS INTO CURRENT PROJECT, POTENTIALLY PUT IT INTO THE SECRETS EXAMPLE
-                    env.PR_GITHUB_TOKEN = new String("oc get secret labs-robot-github-oauth-token --template='{{.data.password}}'".execute().text.minus("'").minus("'").decodeBase64())
+
+                    //TODO GET THIS FROM A WEBHOOK NOT MANUALLY. looks like this involves a lot of things, including generic webhook triggers, get this later
+                    timeout(time: 1, unit: 'HOURS') {
+                        env.PR_ID = input(
+                                id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
+                                [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
+                        ])
+                        if (env.PR_ID == null || env.PR_ID == ""){
+                            error('PR_ID cannot be null or empty')
+                        }
+                    }
+
                     env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
                     env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
                     env.PR_TEST_PROJECT_NAME = "labs-test-pr-${env.PR_ID}"
+
+                    // TODO PULL THIS INTO CURRENT PROJECT???, POTENTIALLY PUT IT INTO THE SECRETS EXAMPLE, it's currently in the infrastructure project
+                    env.PR_GITHUB_TOKEN = new String("oc get secret labs-robot-github-oauth-token --template='{{.data.password}}'".execute().text.minus("'").minus("'").decodeBase64())
                     if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
                         error('PR_GITHUB_TOKEN cannot be null or empty')
                     }
                     env.USER_PASS = "${env.PR_GITHUB_USERNAME}:${env.PR_GITHUB_TOKEN}"
 
-                    //                        env.PR_BRANCH = "pull/${env.PR_ID}/head"
-                    //TODO get this from the webhook
-                    env.PR_BRANCH = "cleanup"
+                    env.PR_BRANCH = "pull/${env.PR_ID}/head"
+                    env.PR_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/pulls/${env.PR_ID}"
 
-                    // when using the git plugin...
-//                    env.GIT_COMMITTER_NAME = "jenkins"
-//                    env.GIT_COMMITTER_EMAIL = "jenkins@example.com"
+                    //test first
+                    getGitHubPullRequest()
+
+                    env.PR_STATUS_URI = getGitHubPullRequest().statuses_url
+
+                    input("continue?")
 
                 }
             }
@@ -112,17 +127,7 @@ pipeline {
                 stage("merge PR") {
 
                     steps {
-                        //TODO GET THIS FROM THE WEBHOOK
                         echo "Pushing build state to the PR"
-                        script {
-                            // set the vars
-                            env.COMMIT_SHA = sh(returnStdout: true, script: "git rev-parse HEAD")
-                            // env.COMMIT_SHA = "git rev-parse HEAD".execute().text.minus("'").minus("'")
-                            if (env.COMMIT_SHA == null || env.COMMIT_SHA == ""){
-                                error('could not get COMMIT_SHA')
-                            }
-                            env.PR_STATUS_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/statuses/${env.COMMIT_SHA}"
-                        }
 
                         notifyGitHub('''{
                                     "state": "pending",
@@ -134,6 +139,7 @@ pipeline {
                         // commenting out to pretend that is it, since we've set this to my PR branch anyways
 
                         // SAME AS ABOVE, THIS IS SET TO MY BRANCH
+
                         sh """
                             git config --global user.email "labs.robot@gmail.com"
                             git config --global user.name "Labs Robot"
