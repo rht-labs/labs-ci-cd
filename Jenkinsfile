@@ -4,7 +4,7 @@ def notifyGitHub(state) {
 }
 
 def getGitHubPullRequest() {
-    def output = sh "curl -u ${env.USER_PASS} -H 'Content-Type: application/json' -X GET ${env.PR_URI}"
+    def output = sh(returnStdout: true, script: "curl -u ${env.USER_PASS} -H 'Content-Type: application/json' -X GET ${env.PR_URI}")
 
     echo output
 
