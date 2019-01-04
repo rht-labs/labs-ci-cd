@@ -11,17 +11,10 @@ jenkins:
     SOURCE_REPOSITORY_URL: https://github.com/rht-labs/s2i-config-jenkins.git
     SOURCE_REPOSITORY_REF: v1.0
     BUILDER_IMAGE_STREAM_NAME: jenkins-2-rhel7
-    BUILDER_IMAGE_STREAM_TAG_NAME: v3.9
+    BUILDER_IMAGE_STREAM_TAG_NAME: v3.10.14
     IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
-#    SLACK_BASE_URL: https://fake-at-fake-dot-com.slack.com/services/hooks/jenkins-ci/ #put real test slack in here
-#    SLACK_ROOM: builds
-#    SLACK_TOKEN: notrealtokenMAKEMEASECRET #put real slack token here
-#    SHARED_LIB_REPO: "git@github.com:redhat-cop/pipeline-library.git" #todo update with labs stuff before putting this back in.
-#    SHARED_LIB_NAME: "pipeline-library"
-#    SHARED_LIB_REF: "master" #todo need a tag here in that repo ^
-#    SHARED_LIB_SECRET: "{{ ci_cd.SECRET_NAME }}" #todo need this because the lib_repo is going over ssh, add ssh key or don't use this
     JENKINS_IMAGE_STREAM_TAG: "{{ jenkins_name }}:latest"
     MEMORY_LIMIT: 2Gi
     JENKINS_OPTS: "--sessionTimeout=720"
@@ -36,8 +29,8 @@ sonarqube:
   postgresql:
     POSTGRESQL_DATABASE: sonar
     VOLUME_CAPACITY: 5
-    POSTGRESQL_PASSWORD: sonar #TODO NEED TO CREATE THESE or should i be defaulting??? "{{ sonarqube_db_password }}"
-    POSTGRESQL_USER: sonar #TODO NEED TO CREATE THESE? "{{ sonarqube_db_username }}"
+    POSTGRESQL_PASSWORD: sonar
+    POSTGRESQL_USER: sonar
   deploy:
     POSTGRES_DATABASE_NAME: "sonar"
 
@@ -191,4 +184,3 @@ openshift_cluster_content:
     tags:
       - hoverfly
       - hoverfly-deploy
-        #TODO add deploy tool-box back in here?

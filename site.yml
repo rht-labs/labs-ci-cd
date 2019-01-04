@@ -1,26 +1,10 @@
 ---
-#### old way
-#- import_playbook: bootstrap.yml
-#- import_playbook: secrets.yml
-#- import_playbook: tools.yml
-
-### bootstrap.yml
 - name: Create Projects and Policies
   hosts: bootstrap
   tasks:
     - include_role:
         name: openshift-applier/roles/openshift-applier
 
-### secrets.yml
-#- name: Create secrets
-#  hosts: secrets
-#  tasks:
-#    - include_vars: "{{ playbook_dir }}/secrets/keys.yml"
-#    - include_vars: "{{ playbook_dir }}/secrets/user-pass.yml"
-#    - include_role:
-#        name: openshift-applier/roles/openshift-applier
-
-### tools.yml
 - name: Create CI/CD tools
   hosts: tools
   tasks:
@@ -31,8 +15,8 @@
     - name: set namespace
       set_fact:
         nexus_namespace: "{{ ci_cd_namespace }}"
-        nexus_user: "admin" #TODO do i need these here?
-        nexus_password: "admin123" #TODO do i need these here?
+        nexus_user: "admin"
+        nexus_password: "admin123"
     - include_role:
         name: roles/infra-ansible/roles/config-nexus
       tags:
