@@ -83,8 +83,7 @@ pipeline {
                     }
                     env.USER_PASS = "${env.PR_GITHUB_USERNAME}:${env.PR_GITHUB_TOKEN}"
 
-                    env.PR_BRANCH = "cleanup"
-//                    env.PR_BRANCH = "pull/${env.PR_ID}/head"
+                    env.PR_BRANCH = "pull/${env.PR_ID}/head"
                     env.PR_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/pulls/${env.PR_ID}"
                     env.PR_STATUS_URI = getGitHubPullRequest().statuses_url
 
