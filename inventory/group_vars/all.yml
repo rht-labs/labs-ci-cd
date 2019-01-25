@@ -1,0 +1,20 @@
+ci_cd_namespace: labs-ci-cd
+dev_namespace: labs-dev
+test_namespace: labs-test
+
+ci_cd:
+  NAMESPACE: "{{ ci_cd_namespace }}"
+  NAMESPACE_DISPLAY_NAME: "{{ ci_cd_namespace }}"
+  SECRET_NAME: "ci-cd-secret"
+
+dev:
+  NAMESPACE: "{{ dev_namespace }}"
+  NAMESPACE_DISPLAY_NAME: "{{ dev_namespace }}"
+
+test:
+  NAMESPACE: "{{ test_namespace }}"
+  NAMESPACE_DISPLAY_NAME: "{{ test_namespace }}"
+
+role_binding_group:
+  GROUP: "labs-ci-cd-contributors"
+  ROLE: "{{ role | default('edit') }}"

@@ -6,9 +6,9 @@
 # 1) make the docker run command easier to use.
 # 2) run ansible-galaxy install if required roles are missing.
 # 3) print ASCII art.
-# 
+#
 # Please do not introduce any other logic
-# 
+#
 ######################################################################################
 set -e
 
@@ -40,8 +40,8 @@ if [[ "$#" == 0 ]]; then
 else
     DOCKER_RUN_COMMAND="$@"
     printf "using arguments passed to run.sh for docker run command:\n\t$DOCKER_RUN_COMMAND\n\n"
-    
-fi 
+
+fi
 
 DOCKER_RUN_COMMAND="ansible-galaxy install -r /tmp/src/requirements.yml --roles-path=/tmp/src/roles && $DOCKER_RUN_COMMAND"
 
