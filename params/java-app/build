@@ -1,4 +1,0 @@
-PIPELINE_SOURCE_REPOSITORY_URL=https://github.com/rht-labs/automation-api
-PIPELINE_SOURCE_REPOSITORY_REF=dev-demo
-NAME=java-app
-S2I_BASE_IMAGE=redhat-openjdk18-openshift:1.2

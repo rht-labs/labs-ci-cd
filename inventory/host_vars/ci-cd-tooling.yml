@@ -1,35 +1,84 @@
 ---
-
 ansible_connection: local
 
+jenkins_name: jenkins
+sonarqube_name: sonarqube
+hoverfly_name: hoverfly
+
+jenkins:
+  build:
+    NAME: "{{ jenkins_name }}"
+    SOURCE_REPOSITORY_URL: https://github.com/rht-labs/s2i-config-jenkins.git
+    SOURCE_REPOSITORY_REF: v1.0
+    BUILDER_IMAGE_STREAM_NAME: jenkins-2-rhel7
+    BUILDER_IMAGE_STREAM_TAG_NAME: v3.10.14
+    IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
+  deploy:
+    NAMESPACE: "{{ ci_cd_namespace }}"
+    JENKINS_IMAGE_STREAM_TAG: "{{ jenkins_name }}:latest"
+    MEMORY_LIMIT: 2Gi
+    JENKINS_OPTS: "--sessionTimeout=720"
+    VOLUME_CAPACITY: 2Gi
+
+sonarqube:
+  build:
+    NAME: "{{ sonarqube_name }}"
+    SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
+    SOURCE_REPOSITORY_REF: v1.4
+    SOURCE_CONTEXT_DIR: sonarqube
+  postgresql:
+    POSTGRESQL_DATABASE: sonar
+    VOLUME_CAPACITY: 5
+    POSTGRESQL_PASSWORD: sonar
+    POSTGRESQL_USER: sonar
+  deploy:
+    POSTGRES_DATABASE_NAME: "sonar"
+
+hoverfly:
+  build:
+    NAME: "{{ hoverfly_name }}"
+    SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
+    SOURCE_REPOSITORY_REF: v1.4
+    SOURCE_CONTEXT_DIR: hoverfly
+  deploy:
+    NAMESPACE: "{{ ci_cd_namespace }}"
+    MEMORY_LIMIT: 2Gi
+    HOVERFLY_IMAGE_STREAM_TAG: "{{ hoverfly_name }}:latest"
+
+  
 openshift_cluster_content:
-- galaxy_requirements: "{{ playbook_dir }}/galaxy_requirements.yml"
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins-s2i-build/template.yml"
-    params: "{{ playbook_dir }}/params/jenkins/build"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins-s2i-build/jenkins-s2i-build-template.yml"
+    params_from_vars: "{{ jenkins.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins
+    - jenkins-build
   - name: tool-box
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/template.yml"
-    params: "{{ playbook_dir }}/params/tool-box/build"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    params_from_vars:
+      NAME: tool-box
+      SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
+      SOURCE_REPOSITORY_REF: v1.1
+      SOURCE_CONTEXT_DIR: tool-box
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - tool-box
   - name: hoverfly
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/template.yml"
-    params: "{{ playbook_dir }}/params/hoverfly/build"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    params_from_vars: "{{ hoverfly.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - hoverfly
   - name: sonarqube
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/docker-build/template.yml"
-    params: "{{ playbook_dir }}/params/sonarqube/build"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    params_from_vars: "{{ sonarqube.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-      - sonarqube     
+      - sonarqube
+      - sonarqube-build
 - object: jenkins-slave-nodes
   content:
   - name: jenkins-slave-mvn
@@ -98,34 +147,40 @@ openshift_cluster_content:
 - object: ci-cd-deployments
   content:
   - name: sonarqube
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/sonarqube/template.yml"
-    params: "{{ playbook_dir }}/params/sonarqube/deploy"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/sonarqube/sonarqube-deployment-template.yml"
+    params_from_vars: "{{ sonarqube.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - sonarqube
+      - sonarqube
+      - sonarqube-deploy
   - name: sonarqube-postgresql
     template: "openshift//postgresql-persistent"
-    params: "{{ playbook_dir }}/params/sonarqube/postgresql"
+    params_from_vars: "{{ sonarqube.postgresql }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - sonarqube
+      - sonarqube
+      - sonarqube-postgresql
+      - sonarqube-postgresql-deploy
   - name: nexus
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/nexus/template.yml"
-    params: "{{ playbook_dir }}/params/nexus/deploy"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/nexus/nexus-deployment-template.yml"
+    params_from_vars:
+      VOLUME_CAPACITY: 10Gi
+      MEMORY_LIMIT: 2Gi
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - nexus
-    post_steps:
-    - role: "labs-ci-cd/roles/configure-nexus"
-  - name: jenkins-persistent
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-persistent-template.yml"
-    params: "{{ playbook_dir }}/params/jenkins/deploy"
+      - nexus
+      - nexus-deploy
+  - name: jenkins-ephemeral
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-ephemeral-template.yml"
+    params_from_vars: "{{ jenkins.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - jenkins
+      - jenkins
+      - jenkins-deploy
   - name: hoverfly
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/hoverfly/template.yml"
-    params: "{{ playbook_dir }}/params/hoverfly/deploy"
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/hoverfly/.openshift/templates/hoverfly-deployment-template.yml"
+    params_from_vars: "{{ hoverfly.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-    - hoverfly
+      - hoverfly
+      - hoverfly-deploy
