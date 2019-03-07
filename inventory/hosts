@@ -1,2 +1,11 @@
-[seed-hosts]
-localhost ansible_connection=local
+[bootstrap]
+projects-and-policies
+
+[tools]
+ci-cd-tooling
+
+[apps]
+app-build-deploy
+
+[ci-for-labs]
+ci-for-labs-ci-cd

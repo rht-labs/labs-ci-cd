@@ -1,0 +1,5 @@
+---
+- name: Setting up CI for Labs CI/CD
+  hosts: "ci-for-labs"
+  roles:
+    - openshift-applier/roles/openshift-applier

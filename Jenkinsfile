@@ -1,198 +1,293 @@
-node() {
-    try {
-        stage('Initialization') {
-            env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
-            env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
-            timeout(time: 1, unit: 'HOURS') {
-                def userInput = input(
-                        id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
-                        [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
-                ])
-                env.PR_ID = userInput
-                if (env.PR_ID == null || env.PR_ID == ""){
-                    error('PR_ID cannot be null or empty')
+@NonCPS
+def notifyGitHub(state) {
+    sh "curl -u ${env.USER_PASS} -d '${state}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+}
+
+def getGitHubPullRequest() {
+    def output = sh(returnStdout: true, script: "curl -u ${env.USER_PASS} -H 'Content-Type: application/json' -X GET ${env.PR_URI}")
+
+    def json = readJSON text: output
+
+    return json
+}
+
+def clearProjects(){
+    sh """
+        oc delete project $PR_CI_CD_PROJECT_NAME || rc=\$?
+        oc delete project $PR_DEV_PROJECT_NAME || rc=\$?
+        oc delete project $PR_TEST_PROJECT_NAME || rc=\$?
+        while \${unfinished}
+        do
+            oc get project $PR_CI_CD_PROJECT_NAME || \
+            oc get project $PR_DEV_PROJECT_NAME || \
+            oc get project $PR_TEST_PROJECT_NAME || unfinished=false
+        done
+    """
+}
+
+
+pipeline {
+
+    agent {
+        label "master"
+    }
+
+    environment {
+        // Global Vars
+        JOB_NAME = "${JOB_NAME}".replace("/", "-")
+        GIT_SSL_NO_VERIFY = true
+        URL_TO_TEST = "https://google.com"
+        PR_GITHUB_USERNAME = "labs-robot"
+
+    }
+
+    // The options directive is for configuration that applies to the whole job.
+    options {
+        buildDiscarder(logRotator(numToKeepStr:'10'))
+        timeout(time: 35, unit: 'MINUTES')
+        // ansiColor('xterm')
+        // timestamps()
+    }
+
+    stages {
+        stage("Prepare Environment") {
+            agent {
+                node {
+                    label "master"
                 }
             }
-        }
+            steps {
+                echo "Setting up environment variables"
+                script {
+                    env.OCP_API_SERVER = "${env.OPENSHIFT_API_URL}"
+                    env.OCP_TOKEN = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
 
-        node('jenkins-slave-ansible') {
+                    // Get the PR ID
+                    timeout(time: 1, unit: 'HOURS') {
+                        env.PR_ID = input(
+                                id: 'userInput', message: 'Which PR # do you want to test?', parameters: [
+                                [$class: 'StringParameterDefinition', description: 'PR #', name: 'pr']
+                        ])
+                        if (env.PR_ID == null || env.PR_ID == ""){
+                            error('PR_ID cannot be null or empty')
+                        }
+                    }
 
+                    env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
+                    env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
+                    env.PR_TEST_PROJECT_NAME = "labs-test-pr-${env.PR_ID}"
 
-            stage('Merge PR') {
-
-                sh '''
-                    git config --global user.email "labs.robot@gmail.com"
-                    git config --global user.name "Labs Robot"
-                    cd $HOME
-                    mkdir .ssh
-                    oc get secret labs-robot-ssh-privatekey --template=\'{{index .data \"ssh-privatekey\"}}\' | base64 -d >> .ssh/id_rsa
-                    chmod 0600 .ssh/id_rsa
-                    echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> .ssh/config
-                '''
-
-                sh '''
-                    git clone https://github.com/rht-labs/labs-ci-cd
-                    cd labs-ci-cd
-                    git remote add ci git@github.com:labs-robot/labs-ci-cd.git
-                '''
-
-                env.PR_GITHUB_TOKEN = sh (returnStdout: true, script : 'oc get secret labs-robot-github-oauth-token --template=\'{{.data.password}}\' | base64 -d')
-                env.PR_GITHUB_USERNAME = 'labs-robot'
-                env.PR_CI_CD_PROJECT_NAME = "labs-ci-cd-pr-${env.PR_ID}"
-                env.PR_DEV_PROJECT_NAME = "labs-dev-pr-${env.PR_ID}"
-                env.PR_DEMO_PROJECT_NAME = "labs-demo-pr-${env.PR_ID}"
-
-                if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
-                    error('PR_GITHUB_TOKEN cannot be null or empty')
-                }
-                if (env.PR_GITHUB_USERNAME == null || env.PR_GITHUB_USERNAME == ""){
-                    error('PR_GITHUB_USERNAME cannot be null or empty')
-                }
-
-                dir('labs-ci-cd') {
-
-                    String getCommitShaScript = """
-                        git fetch origin pull/${env.PR_ID}/head:pr
-                        git checkout pr
-                        git rev-parse HEAD
-                    """
-
-                    // set the vars
-                    env.COMMIT_SHA = sh(returnStdout: true, script: getCommitShaScript)
+                    env.PR_GITHUB_TOKEN = new String("oc get secret labs-robot-github-oauth-token --template='{{.data.password}}'".execute().text.minus("'").minus("'").decodeBase64())
+                    if (env.PR_GITHUB_TOKEN == null || env.PR_GITHUB_TOKEN == ""){
+                        error('PR_GITHUB_TOKEN cannot be null or empty')
+                    }
                     env.USER_PASS = "${env.PR_GITHUB_USERNAME}:${env.PR_GITHUB_TOKEN}"
-                    env.PR_STATUS_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/statuses/${env.COMMIT_SHA}"
 
+                    env.PR_BRANCH = "pull/${env.PR_ID}/head"
+                    env.PR_URI = "https://api.github.com/repos/rht-labs/labs-ci-cd/pulls/${env.PR_ID}"
+                    env.PR_STATUS_URI = getGitHubPullRequest().statuses_url
 
-                    def json = '''
-                        {
-                            "state": "pending",
-                            "description": "job is running...",
-                            "context": "Jenkins"
-                        }
-                    '''
-
-                    sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
-
-
-                    sh """
-                        git checkout master
-                        git fetch origin pull/${env.PR_ID}/head:pr
-                        git merge pr --ff
-                        git push ci master:pr-${env.PR_ID} -f
-                    """
-                }
-
-
-            }
-
-            stage('Apply Inventory') {
-                dir('labs-ci-cd'){
-                    sh 'ansible-galaxy install -r requirements.yml --roles-path=roles'
-                    sh "ansible-playbook ci-playbook.yaml -i inventory/ -e \"project_name_postfix=-pr-${env.PR_ID} scm_ref=pr-${env.PR_ID}\""
-                    sh """
-                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_CI_CD_PROJECT_NAME}
-                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEV_PROJECT_NAME}
-                        oc adm policy add-role-to-group admin labs-ci-cd-contributors -n ${env.PR_DEMO_PROJECT_NAME}
-                    """
+                    echo env.PR_STATUS_URI
                 }
             }
-
         }
 
-        stage('Verify Results') {
-            parallel(
-                    'CI Builds': {
-                        def ciPipelineResponse = sh(returnStdout: true, script:"oc get bc -l type=pipeline -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
-                        def ciPipelineList = []
-                        for (entry in ciPipelineResponse.split()){
-                            ciPipelineList += entry.replace('buildconfigs/','').replace('-pipeline','')
+        stage("Clear Existing Projects") {
+            steps {
+                echo "Removing old PR projects if they exist to ensure a clean slate to test against"
+                clearProjects()
+            }
+        }
+
+        // Uses sequential stages so same slave / workspace is preserved i.e. no need for stash link: https://jenkins.io/blog/2018/07/02/whats-new-declarative-piepline-13x-sequential-stages/
+        stage ("Spin up shared ansible slave") {
+            agent {
+                node {
+                    label "jenkins-slave-ansible"
+                }
+            }
+            when {
+                expression { return env.PR_ID }
+            }
+            stages {
+                stage("Merge PR") {
+
+                    steps {
+                        echo "Pushing build state to the PR"
+
+                        notifyGitHub('''{
+                                    "state": "pending",
+                                    "description": "ALL CI jobs are running...",
+                                    "context": "Jenkins"
+                                }''')
+
+                        sh """
+                            git config --global user.email "labs.robot@gmail.com"
+                            git config --global user.name "Labs Robot"
+                            git checkout master
+                            git fetch origin ${env.PR_BRANCH}:pr
+                            git merge pr --ff
+                        """
+                    }
+                }
+
+                stage("Apply ci-for-ci Inventory") {
+                    steps {
+                        echo "Applying inventory"
+                        // each its own line to that in blue ocean UI they show seperately
+                        sh "ansible-galaxy install -r requirements.yml --roles-path=roles"
+                        sh "ansible-playbook site.yml -e ci_cd_namespace=${env.PR_CI_CD_PROJECT_NAME} -e dev_namespace=${env.PR_DEV_PROJECT_NAME} -e test_namespace=${env.PR_TEST_PROJECT_NAME} -e role=admin"
+
+                    }
+                    // Post can be used both on individual stages and for the entire build.
+                    post {
+                        success {
+                            notifyGitHub('''{
+                                        "state": "success",
+                                        "description": "job completed :)",
+                                        "context": "Apply Inventory"
+                                    }''')
                         }
+                        failure {
+                            notifyGitHub('''{
+                                        "state": "failure",
+                                        "description": "job failed :(",
+                                        "context": "Apply Inventory"
+                                    }''')
+                        }
+                    }
+                }
+            }
+        }
 
-                        def ciBuildsResponse = sh(returnStdout: true, script:"oc get bc -l type=image -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
-                        def ciBuildsList = ciBuildsResponse.split()
+        stage("Verifying CI Builds") {
+            steps {
+                notifyGitHub('''{
+                        "state": "pending",
+                        "description": " job is running...",
+                        "context": "CI Builds"
+                    }''')
 
-                        for (String build : ciBuildsList) {
-                            String buildName = build.replace('buildconfigs/','')
-                            if( ciPipelineList.contains(buildName) ){
-                                // we have an image build with a corresponding pipeline build
-                                // for now, these builds aren't compatible with the openshiftVerifyBuild test we are going to do
-                                // so skip them here, but we'll test them indirectly via the deploy tests
-                            } else {
-                                openshiftVerifyBuild(
-                                        apiURL: "${env.OCP_API_SERVER}",
-                                        authToken: "${env.OCP_TOKEN}",
-                                        buildConfig: buildName,
-                                        namespace: "${env.PR_CI_CD_PROJECT_NAME}",
-                                        waitTime: '10',
-                                        waitUnit: 'min'
-                                )
+                node('master') {
+                    echo "Verifying the CI Builds have completed successfully"
+                    script {
+                        openshift.withCluster() {
+                            openshift.withProject("${env.PR_CI_CD_PROJECT_NAME}") {
+                                timeout(5) {
+                                    def pipelineBuildConfigs = openshift.selector('bc', [ type:'pipeline'])
+                                    def imageBuildConfigs = openshift.selector('bc', [ type:'image'])
+                                    def allDone = true
+                                    imageBuildConfigs.withEach {
+                                        echo "CI Builds: Checking ${it.name()}"
+                                        def imageBuildName = it.name()
+                                        def isPipelineBuild = false
+                                        pipelineBuildConfigs.withEach {
+                                            if (it.name() == imageBuildName) {
+                                                isPipelineBuild = true
+                                            }
+                                        }
+
+                                        if (isPipelineBuild == false) {
+                                            if (it.object().status.phase != "Complete") {
+                                                allDone = false
+                                            }
+                                        }
+                                    }
+                                    return allDone;
+                                }
                             }
                         }
-                    },
-                    'CI Deploys': {
-                        def ciDeploysResponse = sh(returnStdout: true, script:"oc get dc -n ${env.PR_CI_CD_PROJECT_NAME} -o name")
-                        def ciDeploysList = ciDeploysResponse.split()
+                    }
+                }
+            }
+            // Post can be used both on individual stages and for the entire build.
+            post {
+                success {
+                    notifyGitHub('''{
+                                "state": "success",
+                                "description": "job completed :)",
+                                "context": "CI Builds"
+                            }''')
+                }
+                failure {
+                    notifyGitHub('''{
+                                "state": "failure",
+                                "description": "job failed :(",
+                                "context": "CI Builds"
+                            }''')
+                }
+            }
+        }
 
-                        for (String deploy : ciDeploysList) {
-                            def deployName = deploy.replace('deploymentconfigs/','')
-                            openshiftVerifyDeployment(
-                                    apiURL: "${env.OCP_API_SERVER}",
-                                    authToken: "${env.OCP_TOKEN}",
-                                    depCfg: deployName,
-                                    namespace: "${env.PR_CI_CD_PROJECT_NAME}",
-                                    verifyReplicaCount: true,
-                                    waitTime: '10',
-                                    waitUnit: 'min'
-                            )
+        stage("Verifying CI Deploys") {
+            steps {
+                notifyGitHub('''{
+                        "state": "pending",
+                        "description": " job is running...",
+                        "context": "CI Deploys"
+                    }''')
+
+                node('master') {
+                    echo "Verifying the CI Deploys have completed successfully"
+                    script {
+                        openshift.withCluster() {
+                            openshift.withProject("${env.PR_CI_CD_PROJECT_NAME}") {
+                                timeout(10) {
+                                    def deploymentConfigs = openshift.selector('dc')
+                                    deploymentConfigs.withEach {
+                                        echo "Checking ${env.PR_CI_CD_PROJECT_NAME}:${it.name()}"
+                                        // this will wait until the desired replicas are available
+                                        // - or be terminated at timeout
+                                        it.rollout().status()
+                                    }
+                                }
+                            }
                         }
-                    },
-                    'App Deploys': {
-                        def appDeploysResponse = sh(returnStdout: true, script:"oc get dc -n ${env.PR_DEV_PROJECT_NAME} -o name")
-                        def appDeploysList = appDeploysResponse.split()
+                    }
+                }
+            }
+            // Post can be used both on individual stages and for the entire build.
+            post {
+                success {
+                    notifyGitHub('''{
+                                "state": "success",
+                                "description": "job completed :)",
+                                "context": "CI Deploys"
+                            }''')
+                }
+                failure {
+                    notifyGitHub('''{
+                                "state": "failure",
+                                "description": "job failed :(",
+                                "context": "CI Deploys"
+                            }''')
+                }
+            }
+        }
 
-                        for (String app : appDeploysList) {
-                            def appName = app.replace('deploymentconfigs/','')
-                            openshiftVerifyDeployment(
-                                    apiURL: "${env.OCP_API_SERVER}",
-                                    authToken: "${env.OCP_TOKEN}",
-                                    depCfg: appName,
-                                    namespace: "${env.PR_DEV_PROJECT_NAME}",
-                                    verifyReplicaCount: true,
-                                    waitTime: '15',
-                                    waitUnit: 'min'
-                            )
-                        }
-                    }, failFast: true
-            )
-
-            def json = '''\
-            {
-                "state": "success",
-                "description": "the job passed!",
-                "context": "Jenkins"
-            }'''
-
-            sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
+        stage("Clear Existing Projects on Successful Job") {
+            steps {
+                echo "Removing old PR projects if they exist to ensure a clean slate to test against"
+                clearProjects()
+            }
         }
 
     }
-    catch (e) {
-
-        // we don't have the info to post a status, so short circuit
-        if (env.COMMIT_SHA == null || env.COMMIT_SHA == "") {
-            error("The pull request ID ${env.PR_ID} is invalid.")
-        } else {
-
-            def json = '''
-            {
-                "state": "failure",
-                "description": "the job failed",
-                "context": "Jenkins"
-            }'''
-
-            sh "curl -u ${env.USER_PASS} -d '${json}' -H 'Content-Type: application/json' -X POST ${env.PR_STATUS_URI}"
-
-            throw e
+    // global post hook
+    post {
+        success {
+            notifyGitHub('''{
+                        "state": "success",
+                        "description": "master ci job completed :)",
+                        "context": "Jenkins"
+                    }''')
+        }
+        failure {
+            notifyGitHub('''{
+                        "state": "failure",
+                        "description": "master ci job failed :(",
+                        "context": "Jenkins"
+                    }''')
         }
     }
 }
