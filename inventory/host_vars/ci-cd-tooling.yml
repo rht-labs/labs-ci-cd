@@ -28,9 +28,10 @@ sonarqube:
     SOURCE_CONTEXT_DIR: sonarqube
   postgresql:
     POSTGRESQL_DATABASE: sonar
-    VOLUME_CAPACITY: 5
+    VOLUME_CAPACITY: 5Gi
     POSTGRESQL_PASSWORD: sonar
     POSTGRESQL_USER: sonar
+    DATABASE_SERVICE_NAME: sonardb
   deploy:
     POSTGRES_DATABASE_NAME: "sonar"
 
@@ -145,15 +146,8 @@ openshift_cluster_content:
       - jenkins-slaves
       - python-slave
 - object: ci-cd-deployments
-  content:
-  - name: sonarqube
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.5/sonarqube/.openshift/templates/sonarqube-deployment-template.yml"
-    params_from_vars: "{{ sonarqube.deploy }}"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - sonarqube
-      - sonarqube-deploy
-  - name: sonarqube-postgresql
+  content: ## SONARQUBE DB DEPLOYMENT MUST COME BEFORE SONARQUBE DEPLOYMENT OR THE JDBC SECRETS WILL NOT BE CREATED PROPERLY
+  - name: sonardb
     template: "openshift//postgresql-persistent"
     params_from_vars: "{{ sonarqube.postgresql }}"
     namespace: "{{ ci_cd_namespace }}"
@@ -161,6 +155,13 @@ openshift_cluster_content:
       - sonarqube
       - sonarqube-postgresql
       - sonarqube-postgresql-deploy
+  - name: sonarqube
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.5/sonarqube/.openshift/templates/sonarqube-deployment-template.yml"
+    params_from_vars: "{{ sonarqube.deploy }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+      - sonarqube
+      - sonarqube-deploy
   - name: nexus
     template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/nexus/nexus-deployment-template.yml"
     params_from_vars:
