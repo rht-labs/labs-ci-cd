@@ -166,6 +166,7 @@ openshift_cluster_content:
     params_from_vars:
       VOLUME_CAPACITY: 10Gi
       MEMORY_LIMIT: 2Gi
+      CONTAINER_IMAGE: sonatype/nexus3:3.15.2
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - nexus
