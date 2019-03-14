@@ -2,3 +2,7 @@
   scm: git
   version: v3.11.1
   name: casl-ansible
+- src: https://github.com/redhat-cop/infra-ansible
+  scm: git
+  version: v1.0.9
+  name: infra-ansible
