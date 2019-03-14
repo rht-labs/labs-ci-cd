@@ -4,7 +4,7 @@
 # From 'openshift-applier'
 - src: https://github.com/redhat-cop/openshift-applier
   scm: git
-  version: v2.0.8
+  version: v2.0.9
   name: openshift-applier
 - src: https://github.com/redhat-cop/infra-ansible
   scm: git
