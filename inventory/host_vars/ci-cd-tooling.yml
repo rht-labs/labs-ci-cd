@@ -156,19 +156,19 @@ openshift_cluster_content:
     post_steps:
     - role: casl-ansible/roles/openshift-labels
       vars:
-        target_namespace: "-n {{ ci_cd_namespace }}"
+        target_namespace: "{{ ci_cd_namespace }}"
         label: "app=sonarqube"
         target_object: dc
         target_name: sonardb
     - role: casl-ansible/roles/openshift-labels
       vars:
-        target_namespace: "-n {{ ci_cd_namespace }}"
+        target_namespace: "{{ ci_cd_namespace }}"
         label: "app=sonarqube"
         target_object: svc
         target_name: sonardb
     - role: casl-ansible/roles/openshift-labels
       vars:
-        target_namespace: "-n {{ ci_cd_namespace }}"
+        target_namespace: "{{ ci_cd_namespace }}"
         label: "app=sonarqube"
         target_object: secret
         target_name: sonardb
