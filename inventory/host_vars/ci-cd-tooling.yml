@@ -190,6 +190,13 @@ openshift_cluster_content:
       MEMORY_LIMIT: 2Gi
       CONTAINER_IMAGE: sonatype/nexus3:3.15.2
     namespace: "{{ ci_cd_namespace }}"
+    post_steps:
+    - role: infra-ansible/roles/config-nexus
+      vars:
+        nexus_namespace: "{{ ci_cd_namespace }}"
+        nexus_user: "admin"
+        nexus_password: "admin123"
+        nexus_api_base_path: /service/rest/v1
     tags:
       - nexus
       - nexus-deploy

@@ -6,7 +6,3 @@
   scm: git
   version: v2.0.9
   name: openshift-applier
-- src: https://github.com/redhat-cop/infra-ansible
-  scm: git
-  version: v1.0.9
-  name: infra-ansible
