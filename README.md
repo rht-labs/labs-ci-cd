@@ -120,7 +120,9 @@ A few additional guiding principles:
 
 ## Common Issues
 
+* Issues with valid nexus certs like seen [here](https://github.com/redhat-cop/infra-ansible/issues/342). You can set the ansible variable `nexus_validate_certs: false` as a work around.
 * S2I Build fails to push image to registry with `error: build error: Failed to push image: unauthorized: authentication required`. See [this issue](https://github.com/openshift/origin/issues/4518)
+
 
 ## License
 [ASL 2.0](LICENSE)
