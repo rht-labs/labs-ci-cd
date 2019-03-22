@@ -1,6 +1,6 @@
-ci_cd_namespace: labs-hs-npm-ci-cd
-dev_namespace: labs-hs-npm-dev
-test_namespace: labs-hs-npm-test
+ci_cd_namespace: labs-ci-cd
+dev_namespace: labs-dev
+test_namespace: labs-test
 
 ci_cd:
   NAMESPACE: "{{ ci_cd_namespace }}"
