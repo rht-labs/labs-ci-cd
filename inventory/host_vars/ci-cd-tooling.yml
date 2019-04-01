@@ -4,6 +4,7 @@ ansible_connection: local
 jenkins_name: jenkins
 sonarqube_name: sonarqube
 hoverfly_name: hoverfly
+nexus_password: "admin123"
 
 jenkins:
   build:
@@ -13,12 +14,28 @@ jenkins:
     BUILDER_IMAGE_STREAM_NAME: jenkins-2-rhel7
     BUILDER_IMAGE_STREAM_TAG_NAME: v3.11
     IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
+    SECRET_NAME: "jenkins-git-password"
+    USERNAME: gitlab-sa
+    PASSWORD: "some-secret-password"
+    SOURCE_REPOSITORY_SECRET: "jenkins-git-password"
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
     JENKINS_IMAGE_STREAM_TAG: "{{ jenkins_name }}:latest"
-    MEMORY_LIMIT: 2Gi
+    MEMORY_LIMIT: 8Gi
     JENKINS_OPTS: "--sessionTimeout=720"
-    VOLUME_CAPACITY: 2Gi
+    VOLUME_CAPACITY: 20Gi
+    MEMORY_REQUEST: 2Gi
+    JVM_ARCH: x86_64
+
+nexus:
+  secret:
+    SECRET_NAME: "nexus-password"
+    USERNAME: admin
+    PASSWORD: "{{ nexus_password }}"
+  deploy:
+    VOLUME_CAPACITY: 10Gi
+    MEMORY_LIMIT: 2Gi
+    CONTAINER_IMAGE: sonatype/nexus3:3.15.2
 
 sonarqube:
   build:
@@ -82,6 +99,24 @@ openshift_cluster_content:
     tags:
       - sonarqube
       - sonarqube-build
+
+- object: ci-cd-secrets
+  content:
+  - name: nexus-secret
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/master/secrets/secret-user-pass-plaintext.yml"
+    params_from_vars: "{{ nexus.secret }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - jenkins
+    - secret
+  - name: jenkins-secret
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/master/secrets/secret-user-pass-plaintext.yml"
+    params_from_vars: "{{ jenkins.build }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - jenkins
+    - secret
+
 - object: jenkins-slave-nodes
   content:
   - name: jenkins-slave-mvn
@@ -176,6 +211,7 @@ openshift_cluster_content:
       - sonarqube
       - sonarqube-postgresql
       - sonarqube-postgresql-deploy
+      - ci-cd-deployments
   - name: sonarqube
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.6/sonarqube/.openshift/templates/sonarqube-deployment-template.yml"
     params_from_vars: "{{ sonarqube.deploy }}"
@@ -183,23 +219,22 @@ openshift_cluster_content:
     tags:
       - sonarqube
       - sonarqube-deploy
+      - ci-cd-deployments
   - name: nexus
     template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/nexus/nexus-deployment-template.yml"
-    params_from_vars:
-      VOLUME_CAPACITY: 10Gi
-      MEMORY_LIMIT: 2Gi
-      CONTAINER_IMAGE: sonatype/nexus3:3.15.2
+    params_from_vars: "{{ nexus.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     post_steps:
     - role: infra-ansible/roles/config-nexus
       vars:
         nexus_namespace: "{{ ci_cd_namespace }}"
         nexus_user: "admin"
-        nexus_password: "admin123"
+        nexus_password: "{{ nexus_password }}"
         nexus_api_base_path: /service/rest/v1
     tags:
       - nexus
       - nexus-deploy
+      - ci-cd-deployments
   - name: jenkins-ephemeral
     template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-ephemeral-template.yml"
     params_from_vars: "{{ jenkins.deploy }}"
@@ -207,6 +242,17 @@ openshift_cluster_content:
     tags:
       - jenkins
       - jenkins-deploy
+      - jenkins-persistent
+      - ci-cd-deployments
+  - name: jenkins-persistent
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-persistent-template.yml"
+    params_from_vars: "{{ jenkins.deploy }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+      - jenkins
+      - jenkins-deploy
+      - jenkins-persistent
+      - ci-cd-deployments
   - name: hoverfly
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/hoverfly/.openshift/templates/hoverfly-deployment-template.yml"
     params_from_vars: "{{ hoverfly.deploy }}"
@@ -214,3 +260,4 @@ openshift_cluster_content:
     tags:
       - hoverfly
       - hoverfly-deploy
+      - ci-cd-deployments
