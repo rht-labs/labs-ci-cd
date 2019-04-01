@@ -67,6 +67,7 @@ hoverfly:
 openshift_cluster_content:
 - galaxy_requirements:
   - pre_post_requirements.yml # Uses openshift-label role from casl-ansible
+# CI/CD builds are customisations to base software to enhance their functionality or make them OCP ready 
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
@@ -76,6 +77,7 @@ openshift_cluster_content:
     tags:
     - jenkins
     - jenkins-build
+    - ci-cd-builds
   - name: tool-box
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars:
@@ -85,21 +87,25 @@ openshift_cluster_content:
       SOURCE_CONTEXT_DIR: tool-box
     namespace: "{{ ci_cd_namespace }}"
     tags:
-      - tool-box
+    - tool-box
+    - ci-cd-builds
   - name: hoverfly
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars: "{{ hoverfly.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-      - hoverfly
+    - hoverfly
+    - ci-cd-builds
   - name: sonarqube
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars: "{{ sonarqube.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-      - sonarqube
-      - sonarqube-build
+    - sonarqube
+    - sonarqube-build
+    - ci-cd-builds
 
+# Secrets stored in OCP land and sync'd to Jenkins for consumption
 - object: ci-cd-secrets
   content:
   - name: nexus-secret
@@ -109,6 +115,7 @@ openshift_cluster_content:
     tags:
     - jenkins
     - secret
+    - ci-cd-secrets
   - name: jenkins-secret
     template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/master/secrets/secret-user-pass-plaintext.yml"
     params_from_vars: "{{ jenkins.build }}"
@@ -116,7 +123,9 @@ openshift_cluster_content:
     tags:
     - jenkins
     - secret
+    - ci-cd-secrets
 
+# Jenkins slave agents to give him some superpowers in OCP land
 - object: jenkins-slave-nodes
   content:
   - name: jenkins-slave-mvn
@@ -182,6 +191,9 @@ openshift_cluster_content:
     tags:
       - jenkins-slaves
       - python-slave
+
+# CI/CD Deployments is the OpenShift Deployment Configs and all
+# supporting tooling, pre and post hooks needed to setup and configure a comprehensive tool chain
 - object: ci-cd-deployments
   content: ## SONARQUBE DB DEPLOYMENT MUST COME BEFORE SONARQUBE DEPLOYMENT OR THE JDBC SECRETS WILL NOT BE CREATED PROPERLY
   - name: sonardb
@@ -235,15 +247,16 @@ openshift_cluster_content:
       - nexus
       - nexus-deploy
       - ci-cd-deployments
-  - name: jenkins-ephemeral
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-ephemeral-template.yml"
-    params_from_vars: "{{ jenkins.deploy }}"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - jenkins
-      - jenkins-deploy
-      - jenkins-persistent
-      - ci-cd-deployments
+  #  Want to use Ephemeral Jenkins? Just swap out these two lines
+  # - name: jenkins-ephemeral
+  #   template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-ephemeral-template.yml"
+  #   params_from_vars: "{{ jenkins.deploy }}"
+  #   namespace: "{{ ci_cd_namespace }}"
+  #   tags:
+  #     - jenkins
+  #     - jenkins-deploy
+  #     - jenkins-ephemeral
+  #     - ci-cd-deployments
   - name: jenkins-persistent
     template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-persistent-template.yml"
     params_from_vars: "{{ jenkins.deploy }}"
