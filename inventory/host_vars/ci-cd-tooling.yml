@@ -26,6 +26,9 @@ jenkins:
     VOLUME_CAPACITY: 20Gi
     MEMORY_REQUEST: 2Gi
     JVM_ARCH: x86_64
+    GITLAB_HOST: "gitlab.mydomain.example.com"
+    GITLAB_TOKEN: "token123"
+    GITLAB_GROUP_NAME: "rht-labs"
 
 nexus:
   secret:

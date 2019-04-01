@@ -1,9 +1,18 @@
 ---
 ansible_connection: local
 
-jenkins:
-  JENKINS_NAMESPACE: "{{ ci_cd_namespace }}"
 
+jenkins:
+  ROLE: admin
+  PIPELINES_NAMESPACE: "{{ ci_cd_namespace }}"
+  DEPLOYER_USER: jenkins
+
+image_puller:
+  ROLE: "system:image-puller"
+  PIPELINES_NAMESPACE: "{{ ci_cd_namespace }}"
+  DEPLOYER_USER: default
+
+# Create new projects with a given short name and display name
 openshift_cluster_content:
 - object: projectrequest
   content:
@@ -31,6 +40,8 @@ openshift_cluster_content:
     - "{{ test_namespace }}"
     - projects
     - "projects-{{ test_namespace }}"
+
+#  Bind user groups to roles for each of the new project eg giving ocp-devs edit access in the labs-ci-cd project
 - object: group-role-binding
   content:
   - name: "{{ ci_cd_namespace }}-acl"
@@ -57,8 +68,13 @@ openshift_cluster_content:
     - "{{ test_namespace }}"
     - rolebinding-group
     - "rolebinding-group-{{ test_namespace }}"
+
+
+# Bindings to allow Jenkins operate outside of the project he's created in
+- object: service-user-role-bind
+  content:
   - name: "jenkins-{{ dev_namespace }}-role-binding"
-    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/jenkins-rolebinding-template.yml"
+    template: "{{ openshift_templates_raw }}/v1.2/role-bindings/generic-service-user-bind.yml"
     params_from_vars: "{{ jenkins }}"
     namespace: "{{ dev_namespace }}"
     tags:
@@ -66,10 +82,30 @@ openshift_cluster_content:
     - rolebinding-jenkins
     - "rolebinding-jenkins-{{ dev_namespace }}"
   - name: "jenkins-{{ test_namespace }}-role-binding"
-    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/jenkins-rolebinding-template.yml"
+    template: "{{ openshift_templates_raw }}/v1.2/role-bindings/generic-service-user-bind.yml"
     params_from_vars: "{{ jenkins }}"
     namespace: "{{ test_namespace }}"
     tags:
     - "{{ test_namespace }}"
     - rolebinding-jenkins
     - "rolebinding-jenkins-{{ test_namespace }}"
+
+# Add image puller role to be able to get images stored in other namespace
+- object: image-puller-role-binding
+  content:
+  - name: "image-puller-{{ dev_namespace }}-role-binding"
+    template: "{{ openshift_templates_raw }}/v1.2/role-bindings/generic-service-user-bind.yml"
+    params_from_vars: "{{ image_puller }}"
+    namespace: "{{ dev_namespace }}"
+    tags:
+    - "{{ dev_namespace }}"
+    - rolebinding-image-puller
+    - "rolebinding-image-puller-{{ dev_namespace }}"
+  - name: "image-puller-{{ test_namespace }}-role-binding"
+    template: "{{ openshift_templates_raw }}/v1.2/role-bindings/generic-service-user-bind.yml"
+    params_from_vars: "{{ image_puller }}"
+    namespace: "{{ test_namespace }}"
+    tags:
+    - "{{ test_namespace }}"
+    - rolebinding-image-puller
+    - "rolebinding-image-puller-{{ test_namespace }}"
