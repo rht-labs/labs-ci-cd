@@ -46,7 +46,15 @@ openshift_cluster_content:
   content:
   - name: "{{ ci_cd_namespace }}-acl"
     template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
-    params_from_vars: "{{ role_binding_group }}"
+    params_from_vars: "{{ edit_role_binding_group }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - "{{ ci_cd_namespace }}"
+    - rolebinding-group
+    - "rolebinding-group-{{ ci_cd_namespace }}"
+  - name: "{{ ci_cd_namespace }}-acl"
+    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
+    params_from_vars: "{{ admin_role_binding_group }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - "{{ ci_cd_namespace }}"
@@ -54,7 +62,15 @@ openshift_cluster_content:
     - "rolebinding-group-{{ ci_cd_namespace }}"
   - name: "{{ dev_namespace }}-acl"
     template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
-    params_from_vars: "{{ role_binding_group }}"
+    params_from_vars: "{{ edit_role_binding_group }}"
+    namespace: "{{ dev_namespace }}"
+    tags:
+    - "{{ dev_namespace }}"
+    - rolebinding-group
+    - "rolebinding-group-{{ dev_namespace }}"
+  - name: "{{ dev_namespace }}-acl"
+    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
+    params_from_vars: "{{ admin_role_binding_group }}"
     namespace: "{{ dev_namespace }}"
     tags:
     - "{{ dev_namespace }}"
@@ -62,7 +78,15 @@ openshift_cluster_content:
     - "rolebinding-group-{{ dev_namespace }}"
   - name: "{{ test_namespace }}-acl"
     template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
-    params_from_vars: "{{ role_binding_group }}"
+    params_from_vars: "{{ edit_role_binding_group }}"
+    namespace: "{{ test_namespace }}"
+    tags:
+    - "{{ test_namespace }}"
+    - rolebinding-group
+    - "rolebinding-group-{{ test_namespace }}"
+  - name: "{{ test_namespace }}-acl"
+    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
+    params_from_vars: "{{ admin_role_binding_group }}"
     namespace: "{{ test_namespace }}"
     tags:
     - "{{ test_namespace }}"

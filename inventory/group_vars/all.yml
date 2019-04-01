@@ -20,6 +20,9 @@ test:
   NAMESPACE: "{{ test_namespace }}"
   NAMESPACE_DISPLAY_NAME: "{{ test_namespace }}"
 
-role_binding_group:
+edit_role_binding_group:
   GROUP: "labs-ci-cd-contributors"
   ROLE: "{{ role | default('edit') }}"
+admin_role_binding_group:
+  GROUP: "ocp-admins"
+  ROLE: "admin"
