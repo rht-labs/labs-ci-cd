@@ -2,6 +2,11 @@ ci_cd_namespace: labs-ci-cd
 dev_namespace: labs-dev
 test_namespace: labs-test
 
+# When the ocp_templates gets moved to cop land we can merge the two raws below
+openshift_templates_raw: "https://raw.githubusercontent.com/rht-labs/openshift-templates"
+cop_quickstarts: "https://github.com/redhat-cop/containers-quickstarts.git"
+cop_quickstarts_raw: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts"
+
 ci_cd:
   NAMESPACE: "{{ ci_cd_namespace }}"
   NAMESPACE_DISPLAY_NAME: "{{ ci_cd_namespace }}"
