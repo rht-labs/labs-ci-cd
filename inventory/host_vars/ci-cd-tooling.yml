@@ -51,7 +51,6 @@ pact_broker:
   POSTGRESQL_PERSISTENT_VOLUME_CLAIM_SIZE: 5Gi
   GIT_REPOSITORY: https://github.com/DiUS/pact_broker-docker.git
 
-  
 openshift_cluster_content:
 - galaxy_requirements:
   - pre_post_requirements.yml # Uses openshift-label role from casl-ansible
@@ -88,7 +87,7 @@ openshift_cluster_content:
       - sonarqube
       - sonarqube-build
   - name: pact-broker
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/master/pact-broker/build.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.2/pact-broker/pact-broker-build.yml"
     params_from_vars: "{{ pact_broker }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -228,10 +227,10 @@ openshift_cluster_content:
       - hoverfly
       - hoverfly-deploy
   - name: pact-broker
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/master/pact-broker/deploy.yml"
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.2/pact-broker/pact-broker-deploy.yml"
     params_from_vars: "{{ pact_broker }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - pact-broker
-      - ci-cd-deployments
       - pact-broker-deploy
+      - ci-cd-deployments
