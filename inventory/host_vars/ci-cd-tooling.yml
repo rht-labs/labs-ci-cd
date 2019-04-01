@@ -35,6 +35,14 @@ sonarqube:
   deploy:
     POSTGRES_DATABASE_NAME: "sonar"
 
+zalenium:
+  NAMESPACE: "{{ ci_cd_namespace }}"
+  IMAGE: "dosel/zalenium:latest"
+  CPU_REQUEST: 200m
+  MEMORY_REQUEST: 400M
+  CPU_LIMIT: 1000m
+  MEMORY_LIMIT: 2000M
+
 hoverfly:
   build:
     NAME: "{{ hoverfly_name }}"
@@ -207,6 +215,14 @@ openshift_cluster_content:
     tags:
       - jenkins
       - jenkins-deploy
+  - name: zalenium
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.9/zalenium/.openshift/templates/zalenium-deployment.yml"
+    params_from_vars: "{{ zalenium }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+      - zalenium
+      - zalenium-deploy
+      - ci-cd-deployments
   - name: hoverfly
     template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/hoverfly/.openshift/templates/hoverfly-deployment-template.yml"
     params_from_vars: "{{ hoverfly.deploy }}"
