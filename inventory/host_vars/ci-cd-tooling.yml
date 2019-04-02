@@ -4,27 +4,47 @@ ansible_connection: local
 jenkins_name: jenkins
 sonarqube_name: sonarqube
 hoverfly_name: hoverfly
+nexus_password: "admin123"
 
 jenkins:
   build:
     NAME: "{{ jenkins_name }}"
     SOURCE_REPOSITORY_URL: https://github.com/rht-labs/s2i-config-jenkins.git
-    SOURCE_REPOSITORY_REF: v1.3
+    SOURCE_REPOSITORY_REF: v1.4
     BUILDER_IMAGE_STREAM_NAME: jenkins-2-rhel7
     BUILDER_IMAGE_STREAM_TAG_NAME: v3.11
     IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
+    SECRET_NAME: "jenkins-git-password"
+    USERNAME: gitlab-sa
+    PASSWORD: "some-secret-password"
+    SOURCE_REPOSITORY_SECRET: "jenkins-git-password"
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
     JENKINS_IMAGE_STREAM_TAG: "{{ jenkins_name }}:latest"
-    MEMORY_LIMIT: 2Gi
+    MEMORY_LIMIT: 8Gi
     JENKINS_OPTS: "--sessionTimeout=720"
-    VOLUME_CAPACITY: 2Gi
+    VOLUME_CAPACITY: 20Gi
+    MEMORY_REQUEST: 2Gi
+    JVM_ARCH: x86_64
+    GITLAB_HOST: "gitlab.mydomain.example.com"
+    GITLAB_TOKEN: "token123"
+    GITLAB_GROUP_NAME: "rht-labs"
+
+nexus:
+  secret:
+    SECRET_NAME: "nexus-password"
+    USERNAME: admin
+    PASSWORD: "{{ nexus_password }}"
+  deploy:
+    VOLUME_CAPACITY: 10Gi
+    MEMORY_LIMIT: 2Gi
+    CONTAINER_IMAGE: sonatype/nexus3:3.15.2
 
 sonarqube:
   build:
     NAME: "{{ sonarqube_name }}"
-    SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
-    SOURCE_REPOSITORY_REF: v1.4
+    SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
     SOURCE_CONTEXT_DIR: sonarqube
   postgresql:
     POSTGRESQL_DATABASE: sonar
@@ -46,8 +66,8 @@ zalenium:
 hoverfly:
   build:
     NAME: "{{ hoverfly_name }}"
-    SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
-    SOURCE_REPOSITORY_REF: v1.4
+    SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
     SOURCE_CONTEXT_DIR: hoverfly
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
@@ -62,111 +82,141 @@ pact_broker:
 openshift_cluster_content:
 - galaxy_requirements:
   - pre_post_requirements.yml # Uses openshift-label role from casl-ansible
+# CI/CD builds are customisations to base software to enhance their functionality or make them OCP ready 
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins-s2i-build/jenkins-s2i-build-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins-s2i-build/jenkins-s2i-build-template.yml"
     params_from_vars: "{{ jenkins.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins
     - jenkins-build
+    - ci-cd-builds
   - name: tool-box
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars:
       NAME: tool-box
-      SOURCE_REPOSITORY_URL: https://github.com/redhat-cop/containers-quickstarts.git
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
       SOURCE_REPOSITORY_REF: v1.1
       SOURCE_CONTEXT_DIR: tool-box
     namespace: "{{ ci_cd_namespace }}"
     tags:
-      - tool-box
+    - tool-box
+    - ci-cd-builds
   - name: hoverfly
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars: "{{ hoverfly.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-      - hoverfly
+    - hoverfly
+    - ci-cd-builds
   - name: sonarqube
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars: "{{ sonarqube.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
-      - sonarqube
-      - sonarqube-build
+    - sonarqube
+    - sonarqube-build
+    - ci-cd-builds
   - name: pact-broker
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.2/pact-broker/pact-broker-build.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/pact-broker/pact-broker-build.yml"
     params_from_vars: "{{ pact_broker }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - pact-broker
       - pact-broker-build
       - ci-cd-builds
+
+# Secrets stored in OCP land and sync'd to Jenkins for consumption
+- object: ci-cd-secrets
+  content:
+  - name: nexus-secret
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/secrets/secret-user-pass-plaintext.yml"
+    params_from_vars: "{{ nexus.secret }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - jenkins
+    - secret
+    - ci-cd-secrets
+  - name: jenkins-secret
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/secrets/secret-user-pass-plaintext.yml"
+    params_from_vars: "{{ jenkins.build }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+    - jenkins
+    - secret
+    - ci-cd-secrets
+
+# Jenkins slave agents to give him some superpowers in OCP land
 - object: jenkins-slave-nodes
   content:
   - name: jenkins-slave-mvn
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/mvn"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - mvn-slave
   - name: jenkins-slave-npm
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/npm"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - npm-slave
   - name: jenkins-slave-zap
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/zap"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - zap-slave
   - name: jenkins-slave-ansible
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/ansible"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - ansible-slave
   - name: jenkins-slave-arachni
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/arachni"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - arachni-slave
   - name: jenkins-slave-gradle
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/gradle"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - gradle-slave
   - name: jenkins-slave-golang
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/golang"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - golang-slave
   - name: jenkins-slave-mongodb
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/mongodb"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - mongodb-slave
   - name: jenkins-slave-python
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/python"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - python-slave
+
+# CI/CD Deployments is the OpenShift Deployment Configs and all
+# supporting tooling, pre and post hooks needed to setup and configure a comprehensive tool chain
 - object: ci-cd-deployments
   content: ## SONARQUBE DB DEPLOYMENT MUST COME BEFORE SONARQUBE DEPLOYMENT OR THE JDBC SECRETS WILL NOT BE CREATED PROPERLY
   - name: sonardb
@@ -196,39 +246,51 @@ openshift_cluster_content:
       - sonarqube
       - sonarqube-postgresql
       - sonarqube-postgresql-deploy
+      - ci-cd-deployments
   - name: sonarqube
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.6/sonarqube/.openshift/templates/sonarqube-deployment-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/sonarqube/.openshift/templates/sonarqube-deployment-template.yml"
     params_from_vars: "{{ sonarqube.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - sonarqube
       - sonarqube-deploy
+      - ci-cd-deployments
   - name: nexus
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/nexus/nexus-deployment-template.yml"
-    params_from_vars:
-      VOLUME_CAPACITY: 10Gi
-      MEMORY_LIMIT: 2Gi
-      CONTAINER_IMAGE: sonatype/nexus3:3.15.2
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/nexus/nexus-deployment-template.yml"
+    params_from_vars: "{{ nexus.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     post_steps:
     - role: infra-ansible/roles/config-nexus
       vars:
         nexus_namespace: "{{ ci_cd_namespace }}"
         nexus_user: "admin"
-        nexus_password: "admin123"
+        nexus_password: "{{ nexus_password }}"
         nexus_api_base_path: /service/rest/v1
     tags:
       - nexus
       - nexus-deploy
-  - name: jenkins-ephemeral
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.0/jenkins/jenkins-ephemeral-template.yml"
+      - ci-cd-deployments
+  #  Want to use Ephemeral Jenkins? Just swap out these two lines
+  # - name: jenkins-ephemeral
+  #   template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins/jenkins-ephemeral-template.yml"
+  #   params_from_vars: "{{ jenkins.deploy }}"
+  #   namespace: "{{ ci_cd_namespace }}"
+  #   tags:
+  #     - jenkins
+  #     - jenkins-deploy
+  #     - jenkins-ephemeral
+  #     - ci-cd-deployments
+  - name: jenkins-persistent
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins/jenkins-persistent-template.yml"
     params_from_vars: "{{ jenkins.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins
       - jenkins-deploy
+      - jenkins-persistent
+      - ci-cd-deployments
   - name: zalenium
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.9/zalenium/.openshift/templates/zalenium-deployment.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/zalenium/.openshift/templates/zalenium-deployment.yml"
     params_from_vars: "{{ zalenium }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -236,14 +298,15 @@ openshift_cluster_content:
       - zalenium-deploy
       - ci-cd-deployments
   - name: hoverfly
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.4/hoverfly/.openshift/templates/hoverfly-deployment-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/hoverfly/.openshift/templates/hoverfly-deployment-template.yml"
     params_from_vars: "{{ hoverfly.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - hoverfly
       - hoverfly-deploy
+      - ci-cd-deployments
   - name: pact-broker
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.2/pact-broker/pact-broker-deploy.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/pact-broker/pact-broker-deploy.yml"
     params_from_vars: "{{ pact_broker }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
