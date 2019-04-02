@@ -17,7 +17,7 @@ openshift_cluster_content:
 - object: projectrequest
   content:
   - name: "{{ ci_cd_namespace }}"
-    template: "{{ openshift_templates_raw }}/v1.3/project-requests/create-project.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/project-requests/create-project.yml"
     params_from_vars: "{{ ci_cd }}"
     action: create
     tags:
@@ -25,7 +25,7 @@ openshift_cluster_content:
     - projects
     - "projects-{{ ci_cd_namespace }}"
   - name: "{{ dev_namespace }}"    
-    template: "{{ openshift_templates_raw }}/v1.3/project-requests/create-project.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/project-requests/create-project.yml"
     params_from_vars: "{{ dev }}"
     action: create
     tags:
@@ -33,7 +33,7 @@ openshift_cluster_content:
     - projects
     - "projects-{{ dev_namespace }}"
   - name: "{{ test_namespace }}"
-    template: "{{ openshift_templates_raw }}/v1.3/project-requests/create-project.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/project-requests/create-project.yml"
     params_from_vars: "{{ test }}"
     action: create
     tags:
@@ -45,7 +45,7 @@ openshift_cluster_content:
 - object: group-role-binding
   content:
   - name: "{{ ci_cd_namespace }}-acl"
-    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/group-rolebinding-template.yml"
     params_from_vars: "{{ edit_role_binding_group }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -53,7 +53,7 @@ openshift_cluster_content:
     - rolebinding-group
     - "rolebinding-group-{{ ci_cd_namespace }}"
   - name: "{{ ci_cd_namespace }}-acl"
-    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/group-rolebinding-template.yml"
     params_from_vars: "{{ admin_role_binding_group }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -61,7 +61,7 @@ openshift_cluster_content:
     - rolebinding-group
     - "rolebinding-group-{{ ci_cd_namespace }}"
   - name: "{{ dev_namespace }}-acl"
-    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/group-rolebinding-template.yml"
     params_from_vars: "{{ edit_role_binding_group }}"
     namespace: "{{ dev_namespace }}"
     tags:
@@ -69,7 +69,7 @@ openshift_cluster_content:
     - rolebinding-group
     - "rolebinding-group-{{ dev_namespace }}"
   - name: "{{ dev_namespace }}-acl"
-    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/group-rolebinding-template.yml"
     params_from_vars: "{{ admin_role_binding_group }}"
     namespace: "{{ dev_namespace }}"
     tags:
@@ -77,7 +77,7 @@ openshift_cluster_content:
     - rolebinding-group
     - "rolebinding-group-{{ dev_namespace }}"
   - name: "{{ test_namespace }}-acl"
-    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/group-rolebinding-template.yml"
     params_from_vars: "{{ edit_role_binding_group }}"
     namespace: "{{ test_namespace }}"
     tags:
@@ -85,7 +85,7 @@ openshift_cluster_content:
     - rolebinding-group
     - "rolebinding-group-{{ test_namespace }}"
   - name: "{{ test_namespace }}-acl"
-    template: "{{ openshift_templates_raw }}/v1.0/role-bindings/group-rolebinding-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/group-rolebinding-template.yml"
     params_from_vars: "{{ admin_role_binding_group }}"
     namespace: "{{ test_namespace }}"
     tags:
@@ -98,7 +98,7 @@ openshift_cluster_content:
 - object: service-user-role-bind
   content:
   - name: "jenkins-{{ dev_namespace }}-role-binding"
-    template: "{{ openshift_templates_raw }}/v1.2/role-bindings/generic-service-user-bind.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/generic-service-user-bind.yml"
     params_from_vars: "{{ jenkins }}"
     namespace: "{{ dev_namespace }}"
     tags:
@@ -106,7 +106,7 @@ openshift_cluster_content:
     - rolebinding-jenkins
     - "rolebinding-jenkins-{{ dev_namespace }}"
   - name: "jenkins-{{ test_namespace }}-role-binding"
-    template: "{{ openshift_templates_raw }}/v1.2/role-bindings/generic-service-user-bind.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/generic-service-user-bind.yml"
     params_from_vars: "{{ jenkins }}"
     namespace: "{{ test_namespace }}"
     tags:
@@ -118,7 +118,7 @@ openshift_cluster_content:
 - object: image-puller-role-binding
   content:
   - name: "image-puller-{{ dev_namespace }}-role-binding"
-    template: "{{ openshift_templates_raw }}/v1.2/role-bindings/generic-service-user-bind.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/generic-service-user-bind.yml"
     params_from_vars: "{{ image_puller }}"
     namespace: "{{ dev_namespace }}"
     tags:
@@ -126,7 +126,7 @@ openshift_cluster_content:
     - rolebinding-image-puller
     - "rolebinding-image-puller-{{ dev_namespace }}"
   - name: "image-puller-{{ test_namespace }}-role-binding"
-    template: "{{ openshift_templates_raw }}/v1.2/role-bindings/generic-service-user-bind.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/role-bindings/generic-service-user-bind.yml"
     params_from_vars: "{{ image_puller }}"
     namespace: "{{ test_namespace }}"
     tags:

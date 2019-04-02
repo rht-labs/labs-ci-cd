@@ -86,7 +86,7 @@ openshift_cluster_content:
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
-    template: "{{ openshift_templates_raw }}/v1.0/jenkins-s2i-build/jenkins-s2i-build-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins-s2i-build/jenkins-s2i-build-template.yml"
     params_from_vars: "{{ jenkins.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -120,7 +120,7 @@ openshift_cluster_content:
     - sonarqube-build
     - ci-cd-builds
   - name: pact-broker
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.2/pact-broker/pact-broker-build.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/pact-broker/pact-broker-build.yml"
     params_from_vars: "{{ pact_broker }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -132,7 +132,7 @@ openshift_cluster_content:
 - object: ci-cd-secrets
   content:
   - name: nexus-secret
-    template: "{{ openshift_templates_raw }}/v1.2/secrets/secret-user-pass-plaintext.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/secrets/secret-user-pass-plaintext.yml"
     params_from_vars: "{{ nexus.secret }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -140,7 +140,7 @@ openshift_cluster_content:
     - secret
     - ci-cd-secrets
   - name: jenkins-secret
-    template: "{{ openshift_templates_raw }}/v1.2/secrets/secret-user-pass-plaintext.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/secrets/secret-user-pass-plaintext.yml"
     params_from_vars: "{{ jenkins.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -256,7 +256,7 @@ openshift_cluster_content:
       - sonarqube-deploy
       - ci-cd-deployments
   - name: nexus
-    template: "{{ openshift_templates_raw }}/v1.0/nexus/nexus-deployment-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/nexus/nexus-deployment-template.yml"
     params_from_vars: "{{ nexus.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     post_steps:
@@ -272,7 +272,7 @@ openshift_cluster_content:
       - ci-cd-deployments
   #  Want to use Ephemeral Jenkins? Just swap out these two lines
   # - name: jenkins-ephemeral
-  #   template: "{{ openshift_templates_raw }}/v1.0/jenkins/jenkins-ephemeral-template.yml"
+  #   template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins/jenkins-ephemeral-template.yml"
   #   params_from_vars: "{{ jenkins.deploy }}"
   #   namespace: "{{ ci_cd_namespace }}"
   #   tags:
@@ -281,7 +281,7 @@ openshift_cluster_content:
   #     - jenkins-ephemeral
   #     - ci-cd-deployments
   - name: jenkins-persistent
-    template: "{{ openshift_templates_raw }}/v1.0/jenkins/jenkins-persistent-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins/jenkins-persistent-template.yml"
     params_from_vars: "{{ jenkins.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -290,7 +290,7 @@ openshift_cluster_content:
       - jenkins-persistent
       - ci-cd-deployments
   - name: zalenium
-    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.9/zalenium/.openshift/templates/zalenium-deployment.yml"
+    template: "{{ cop_quickstarts_raw }}/v1.9/zalenium/.openshift/templates/zalenium-deployment.yml"
     params_from_vars: "{{ zalenium }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -306,7 +306,7 @@ openshift_cluster_content:
       - hoverfly-deploy
       - ci-cd-deployments
   - name: pact-broker
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.2/pact-broker/pact-broker-deploy.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/pact-broker/pact-broker-deploy.yml"
     params_from_vars: "{{ pact_broker }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
