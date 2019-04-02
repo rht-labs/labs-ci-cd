@@ -44,7 +44,7 @@ sonarqube:
   build:
     NAME: "{{ sonarqube_name }}"
     SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
-    SOURCE_REPOSITORY_REF: v1.4
+    SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
     SOURCE_CONTEXT_DIR: sonarqube
   postgresql:
     POSTGRESQL_DATABASE: sonar
@@ -67,7 +67,7 @@ hoverfly:
   build:
     NAME: "{{ hoverfly_name }}"
     SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
-    SOURCE_REPOSITORY_REF: v1.4
+    SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
     SOURCE_CONTEXT_DIR: hoverfly
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
@@ -94,7 +94,7 @@ openshift_cluster_content:
     - jenkins-build
     - ci-cd-builds
   - name: tool-box
-    template: "{{ cop_quickstarts_raw }}/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars:
       NAME: tool-box
       SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
@@ -105,14 +105,14 @@ openshift_cluster_content:
     - tool-box
     - ci-cd-builds
   - name: hoverfly
-    template: "{{ cop_quickstarts_raw }}/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars: "{{ hoverfly.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - hoverfly
     - ci-cd-builds
   - name: sonarqube
-    template: "{{ cop_quickstarts_raw }}/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars: "{{ sonarqube.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -152,63 +152,63 @@ openshift_cluster_content:
 - object: jenkins-slave-nodes
   content:
   - name: jenkins-slave-mvn
-    template: "{{ cop_quickstarts_raw }}/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/mvn"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - mvn-slave
   - name: jenkins-slave-npm
-    template: "{{ cop_quickstarts_raw }}/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/npm"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - npm-slave
   - name: jenkins-slave-zap
-    template: "{{ cop_quickstarts_raw }}/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/zap"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
     - zap-slave
   - name: jenkins-slave-ansible
-    template: "{{ cop_quickstarts_raw }}/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/ansible"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - ansible-slave
   - name: jenkins-slave-arachni
-    template: "{{ cop_quickstarts_raw }}/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/arachni"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - arachni-slave
   - name: jenkins-slave-gradle
-    template: "{{ cop_quickstarts_raw }}/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/gradle"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - gradle-slave
   - name: jenkins-slave-golang
-    template: "{{ cop_quickstarts_raw }}/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/golang"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - golang-slave
   - name: jenkins-slave-mongodb
-    template: "{{ cop_quickstarts_raw }}/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/mongodb"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins-slaves
       - mongodb-slave
   - name: jenkins-slave-python
-    template: "{{ cop_quickstarts_raw }}/v1.3/jenkins-slaves/templates/jenkins-slave-generic-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
     params: "{{ inventory_dir }}/../params/jenkins-slaves/python"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -248,7 +248,7 @@ openshift_cluster_content:
       - sonarqube-postgresql-deploy
       - ci-cd-deployments
   - name: sonarqube
-    template: "{{ cop_quickstarts_raw }}/v1.6/sonarqube/.openshift/templates/sonarqube-deployment-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/sonarqube/.openshift/templates/sonarqube-deployment-template.yml"
     params_from_vars: "{{ sonarqube.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -290,7 +290,7 @@ openshift_cluster_content:
       - jenkins-persistent
       - ci-cd-deployments
   - name: zalenium
-    template: "{{ cop_quickstarts_raw }}/v1.9/zalenium/.openshift/templates/zalenium-deployment.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/zalenium/.openshift/templates/zalenium-deployment.yml"
     params_from_vars: "{{ zalenium }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
@@ -298,7 +298,7 @@ openshift_cluster_content:
       - zalenium-deploy
       - ci-cd-deployments
   - name: hoverfly
-    template: "{{ cop_quickstarts_raw }}/v1.4/hoverfly/.openshift/templates/hoverfly-deployment-template.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/hoverfly/.openshift/templates/hoverfly-deployment-template.yml"
     params_from_vars: "{{ hoverfly.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
