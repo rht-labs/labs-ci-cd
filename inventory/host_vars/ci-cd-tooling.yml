@@ -55,6 +55,14 @@ sonarqube:
   deploy:
     POSTGRES_DATABASE_NAME: "sonar"
 
+zalenium:
+  NAMESPACE: "{{ ci_cd_namespace }}"
+  IMAGE: "dosel/zalenium:latest"
+  CPU_REQUEST: 200m
+  MEMORY_REQUEST: 400Mi
+  CPU_LIMIT: 1000m
+  MEMORY_LIMIT: 2Gi
+
 hoverfly:
   build:
     NAME: "{{ hoverfly_name }}"
@@ -66,7 +74,11 @@ hoverfly:
     MEMORY_LIMIT: 2Gi
     HOVERFLY_IMAGE_STREAM_TAG: "{{ hoverfly_name }}:latest"
 
-  
+pact_broker:
+  POSTGRESQL_USERNAME: pact_broker_user
+  POSTGRESQL_PERSISTENT_VOLUME_CLAIM_SIZE: 5Gi
+  GIT_REPOSITORY: https://github.com/DiUS/pact_broker-docker.git
+
 openshift_cluster_content:
 - galaxy_requirements:
   - pre_post_requirements.yml # Uses openshift-label role from casl-ansible
@@ -107,6 +119,14 @@ openshift_cluster_content:
     - sonarqube
     - sonarqube-build
     - ci-cd-builds
+  - name: pact-broker
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.2/pact-broker/pact-broker-build.yml"
+    params_from_vars: "{{ pact_broker }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+      - pact-broker
+      - pact-broker-build
+      - ci-cd-builds
 
 # Secrets stored in OCP land and sync'd to Jenkins for consumption
 - object: ci-cd-secrets
@@ -269,6 +289,14 @@ openshift_cluster_content:
       - jenkins-deploy
       - jenkins-persistent
       - ci-cd-deployments
+  - name: zalenium
+    template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/v1.9/zalenium/.openshift/templates/zalenium-deployment.yml"
+    params_from_vars: "{{ zalenium }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+      - zalenium
+      - zalenium-deploy
+      - ci-cd-deployments
   - name: hoverfly
     template: "{{ cop_quickstarts_raw }}/v1.4/hoverfly/.openshift/templates/hoverfly-deployment-template.yml"
     params_from_vars: "{{ hoverfly.deploy }}"
@@ -276,4 +304,12 @@ openshift_cluster_content:
     tags:
       - hoverfly
       - hoverfly-deploy
+      - ci-cd-deployments
+  - name: pact-broker
+    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.2/pact-broker/pact-broker-deploy.yml"
+    params_from_vars: "{{ pact_broker }}"
+    namespace: "{{ ci_cd_namespace }}"
+    tags:
+      - pact-broker
+      - pact-broker-deploy
       - ci-cd-deployments
