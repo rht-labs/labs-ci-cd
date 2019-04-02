@@ -2,5 +2,5 @@ SOURCE_REPOSITORY_URL=https://github.com/redhat-cop/containers-quickstarts.git
 SOURCE_CONTEXT_DIR=jenkins-slaves/jenkins-slave-mvn
 BUILDER_IMAGE_NAME=registry.access.redhat.com/openshift3/jenkins-agent-maven-35-rhel7:latest
 NAME=jenkins-slave-mvn
-SOURCE_REPOSITORY_REF=v1.8
+SOURCE_REPOSITORY_REF=v1.9
 DOCKERFILE_PATH=Dockerfile
