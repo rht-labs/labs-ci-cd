@@ -10,7 +10,7 @@ jenkins:
   build:
     NAME: "{{ jenkins_name }}"
     SOURCE_REPOSITORY_URL: https://github.com/rht-labs/s2i-config-jenkins.git
-    SOURCE_REPOSITORY_REF: v1.3
+    SOURCE_REPOSITORY_REF: v1.4
     BUILDER_IMAGE_STREAM_NAME: jenkins-2-rhel7
     BUILDER_IMAGE_STREAM_TAG_NAME: v3.11
     IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
@@ -43,7 +43,7 @@ nexus:
 sonarqube:
   build:
     NAME: "{{ sonarqube_name }}"
-    SOURCE_REPOSITORY_URL: {{ cop_quickstarts }}
+    SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
     SOURCE_REPOSITORY_REF: v1.4
     SOURCE_CONTEXT_DIR: sonarqube
   postgresql:
@@ -58,7 +58,7 @@ sonarqube:
 hoverfly:
   build:
     NAME: "{{ hoverfly_name }}"
-    SOURCE_REPOSITORY_URL: {{ cop_quickstarts }}
+    SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
     SOURCE_REPOSITORY_REF: v1.4
     SOURCE_CONTEXT_DIR: hoverfly
   deploy:
@@ -85,7 +85,7 @@ openshift_cluster_content:
     template: "{{ cop_quickstarts_raw }}/v1.4/build-docker-generic/.openshift/templates/docker-build-template.yml"
     params_from_vars:
       NAME: tool-box
-      SOURCE_REPOSITORY_URL: {{ cop_quickstarts }}
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
       SOURCE_REPOSITORY_REF: v1.1
       SOURCE_CONTEXT_DIR: tool-box
     namespace: "{{ ci_cd_namespace }}"

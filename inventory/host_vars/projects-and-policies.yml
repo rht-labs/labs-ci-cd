@@ -17,7 +17,7 @@ openshift_cluster_content:
 - object: projectrequest
   content:
   - name: "{{ ci_cd_namespace }}"
-    template: "{{ openshift_templates_raw }}/v1.2/project-requests/create-project.yml"
+    template: "{{ openshift_templates_raw }}/v1.3/project-requests/create-project.yml"
     params_from_vars: "{{ ci_cd }}"
     action: create
     tags:
@@ -25,7 +25,7 @@ openshift_cluster_content:
     - projects
     - "projects-{{ ci_cd_namespace }}"
   - name: "{{ dev_namespace }}"    
-    template: "{{ openshift_templates_raw }}/v1.2/project-requests/create-project.yml"
+    template: "{{ openshift_templates_raw }}/v1.3/project-requests/create-project.yml"
     params_from_vars: "{{ dev }}"
     action: create
     tags:
@@ -33,7 +33,7 @@ openshift_cluster_content:
     - projects
     - "projects-{{ dev_namespace }}"
   - name: "{{ test_namespace }}"
-    template: "{{ openshift_templates_raw }}/v1.2/project-requests/create-project.yml"
+    template: "{{ openshift_templates_raw }}/v1.3/project-requests/create-project.yml"
     params_from_vars: "{{ test }}"
     action: create
     tags:
