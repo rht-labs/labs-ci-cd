@@ -39,9 +39,9 @@ zalenium:
   NAMESPACE: "{{ ci_cd_namespace }}"
   IMAGE: "dosel/zalenium:latest"
   CPU_REQUEST: 200m
-  MEMORY_REQUEST: 400M
+  MEMORY_REQUEST: 400Mi
   CPU_LIMIT: 1000m
-  MEMORY_LIMIT: 2000M
+  MEMORY_LIMIT: 2Gi
 
 hoverfly:
   build:
