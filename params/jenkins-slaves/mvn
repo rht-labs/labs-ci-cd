@@ -4,3 +4,4 @@ BUILDER_IMAGE_NAME=registry.access.redhat.com/openshift3/jenkins-agent-maven-35-
 NAME=jenkins-slave-mvn
 SOURCE_REPOSITORY_REF=v1.9
 DOCKERFILE_PATH=Dockerfile
+SLAVE_IMAGE_TAG=latest
