@@ -12,12 +12,3 @@
         name: openshift-applier/roles/openshift-applier
       tags:
         - openshift-applier
-    - name: set namespace
-      set_fact:
-        nexus_namespace: "{{ ci_cd_namespace }}"
-        nexus_user: "admin"
-        nexus_password: "admin123"
-    - include_role:
-        name: roles/infra-ansible/roles/config-nexus
-      tags:
-        - configure-nexus

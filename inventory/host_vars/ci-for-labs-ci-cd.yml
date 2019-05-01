@@ -5,7 +5,7 @@ ansible_connection: local
 
 build:
   NAME: ci-for-labs-ci-cd
-  PIPELINE_SOURCE_REPOSITORY_REF: v5.0
+  PIPELINE_SOURCE_REPOSITORY_REF: master
   PIPELINE_SOURCE_REPOSITORY_URL: https://github.com/rht-labs/labs-ci-cd.git
   RUN_POLICY: Parallel
 
@@ -13,7 +13,7 @@ openshift_cluster_content:
 - object: ci-for-labs-ci-cd
   content:
   - name: pipeline
-    template: "https://raw.githubusercontent.com/rht-labs/openshift-templates/v1.1/jenkins-pipelines/jenkins-pipeline-with-ocp-triggers-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins-pipelines/jenkins-pipeline-with-ocp-triggers-template.yml"
     params_from_vars: "{{ build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
