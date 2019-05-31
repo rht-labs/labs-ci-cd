@@ -1,0 +1,28 @@
+# This is a minimal playbook to be used when spinning up new clusters. 
+# It will only install what is need to run the CI job we use for Labs CI/CD development. 
+---
+- name: Create Projects and Policies
+  hosts: bootstrap
+  tasks:
+    - include_role:
+        name: openshift-applier/roles/openshift-applier
+      vars:
+        filter_tags: "{{ ci_cd_namespace }}" 
+
+- name: Create CI/CD tools
+  hosts: tools
+  tasks:
+    - include_role:
+        name: openshift-applier/roles/openshift-applier
+      tags:
+        - openshift-applier
+      vars:
+        filter_tags: "jenkins,ansible-slave" 
+
+- name: Create CI Job
+  hosts: ci-for-labs
+  tasks:
+    - include_role:
+        name: openshift-applier/roles/openshift-applier
+      tags:
+        - openshift-applier
