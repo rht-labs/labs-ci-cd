@@ -26,3 +26,4 @@
         name: openshift-applier/roles/openshift-applier
       tags:
         - openshift-applier
+        - ci-for-ci
