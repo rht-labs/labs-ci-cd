@@ -83,6 +83,14 @@ Note:
 
 After running the playbook, the pipeline should execute in Jenkins, build the spring boot app, deploy artifacts to nexus, deploy the container to the dev stage and then wait approval to deploy to the demo stage. See Common Issues
 
+## Persistent vs Ephemeral Jenkins
+
+`labs-ci-cd` will default to deploying a persistent Jenkins, if you do not wish to use persistent jenkins please add on the extra variable `jenkins_persistence_type` and set it to `ephemeral` For Example:
+
+```bash
+ansible-playbook site.yml -e jenkins_persistence_type=ephemeral
+```
+
 ## Running a Subset of the Inventory
 
 In some cases you might not want to deploy all of the components in this repo; but only a subset such as Jenkins and the customisations to it.
