@@ -30,6 +30,56 @@ jenkins:
     GITLAB_TOKEN: "token123"
     GITLAB_GROUP_NAME: "rht-labs"
 
+jenkins_slaves:
+  build:
+    ansible:
+      NAME: jenkins-slave-ansible
+      SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-ansible
+      SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    arachni:
+      NAME: jenkins-slave-arachni
+      SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-arachni
+      SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    python:
+      NAME: jenkins-slave-python
+      SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-python
+      SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    golang:
+      NAME: jenkins-slave-golang
+      SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-golang
+      SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    gradle:
+      NAME: jenkins-slave-gradle
+      SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-gradle
+      SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    mongodb:
+      NAME: jenkins-slave-mongodb
+      SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-mongodb
+      SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    mvn:
+      NAME: jenkins-slave-mvn
+      SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-mvn
+      SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    npm:
+      BUILDER_IMAGE_NAME: openshift/jenkins-slave-base-centos7:v3.11
+      NAME: jenkins-slave-npm
+      SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-npm
+      SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    zap:
+      BUILDER_IMAGE_NAME: centos:centos7
+      NAME: jenkins-slave-zap
+      SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-zap
+      SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+      SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+
 nexus:
   secret:
     SECRET_NAME: "nexus-password"
@@ -151,69 +201,12 @@ openshift_cluster_content:
 # Jenkins slave agents to give him some superpowers in OCP land
 - object: jenkins-slave-nodes
   content:
-  - name: jenkins-slave-mvn
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
-    params: "{{ inventory_dir }}/../params/jenkins-slaves/mvn"
+  - name: jenkins-slave-agents
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/.openshift/templates/jenkins-slave-generic-template.j2"
+    params_from_vars: "{{ jenkins_slaves.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - jenkins-slaves
-    - mvn-slave
-  - name: jenkins-slave-npm
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
-    params: "{{ inventory_dir }}/../params/jenkins-slaves/npm"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-    - jenkins-slaves
-    - npm-slave
-  - name: jenkins-slave-zap
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
-    params: "{{ inventory_dir }}/../params/jenkins-slaves/zap"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-    - jenkins-slaves
-    - zap-slave
-  - name: jenkins-slave-ansible
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
-    params: "{{ inventory_dir }}/../params/jenkins-slaves/ansible"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - jenkins-slaves
-      - ansible-slave
-  - name: jenkins-slave-arachni
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
-    params: "{{ inventory_dir }}/../params/jenkins-slaves/arachni"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - jenkins-slaves
-      - arachni-slave
-  - name: jenkins-slave-gradle
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
-    params: "{{ inventory_dir }}/../params/jenkins-slaves/gradle"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - jenkins-slaves
-      - gradle-slave
-  - name: jenkins-slave-golang
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
-    params: "{{ inventory_dir }}/../params/jenkins-slaves/golang"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - jenkins-slaves
-      - golang-slave
-  - name: jenkins-slave-mongodb
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
-    params: "{{ inventory_dir }}/../params/jenkins-slaves/mongodb"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - jenkins-slaves
-      - mongodb-slave
-  - name: jenkins-slave-python
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/jenkins-slaves/.openshift/templates/jenkins-slave-generic-template.yml"
-    params: "{{ inventory_dir }}/../params/jenkins-slaves/python"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - jenkins-slaves
-      - python-slave
 
 # CI/CD Deployments is the OpenShift Deployment Configs and all
 # supporting tooling, pre and post hooks needed to setup and configure a comprehensive tool chain
