@@ -100,7 +100,7 @@ In some cases you might not want to deploy all of the components in this repo; b
 3. Here is an example that runs the tags that provision projects, ci, and jenkins objects:
 ```bash
 ansible-playbook site.yml \
-    -e "filter_tags=jenkins,ci,projects"
+    -e "include_tags=jenkins,ci,projects"
 ```
 
 ## Scope and Direction

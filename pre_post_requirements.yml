@@ -2,7 +2,7 @@
   scm: git
   version: v3.11.2
   name: casl-ansible
-- src: https://github.com/pcarney8/infra-ansible
+- src: https://github.com/redhat-cop/infra-ansible
   scm: git
-  version: nexus-graceful-fail-option
+  version: v1.0.10
   name: infra-ansible
