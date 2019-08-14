@@ -132,7 +132,6 @@ hoverfly:
 pact_broker:
   POSTGRESQL_USERNAME: pact_broker_user
   POSTGRESQL_PERSISTENT_VOLUME_CLAIM_SIZE: 5Gi
-  GIT_REPOSITORY: https://github.com/DiUS/pact_broker-docker.git
 
 openshift_cluster_content:
 - galaxy_requirements:
