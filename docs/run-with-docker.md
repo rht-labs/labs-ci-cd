@@ -40,5 +40,5 @@ In some cases you might not want to deploy all of the components in this repo; b
 ./run.sh ansible-playbook /tmp/src/apply.yml \
     -i /tmp/src/inventory/ \
     -e target=tools \
-    -e "filter_tags=jenkins,ci,projects"
+    -e "include_tags=jenkins,ci,projects"
 ```
