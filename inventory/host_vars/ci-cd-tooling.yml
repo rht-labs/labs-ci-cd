@@ -12,9 +12,7 @@ jenkins:
   build:
     NAME: "{{ jenkins_name }}"
     SOURCE_REPOSITORY_URL: https://github.com/rht-labs/s2i-config-jenkins.git
-    SOURCE_REPOSITORY_REF: v1.4
-    BUILDER_IMAGE_STREAM_NAME: jenkins-2-rhel7
-    BUILDER_IMAGE_STREAM_TAG_NAME: v3.11
+    SOURCE_REPOSITORY_REF: v1.5
     IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
     SECRET_NAME: "jenkins-git-password"
     USERNAME: gitlab-sa
@@ -23,7 +21,7 @@ jenkins:
   deploy:
     NAMESPACE: "{{ ci_cd_namespace }}"
     JENKINS_IMAGE_STREAM_TAG: "{{ jenkins_name }}:latest"
-    MEMORY_LIMIT: 8Gi
+    MEMORY_LIMIT: 6Gi
     JENKINS_OPTS: "--sessionTimeout=720"
     VOLUME_CAPACITY: 20Gi
     MEMORY_REQUEST: 2Gi
