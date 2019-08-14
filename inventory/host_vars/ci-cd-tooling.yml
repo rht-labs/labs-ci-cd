@@ -6,6 +6,8 @@ sonarqube_name: sonarqube
 hoverfly_name: hoverfly
 nexus_password: "admin123"
 
+jenkins_persistence_type: "persistent"
+
 jenkins:
   build:
     NAME: "{{ jenkins_name }}"
@@ -263,24 +265,14 @@ openshift_cluster_content:
       - nexus
       - nexus-deploy
       - ci-cd-deployments
-  #  Want to use Ephemeral Jenkins? Just swap out these two lines
-  # - name: jenkins-ephemeral
-  #   template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins/jenkins-ephemeral-template.yml"
-  #   params_from_vars: "{{ jenkins.deploy }}"
-  #   namespace: "{{ ci_cd_namespace }}"
-  #   tags:
-  #     - jenkins
-  #     - jenkins-deploy
-  #     - jenkins-ephemeral
-  #     - ci-cd-deployments
-  - name: jenkins-persistent
-    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins/jenkins-persistent-template.yml"
+  - name: jenkins
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins/jenkins-{{ jenkins_persistence_type }}-template.yml"
     params_from_vars: "{{ jenkins.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - jenkins
       - jenkins-deploy
-      - jenkins-persistent
+      - jenkins-{{ jenkins_persistence_type }}
       - ci-cd-deployments
   - name: zalenium
     template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/zalenium/.openshift/templates/zalenium-deployment.yml"

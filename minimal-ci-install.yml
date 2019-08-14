@@ -7,7 +7,7 @@
     - include_role:
         name: openshift-applier/roles/openshift-applier
       vars:
-        filter_tags: "{{ ci_cd_namespace }}" 
+        include_tags: "{{ ci_cd_namespace }}" 
 
 - name: Create CI/CD tools
   hosts: tools
@@ -17,7 +17,7 @@
       tags:
         - openshift-applier
       vars:
-        filter_tags: "jenkins,ansible-slave" 
+        include_tags: "jenkins,ansible-slave" 
 
 - name: Create CI Job
   hosts: ci-for-labs
@@ -26,3 +26,4 @@
         name: openshift-applier/roles/openshift-applier
       tags:
         - openshift-applier
+        - ci-for-ci
