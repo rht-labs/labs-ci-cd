@@ -12,7 +12,7 @@ jenkins:
   build:
     NAME: "{{ jenkins_name }}"
     SOURCE_REPOSITORY_URL: https://github.com/rht-labs/s2i-config-jenkins.git
-    SOURCE_REPOSITORY_REF: update-for-ocpv4 
+    SOURCE_REPOSITORY_REF: v1.5
     IMAGE_STREAM_NAMESPACE: "{{ ci_cd_namespace }}"
     SECRET_NAME: "jenkins-git-password"
     USERNAME: gitlab-sa
@@ -86,7 +86,7 @@ openshift_cluster_content:
 - object: ci-cd-builds
   content:
   - name: jenkins-s2i
-    template: "https://raw.githubusercontent.com/pcarney8/openshift-templates/updates-for-ocpv4/jenkins-s2i-build/jenkins-s2i-build-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins-s2i-build/jenkins-s2i-build-template.yml"
     params_from_vars: "{{ jenkins.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
