@@ -166,7 +166,7 @@ openshift_cluster_content:
     - hoverfly
     - ci-cd-builds
   - name: sonarqube
-    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/build-docker-generic/.openshift/templates/docker-build-template.yml"
+    template: "https://raw.githubusercontent.com/pcarney8/containers-quickstarts/add-from-image-for-docker-generic-build/build-docker-generic/.openshift/templates/docker-build-template-from-image.yml"
     params_from_vars: "{{ sonarqube.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
