@@ -99,7 +99,7 @@ sonarqube:
     SOURCE_CONTEXT_DIR: sonarqube
     BUILDER_REGISTRY_URL: docker.io
     BUILDER_IMAGE: sonarqube
-    BUILDER_IMAGE_TAG: 7.7
+    BUILDER_IMAGE_TAG: "7.7-community"
     BUILDER_IMAGE_STREAM_NAME: "{{ sonarqube_name }}"
   postgresql:
     POSTGRESQL_DATABASE: sonar
