@@ -126,8 +126,7 @@ hoverfly:
 
 pact_broker:
   POSTGRESQL_USERNAME: pact_broker_user
-  POSTGRESQL_PERSISTENT_VOLUME_CLAIM_SIZE: 5Gi
-  GIT_REPOSITORY: https://github.com/DiUS/pact_broker-docker.git
+  PACT_BROKER_BASIC_AUTH_READ_ONLY_PASSWORD: mysupersecretpassword
 
 openshift_cluster_content:
 - galaxy_requirements:
@@ -169,14 +168,6 @@ openshift_cluster_content:
     - sonarqube
     - sonarqube-build
     - ci-cd-builds
-  - name: pact-broker
-    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/pact-broker/pact-broker-build.yml"
-    params_from_vars: "{{ pact_broker }}"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - pact-broker
-      - pact-broker-build
-      - ci-cd-builds
 
 # Secrets stored in OCP land and sync'd to Jenkins for consumption
 - object: ci-cd-secrets
