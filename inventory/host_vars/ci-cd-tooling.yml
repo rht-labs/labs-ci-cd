@@ -93,11 +93,8 @@ nexus:
 sonarqube:
   build:
     NAME: "{{ sonarqube_name }}"
-    #SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
-    SOURCE_REPOSITORY_URL: "https://github.com/pcarney8/containers-quickstarts.git"
-    #SOURCE_REPOSITORY_REF: "master"
-    SOURCE_REPOSITORY_REF: "add-imagestream-to-docker-generic-override-build"
-    #SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
+    SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
+    SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
     SOURCE_CONTEXT_DIR: sonarqube
     FROM_DOCKER_IMAGE: sonarqube
     FROM_DOCKER_TAG: "7.7-community"
@@ -163,8 +160,7 @@ openshift_cluster_content:
     - hoverfly
     - ci-cd-builds
   - name: sonarqube
-    #template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template-override-FROM.yml"
-    template: "https://raw.githubusercontent.com/pcarney8/containers-quickstarts/add-imagestream-to-docker-generic-override-build/build-docker-generic/.openshift/templates/docker-build-template-override-FROM.yml"
+    template: "{{ cop_quickstarts_raw }}/{{ cop_quickstarts_raw_version_tag }}/build-docker-generic/.openshift/templates/docker-build-template-override-FROM.yml"
     params_from_vars: "{{ sonarqube.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
