@@ -93,14 +93,15 @@ nexus:
 sonarqube:
   build:
     NAME: "{{ sonarqube_name }}"
+    #SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
     SOURCE_REPOSITORY_URL: "https://github.com/pcarney8/containers-quickstarts.git"
-    SOURCE_REPOSITORY_REF: "add-from-image-for-docker-generic-build"
+    #SOURCE_REPOSITORY_REF: "master"
+    SOURCE_REPOSITORY_REF: "add-imagestream-to-docker-generic-override-build"
     #SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
     SOURCE_CONTEXT_DIR: sonarqube
-    BUILDER_REGISTRY_URL: docker.io
-    BUILDER_IMAGE: sonarqube
-    BUILDER_IMAGE_TAG: "7.7-community"
-    BUILDER_IMAGE_STREAM_NAME: "{{ sonarqube_name }}"
+    FROM_DOCKER_IMAGE: sonarqube
+    FROM_DOCKER_TAG: "7.7-community"
+    FROM_DOCKER_IMAGE_REGISTRY_URL: "docker.io/sonarqube"
   postgresql:
     POSTGRESQL_DATABASE: sonar
     VOLUME_CAPACITY: 5Gi
@@ -128,10 +129,6 @@ hoverfly:
     NAMESPACE: "{{ ci_cd_namespace }}"
     MEMORY_LIMIT: 2Gi
     HOVERFLY_IMAGE_STREAM_TAG: "{{ hoverfly_name }}:latest"
-
-pact_broker:
-  POSTGRESQL_USERNAME: pact_broker_user
-  POSTGRESQL_PERSISTENT_VOLUME_CLAIM_SIZE: 5Gi
 
 openshift_cluster_content:
 - galaxy_requirements:
@@ -166,21 +163,14 @@ openshift_cluster_content:
     - hoverfly
     - ci-cd-builds
   - name: sonarqube
-    template: "https://raw.githubusercontent.com/pcarney8/containers-quickstarts/add-from-image-for-docker-generic-build/build-docker-generic/.openshift/templates/docker-build-template-from-image.yml"
+    #template: "https://raw.githubusercontent.com/redhat-cop/containers-quickstarts/master/build-docker-generic/.openshift/templates/docker-build-template-override-FROM.yml"
+    template: "https://raw.githubusercontent.com/pcarney8/containers-quickstarts/add-imagestream-to-docker-generic-override-build/build-docker-generic/.openshift/templates/docker-build-template-override-FROM.yml"
     params_from_vars: "{{ sonarqube.build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
     - sonarqube
     - sonarqube-build
     - ci-cd-builds
-  - name: pact-broker
-    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/pact-broker/pact-broker-build.yml"
-    params_from_vars: "{{ pact_broker }}"
-    namespace: "{{ ci_cd_namespace }}"
-    tags:
-      - pact-broker
-      - pact-broker-build
-      - ci-cd-builds
 
 # Secrets stored in OCP land and sync'd to Jenkins for consumption
 - object: ci-cd-secrets
@@ -294,7 +284,6 @@ openshift_cluster_content:
       - ci-cd-deployments
   - name: pact-broker
     template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/pact-broker/pact-broker-deploy.yml"
-    params_from_vars: "{{ pact_broker }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
       - pact-broker
