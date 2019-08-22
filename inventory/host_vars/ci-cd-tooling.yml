@@ -254,7 +254,7 @@ openshift_cluster_content:
       - nexus-deploy
       - ci-cd-deployments
   - name: jenkins
-    template: "https://raw.githubusercontent.com/redhat-cop/openshift-templates/4f3f0a3bf7cc669fe346183ee05dda3a0ea37b0f/jenkins/jenkins-{{ jenkins_persistence_type }}-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins/jenkins-{{ jenkins_persistence_type }}-template.yml"
     params_from_vars: "{{ jenkins.deploy }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
