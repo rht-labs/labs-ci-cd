@@ -13,7 +13,7 @@ openshift_cluster_content:
 - object: ci-for-labs-ci-cd
   content:
   - name: pipeline
-    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins-pipelines/jenkins-pipeline-with-ocp-triggers-template.yml"
+    template: "{{ openshift_templates_raw }}/{{ openshift_templates_raw_version_tag }}/jenkins-pipelines/jenkins-pipeline-template-with-ocp-triggers.yml"
     params_from_vars: "{{ build }}"
     namespace: "{{ ci_cd_namespace }}"
     tags:
