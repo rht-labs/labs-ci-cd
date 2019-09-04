@@ -30,14 +30,11 @@ all come from different backgrounds and projects, which means we likely
 have different perspectives on "how open source is done". Try to
 listen to others rather than convince them that your way is correct.
 * There is a
-link:./CODE_OF_CONDUCT.adoc[Contributor Code of Conduct]. By participating
+link:./CODE_OF_CONDUCT.md[Contributor Code of Conduct]. By participating
 in this project, you agree to abide by its terms.
 * If you open a pull request, please ensure that your contribution
 passes all tests. If there are test failures, you will need to address
 them before we can merge your contribution.
-* When adding content, please consider if it is widely valuable. Please
-don’t add references or links to things you or your employer have
-created as others will do so if they appreciate it.
 
 == Getting set up for local development
 
@@ -49,18 +46,18 @@ The Labs CI / CD stack can be deployed to any OpenShift cluster, and is automate
 
 [source,bash]
 ----
-ansible-galaxy install -r requirements.yml -p galaxy
+ansible-galaxy install -r requirements.yml -p roles 
 oc login ...
-ansible-playbook -i .applier/ galaxy/openshift-applier/playbooks/openshift-cluster-seed.yml
+ansible-playbook roles/openshift-applier/playbooks/openshift-cluster-seed.yml
 ----
 
-This will result in the creation of a pipeline and deployment environments across several projects:
+This will result in the creation of several tools and environments across several projects:
 
 * `labs-ci-cd` is where Jenkins, and other tools will be deployed to.
 * `labs-dev` will be used as the Development environment, where smoke tests can be run.
 * `labs-test` is a promotion environment
 
-If you need to customize the deployment (e.g. for testing a Pull Request), the Applier inventory supports a number of parameters to customize the deployment. The following command is an example of configuring the pipeline to build from an alternative fork and branch. For other possible parameters, see link:.applier/group_vars/all.yml[all.yml].
+If you need to customize the deployment (e.g. for testing a Pull Request), the Applier inventory supports a number of parameters to customize the deployment. The following command is an example of configuring the pipeline to build from an alternative fork and branch. For other possible parameters, see link:inventory/group_vars/all.yml[all.yml].
 
 == Contributing Content
 
