@@ -75,7 +75,7 @@ do any work.
 
 == Contribution review process
 
-This repo is currently maintained by @springdo, @pcarney8, and
+This repo is currently maintained by @springdo, @pcarney8, @mcanoy, and
 @oybed, who have commit access. They will likely review your
 contribution. If you haven’t heard from anyone in 10 days, feel free to
 bump the thread or @-mention a maintainer or
