@@ -63,6 +63,7 @@ jenkins_slaves:
       SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
       SOURCE_REPOSITORY_URL: "{{ cop_quickstarts }}"
     mvn:
+      BUILDER_IMAGE_NAME: quay.io/openshift/origin-jenkins-agent-maven:4.2
       NAME: jenkins-slave-mvn
       SOURCE_CONTEXT_DIR: jenkins-slaves/jenkins-slave-mvn
       SOURCE_REPOSITORY_REF: "{{ cop_quickstarts_raw_version_tag }}"
