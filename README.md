@@ -1,5 +1,12 @@
 # Open Innovation Labs CI/CD
 
+## 🏁 No Longer Being Maintained  🌇
+This project is being depricated and will no longer receive updates or contributions. OpenShift has moved on to version 4.x and this project was a great enabler for kick starting development of applications on OpenShift 3.x. The tools of DevOps have evolved and grown towards a GitOps approach and so the evolution of Labs CI/CD has moved that way too.
+
+For this teams new approach to tooling and automation checkout these two repositories:
+ - 🐙 [The new home for labs ci cd and other tooling](https://github.com/rht-labs/ubiquitous-journey)  🐙
+ - ⚓️ [Our custom Helm Charts](https://github.com/rht-labs/helm-charts)  ⚓️
+
 ## What's in the box?
 
 This project is an Ansible inventory for loading an OpenShift cluster with some frequently used projects, apps and tools on a Red Hat Open Innovation Lab residencies. Using the `openshift-applier`, cluster content is loaded from templates and param files in a repeatable, config-as-code way.
