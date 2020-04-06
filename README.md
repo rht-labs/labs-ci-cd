@@ -1,7 +1,7 @@
 # Open Innovation Labs CI/CD
 
 ## 🏁 No Longer Being Maintained  🌇
-This project is being depricated and will no longer receive updates or contributions. OpenShift has moved on to version 4.x and this project was a great enabler for kick starting development of applications on OpenShift 3.x. The tools of DevOps have evolved and grown towards a GitOps approach and so the evolution of Labs CI/CD has moved that way too.
+This project is being deprecated and will no longer receive updates or contributions. OpenShift has moved on to version 4.x and this project was a great enabler for kick starting development of applications on OpenShift 3.x. The tools of DevOps have evolved and grown towards a GitOps approach and so the evolution of Labs CI/CD has moved that way too.
 
 For this teams new approach to tooling and automation checkout these two repositories:
  - 🐙 [The new home for labs ci cd and other tooling](https://github.com/rht-labs/ubiquitous-journey)  🐙
